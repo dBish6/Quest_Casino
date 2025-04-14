@@ -1,6 +1,8 @@
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 
+import parsePathWithLocale from "@utils/parsePathWithLocale";
+
 import { useAppSelector } from "@redux/hooks";
 import { selectUserOStateToken } from "@authFeat/redux/authSelectors";
 
@@ -32,7 +34,7 @@ export default function LoginWithGoogle({
   queryKey,
   postLoginGoogle,
   setGoogleLoading,
-  processing,
+  processing
 }: LoginWithGoogleProps) {
   const [searchParams] = useSearchParams(),
     code = searchParams.get("code");
@@ -44,7 +46,7 @@ export default function LoginWithGoogle({
     const scope = "email profile",
       state = storedOState?.original;
 
-    if (!code) localStorage.setItem("qc:prev_path", window.location.pathname);
+    if (!code) localStorage.setItem("qc:prev_path", parsePathWithLocale(window.location.pathname)![2]);
     return `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
   };
 

@@ -2,12 +2,10 @@ import type { CarouselContentResponseDto } from "@views/home/_components/Carouse
 
 import { type RouteObject, Navigate } from "react-router-dom";
 
-import GENERAL_UNAUTHORIZED_MESSAGE from "@authFeat/constants/GENERAL_UNAUTHORIZED_MESSAGE";
-
 import { ResourceLoaderProvider } from "@components/loaders";
-import { BreakpointProvider, Dashboard } from "@components/dashboard";
+import BreakpointProvider from "@components/BreakpointProvider";
 import { LeaderboardProvider } from "@gameFeat/components/modals/menu/slides";
-import SocketListenersProvider from "@components/SetupSocketListeners";
+import { Dashboard } from "@components/dashboard";
 import { ModalsProvider } from "@components/modals";
 
 import { RestrictView, About, Home, Support, PrivacyPolicy, Terms, Error } from "@views/index";
@@ -41,14 +39,12 @@ export const getCarouselContentLoader = async () => {
 
 export const routes: RouteObject[] = [
   {
-    path: "/",
+    path: "/:locale/",
     element: (
       <>
         <ResourceLoaderProvider>
           <BreakpointProvider>
             <LeaderboardProvider>
-              <SocketListenersProvider />
-
               <Dashboard />
 
               <ModalsProvider />
@@ -70,7 +66,7 @@ export const routes: RouteObject[] = [
         loader: getCarouselContentLoader
       },
       {
-        path: "/profile",
+        path: "profile",
         element: <RestrictView />,
         children: [
           {
@@ -103,55 +99,27 @@ export const routes: RouteObject[] = [
       },
       {
         path: "error-401",
-        element: (
-          <Error
-            status={401}
-            title="Unauthorized"
-            description={GENERAL_UNAUTHORIZED_MESSAGE}
-          />
-        )
+        element: <Error status={401} />
       },
       {
         path: "error-403",
-        element: (
-          <Error
-            status={403}
-            title="Forbidden"
-            description="Malicious request or User authorization is not valid."
-          />
-        )
+        element: <Error status={403} />
       },
       {
         path: "error-404-page",
-        element: (
-          <Error status={404} title="Page Not Found" description="The page you are looking for doesn't exist or was moved or deleted." />
-        )
+        element: <Error status={404} />
       },
       {
         path: "error-404-user",
-        element: (
-          <Error status={404} title="User Not Found" description="Unexpectedly we couldn't find your profile on our server." />
-        )
+        element: <Error status={404} />
       },
       {
         path: "error-429",
-        element: (
-          <Error
-            status={429}
-            title="Too Many Requests"
-            description="You made too many requests to the our server in a short period, Quest Casino is temporarily locked down for you. Please come back again in an hour."
-          />
-        )
+        element: <Error status={429} />
       },
       {
         path: "error-500",
-        element: (
-          <Error
-            status={500}
-            title="Internal Server Error"
-            description="Unexpected server error or couldn't establish a connection."
-          />
-        )
+        element: <Error status={500} />
       },
       {
         ...(typeof window !== "undefined" && {

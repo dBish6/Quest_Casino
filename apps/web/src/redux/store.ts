@@ -15,8 +15,8 @@ import { apiMiddleware } from "@services/api";
 
 let preloadedState = {};
 if (typeof window !== "undefined") {
-  preloadedState = deepMerge([(window?.__PRELOADED_STATE__ || {}), loadState()])
-  delete window?.__PRELOADED_STATE__;
+  preloadedState = deepMerge([(window.__PRELOADED_STATE__ || {}), loadState()])
+  delete window.__PRELOADED_STATE__;
 }
 
 const store = configureStore({

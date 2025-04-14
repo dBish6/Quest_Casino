@@ -4,7 +4,7 @@
  *
  * Author: David Bishop
  * Creation Date: April 16, 2024
- * Last Updated: March 19, 2025
+ * Last Updated: April 13, 2025
  *
  * Description:
  * .
@@ -24,9 +24,10 @@ import HistoryProvider from "@utils/History";
 import { ToastsProvider } from "@components/toast";
 
 import { ResourceLoaderProvider } from "@components/loaders";
-import { BreakpointProvider, Dashboard } from "@components/dashboard";
 import { LeaderboardProvider } from "@gameFeat/components/modals/menu/slides";
-import SocketListenersProvider from "@components/SetupSocketListeners";
+import SocketPredefinedListenersProvider from "@components/SocketPredefinedListenersProvider";
+import BreakpointProvider from "@components/BreakpointProvider";
+import { Dashboard } from "@components/dashboard";
 import { ModalsProvider } from "@components/modals";
 import VerificationHandler from "@authFeat/components/VerificationHandler";
 import AwayActivityTracker from "@components/AwayActivityTracker";
@@ -36,7 +37,7 @@ import { routes as initialRoutes } from "./routes";
 import validateUserAction from "@authFeat/actions/validateUser";
 
 export const routes: RouteObject[] = initialRoutes.map((route) => {
-  if (route.path === "/") {
+  if (route.path === "/:locale/") {
     route.element = (
       <>
         {/* <ErrorBoundary> */}
@@ -46,7 +47,7 @@ export const routes: RouteObject[] = initialRoutes.map((route) => {
         <ResourceLoaderProvider>
           <BreakpointProvider>
             <LeaderboardProvider>
-              <SocketListenersProvider />
+              <SocketPredefinedListenersProvider />
 
               <Dashboard />
 
@@ -60,6 +61,7 @@ export const routes: RouteObject[] = initialRoutes.map((route) => {
 
         {/* They get redirected on the server, this is just in case for the client. */}
         {window.location.pathname === "/" && (
+          // FIXME: Would this even work now?
           <Navigate to="/home" replace />
         )}
       </>
