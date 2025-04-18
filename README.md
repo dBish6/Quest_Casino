@@ -1,5 +1,5 @@
 ## 🚀🚀 Active Development
-The development of the complete overhaul of Quest Casino is now underway and we're now in the very early stages. The previous version (v1.2.8) will remain available online for the time being, you can access the previous version through the releases section or the quest_casino_v1.2.8 branch. Quest Casino version 2 is a highly ambitious upgrade that promises to surpass its predecessor in every way. Stay Tuned! 🎰
+The development of the complete overhaul of Quest Casino is now underway, and the first official version of Quest Casino version 2 is now live, but due to a huge change, I have chosen to stop the server for questcasino.org. View the [Current Steps section](#current-steps) for more info. Quest Casino version 2 is a highly ambitious upgrade that promises to surpass its predecessor in every way. Stay Tuned! 🎰
 
 # Quest_Casino_Full-Stack_App
 This is a fun casino app that has different kinds of casino games. From the sound of the name, in addition, it has some quests/challenges to complete for some extra moolah!
@@ -14,7 +14,7 @@ The `web` directory is a `TypeSript React` app which uses `Vite` and a custom `S
 The `serverCore` directory contains the core API and WebSocket connections via `socket.io`, developed using `TypeScript Express`. I also finally decided to remove Firebase, mid-development. I felt that all I really needed from Firebase was Firestore and all the additional features felt like unnecessary 'bloat' and also the 'hand-holding' began to annoy me. So, after I made up this tech stack, I decided to remove Firebase and use a different document-oriented database, `MongoDB`. Our database is now MongoDB complemented with an Object Data Modeling (ODM) tool, `Mongoose`, for a structured schema approach.
 
 ## Current Steps
-I'm now on the new `chat feature`, which will have global chat rooms based on the user's country and private chat rooms will also be implemented for the user's friends. It's a complex chat system for sure, will be a fun challenge.
+The first v1.0.0 version of Quest Casino v2 is now live, but currently, the server is down due to a huge change I want to make. I am localizing the app and it will change the URL, so I don't want bots indexing at this time and I just feel like it's more ready after this time. So, <b>questcasino.org is down due to development</b>.
 
 ## Collaboration Appreciated!
 I would love to work with other people with this app I envisioned.
@@ -48,8 +48,6 @@ $ npm install <package> --workspace <project>
 
 ## Thanks!
 I hope my work can inspire you, thank you for your interest in the app!
-
-_**Deployed Stable Version (Version 1):** [www.questcasino.xyz](https://www.questcasino.xyz)_
 
 <a href="https://www.buymeacoffee.com/dBish" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
