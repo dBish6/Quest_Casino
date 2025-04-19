@@ -47,22 +47,11 @@ export interface LocaleEntry {
 }
 
 /**
- * Can just be title and para directly or key names with `LocaleEntry` 
- * (e.g. { "carousel": { [name: string]: LocaleEntry } } or "section" 
- * as a key is a common one.) DELETE?
- * 
- * Can be just `title` and `para` directly, or key-value pairs that follow the `LocaleEntry` structure.
- * A common convention is to use a `section` key for grouping, like:
- * 
- * ```ts
- * { section: { [name]: LocaleEntry, sub: { [name]: LocaleEntry } } }
- * ```
- * 
  * Developer-Friendly Version
  * 
- * Most types were stripped due to how annoying they are in practice.
+ * Can be just `title` and `para` directly, or key-value pairs that follow the `LocaleEntry` structure.
  * 
- * The 'realistic' version is shown below:
+ * Most types were stripped due to how annoying they are in practice, the 'realistic' version is shown below:
  * ```ts
  * interface LocaleContent extends LocaleEntry {
  *   section?: Record<string, LocaleEntry & { sub?: Record<string, LocaleEntry> }>;
