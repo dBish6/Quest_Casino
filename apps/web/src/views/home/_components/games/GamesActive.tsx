@@ -1,8 +1,9 @@
 import type { Game } from "@qc/typescript/dtos/GetGamesDto";
+import type { LocaleEntry } from "@typings/Locale";
 import type { GameDataState } from "../../Home";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { SetStableSearchParams } from "@hooks/useStableSearchParams";
-import type { BreakpointContextValues } from "@components/dashboard";
+import type { BreakpointContextValues } from "@components/BreakpointProvider";
 import type { IconIds } from "@components/common";
 
 import { useState, useEffect, useRef } from "react";
@@ -22,7 +23,8 @@ import { Skeleton, SkeletonText } from "@components/loaders";
 
 import s from "../../home.module.css";
 
-interface GamesFiltersProps { 
+interface GamesFiltersProps {
+  localeEntry: LocaleEntry;
   gameData: GameDataState["active"]; 
   setGameData: React.Dispatch<React.SetStateAction<GameDataState>>;
   searchParams: URLSearchParams;
@@ -38,6 +40,7 @@ interface SelectedFavourites {
   [title: string]: "delete" | "add"
 }
 interface GameCardActiveProps {
+  localeEntry: LocaleEntry;
   games: (Game | undefined)[];
   game: Game | undefined;
   gameInfoOpen: { [key: string]: boolean };
@@ -49,15 +52,22 @@ interface GameCardActiveProps {
   user: UserCredentials | null;
 }
 
-const FILTER_OPTIONS: ReadonlyArray<Readonly<{ text: string; icon: IconIds }>> = [
-  { text: "All", icon: "infinity-24" },
-  { text: "Table", icon: "cards-24" },
-  { text: "Slots", icon: "slot-machine-24" },
-  { text: "Dice", icon: "dice-24" },
-  { text: "Favourites", icon: "heart-24" }
-];
+interface GamesActiveProps {
+  localeEntry: LocaleEntry;
+  games: (Game | undefined)[];
+  user: UserCredentials | null;
+}
 
-export default function GamesActive({ games, user }: { games: (Game | undefined)[], user: UserCredentials | null }) {
+const getFilterOptions = (
+  names: string[]
+): ReadonlyArray<Readonly<{ text: string; icon: IconIds }>> =>
+  names.map((name, i) => ({
+    text: name,
+    icon: ["infinity-24", "cards-24", "slot-machine-24", "dice-24", "heart-24"][i] as IconIds
+  })
+);
+
+export default function GamesActive({ localeEntry, games, user }: GamesActiveProps) {
   const [gameInfoOpen, setGameInfoOpen] = useState<{ [key: string]: boolean }>({});
 
   const [patchUpdateUserFavourites] = useUpdateUserFavouritesMutation(),
@@ -96,6 +106,7 @@ export default function GamesActive({ games, user }: { games: (Game | undefined)
       {games.map((game, i) => (
         <GameCardActive
           key={game?.title || i}
+          localeEntry={localeEntry}
           games={games}
           game={game}
           gameInfoOpen={gameInfoOpen}
@@ -109,15 +120,10 @@ export default function GamesActive({ games, user }: { games: (Game | undefined)
   );
 }
 
-function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActiveProps) {
+function GameCardActive({ localeEntry, game, user, selectedFavGames, ...props }: GameCardActiveProps) {
   const keepInfoOpen = props.gameInfoOpen[game?.title || ""],
     isFavourite = !!(user?.favourites ?? {})[game?.title || ""], // Is a favourite from the db.
     isSelected = selectedFavGames.current[game?.title || ""];
-
-  const favBtnLabels = {
-    "true": `Add ${game?.title} to Your Favorites`,
-    "false": `Remove ${game?.title} from your favorites`
-  };
 
   const [scope, animate] = useAnimate();
 
@@ -154,13 +160,13 @@ function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActi
     );
 
     const isPressed = target.getAttribute("aria-pressed")!;
-    if (isPressed === "true") {
-      target.setAttribute("aria-label", favBtnLabels[isPressed]);
-      target.setAttribute("aria-pressed", "false");
-    } else {
-      target.setAttribute("aria-label", favBtnLabels[isPressed as "false"]);
-      target.setAttribute("aria-pressed", "true");
-    }
+    if (isPressed === "true") target.setAttribute("aria-pressed", "false");
+    else target.setAttribute("aria-pressed", "true");
+
+    target.setAttribute(
+      "aria-label",
+      localeEntry.aria.label.favBtn[isPressed].replace("{{title}}", game!.title)
+    );
   };
   
   return (
@@ -189,7 +195,9 @@ function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActi
               {({ Arrow }) => (
                 <>
                   <Arrow />
-                  <p aria-label="Game Odds Ratio">Odds: <span>{game.odds}</span></p>
+                  <p aria-label={localeEntry.aria.label.odds}>
+                    {localeEntry.odds} <span>{game.odds}</span>
+                  </p>
                   <ScrollArea orientation="both">
                     <p id={`gameDescrip-${game.title}`}>{game.description}</p>
                   </ScrollArea>
@@ -202,13 +210,15 @@ function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActi
                   (isSelected && isSelected !== "delete")
               )
                 ? {
-                  "aria-label": `Remove ${game.title} from your favorites`,
-                  "aria-pressed": true
-                }
-              : {
-                  "aria-label": `Add ${game.title} to Your Favorites`,
-                  "aria-pressed": false
-                })}
+                    "aria-label":
+                      localeEntry.aria.label.favBtn.false.replace("{{title}}", game!.title),
+                    "aria-pressed": true
+                  }
+                : {
+                    "aria-label":
+                      localeEntry.aria.label.favBtn.true.replace("{{title}}", game!.title),
+                    "aria-pressed": false
+                  })}
               size="sm"
               iconBtn
               onClick={(e) => handleFavouriteSelected(e)}
@@ -225,9 +235,9 @@ function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActi
             onClick={(e) => {
               if (!e.currentTarget.href) {
                 e.preventDefault();
-                alert("Somehow this game has no game link, we're working to resolve this issue as soon as possible.");
+                alert(localeEntry.redirectError);
               } else {
-                alert("The foundation for games is currently under construction as we migrate from Quest Casino v1 to v2. The games will have their own separate dedicated server, this is no small task! Right now, the games shown are just demos since there is no way to sync user data from this app to the games. So, hold tight, exciting things are coming!");
+                alert(localeEntry.TEMPmessage);
               }
             }}
           >
@@ -248,13 +258,19 @@ function GameCardActive({ game, user, selectedFavGames, ...props }: GameCardActi
   );
 }
 
-export function GamesFilters({ gameData, setGameData, searchParams, ...props }: GamesFiltersProps) {
-  const filterSelected = searchParams.get("fil") || "All",
+export function GamesFilters({
+  localeEntry,
+  gameData,
+  setGameData,
+  searchParams,
+  ...props
+}: GamesFiltersProps) {
+  const filterSelected = searchParams.get("fil") || localeEntry.filterNames[0],
     filterSelectedBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (gameData.initial.length) filterSelectedBtnRef.current!.click();
-  }, [gameData.initial])
+  }, [gameData.initial]);
 
   /** Spacing between filter buttons when selected. */
   useEffect(() => {
@@ -263,7 +279,7 @@ export function GamesFilters({ gameData, setGameData, searchParams, ...props }: 
       
       for (const btn of filterBtns) {
         const filter = btn.innerText
-        if (filterSelected === filter && filterSelected !== "All") {
+        if (filterSelected === filter && filterSelected !== localeEntry.filterNames[0]) {
           const prevBtn = btn.previousSibling as HTMLButtonElement;
           if (prevBtn) prevBtn.style.marginRight = "0";
         } else if (filterBtns[filterBtns.length - 1].innerText !== filter) {
@@ -276,12 +292,12 @@ export function GamesFilters({ gameData, setGameData, searchParams, ...props }: 
   return (
     <ScrollArea
       role="group"
-      aria-label="Filter Games by Category"
+      aria-label={localeEntry.aria.label.filters}
       orientation="horizontal"
       id="filters"
       className={s.filters}
     >
-      {FILTER_OPTIONS.map(({ text, icon }) => {
+      {getFilterOptions(localeEntry.filterNames).map(({ text, icon }) => {
         const selected = filterSelected === text;
 
         return (
@@ -293,6 +309,7 @@ export function GamesFilters({ gameData, setGameData, searchParams, ...props }: 
             onClick={(e) =>
               handleFilterActiveGames(
                 e,
+                localeEntry,
                 props.user,
                 searchParams,
                 props.setStableSearchParams,
@@ -311,6 +328,7 @@ export function GamesFilters({ gameData, setGameData, searchParams, ...props }: 
 }
 
 export function GamesSearch({
+  localeEntry,
   gameData,
   setGameData,
   viewport,
@@ -335,7 +353,7 @@ export function GamesSearch({
     let searchedGames = gameData.current.length ? gameData.current : gameData.initial;
     if (value) {
       searchedGames = searchedGames.filter((game) => {
-          return game.title.toLowerCase().includes(value);
+        return game.title.toLowerCase().includes(value);
       });
       searchParams.set("gs", value);
     } else {
@@ -362,9 +380,9 @@ export function GamesSearch({
     >
       <Input
         ref={inputRef}
-        aria-label="Search Games by Title in the Active List"
+        aria-label={localeEntry.aria.label.search}
         aria-controls="activeGames"
-        label="Search"
+        label={localeEntry.search}
         intent="primary"
         size={viewport === "small" ? "lrg" : "xl"}
         id="searchGames"
@@ -387,14 +405,15 @@ export function GamesSearch({
       {viewport === "small" && (
         <Select
           aria-controls="activeGames"
-          label="Type"
+          label={localeEntry.searchType}
           intent="primary"
           size="lrg"
           id="type"
-          defaultValue={searchParams.get("fil") || "All"}
+          defaultValue={searchParams.get("fil") || localeEntry.filterNames[0]}
           onInput={(e) =>
             handleFilterActiveGames(
               e,
+              localeEntry,
               user,
               searchParams,
               setStableSearchParams,
@@ -403,7 +422,7 @@ export function GamesSearch({
             )
           }
         >
-          {FILTER_OPTIONS.map(({ text }) => (
+          {getFilterOptions(localeEntry.filterNames).map(({ text }) => (
             <option key={text} value={text}>
               {text}
             </option>

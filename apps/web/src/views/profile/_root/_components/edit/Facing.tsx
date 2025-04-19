@@ -1,3 +1,5 @@
+import type { LocaleEntry } from "@typings/Locale";
+import type { UseLocale } from "@hooks/useLocale";
 import type { UserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 
 import { useEffect, useRef, useState } from "react";
@@ -16,13 +18,17 @@ import { Spinner } from "@components/loaders";
 import s from "../../profile.module.css";
 
 interface ProfileFacingProps {
+  localeEntry: LocaleEntry;
+  numberFormat: UseLocale["numberFormat"];
   user: UserProfileCredentials;
 }
 
-export default function Facing({ user }: ProfileFacingProps) {
+export default function Facing({ localeEntry, numberFormat, user }: ProfileFacingProps) {
   const bioTextareaRef = useRef<HTMLTextAreaElement>(null),
     bioCounterRef = useRef<HTMLSpanElement>(null),
     [avatarUrl, setAvatarUrl] = useState("/images/default.svg");
+
+  const formatter = useRef(numberFormat());
 
   const [editing, setEditing] = useState<{
     avatar?: boolean;
@@ -65,14 +71,18 @@ export default function Facing({ user }: ProfileFacingProps) {
   };
 
   const handleBioCounter = (isInitial: boolean) => {
-    const textarea = bioTextareaRef.current!, max = 338,
-      counter = bioCounterRef.current!;
+    const textarea = bioTextareaRef.current!,
+      counter = bioCounterRef.current!,
+      max = 338
 
     if (textarea.value.length >= max) {
       bioTextareaRef.current!.value = textarea.value.slice(0, max);
       if (!isInitial) {
         textarea.setAttribute("aria-invalid", "true");
-        counter.setAttribute("aria-label", "338 Characters Used");
+        counter.setAttribute(
+          "aria-label",
+          `${formatter.current.format(max)} ${localeEntry.aria.label.charUsed}`
+        );
         counter.setAttribute("aria-live", "assertive");
         counter.style.color = "var(--c-status-red)";
       }
@@ -82,8 +92,10 @@ export default function Facing({ user }: ProfileFacingProps) {
       counter.removeAttribute("aria-live");
       counter.style.color = "var(--c-para)";
     }
-    
-    bioCounterRef.current!.innerText = `${bioTextareaRef.current!.value.length}/${max}`
+
+    bioCounterRef.current!.innerText = `${formatter.current.format(
+      bioTextareaRef.current!.value.length
+    )}/${formatter.current.format(max)}`;
   };
   useEffect(() => {
     handleBioCounter(true);
@@ -133,10 +145,10 @@ export default function Facing({ user }: ProfileFacingProps) {
 
   useEffect(() => {
     if (user.avatar_url) setAvatarUrl(user.avatar_url);
-  }, [user.avatar_url])
+  }, [user.avatar_url]);
 
   return (
-    <section aria-label="Main Information" className={s.facing}>
+    <section aria-label={localeEntry.aria.label.section} className={s.facing}>
       <Blob svgWidth={371.685} svgHeight={96.985}>
         <path
           data-name="Blob 5"
@@ -161,14 +173,14 @@ export default function Facing({ user }: ProfileFacingProps) {
           >
             <Button
               aria-describedby="addPicTxt"
-              title="Add New Profile Picture"
+              title={localeEntry.aria.title.profilePic}
               type="button"
               className={s.avatar}
               onClick={(e) => (e.currentTarget.nextSibling?.nextSibling as HTMLInputElement).click()}
             >
               <Image
                 src={avatarUrl}
-                alt="Profile Picture"
+                alt={localeEntry.aria.alt.profilePic}
                 fill
               />
             </Button>
@@ -179,7 +191,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                 style: { position: "absolute", opacity: 0 }
               })}
             >
-              Click above to add a new picture
+              {localeEntry.profilePic}
             </label>
             <input
               id="avatar_url"
@@ -192,17 +204,16 @@ export default function Facing({ user }: ProfileFacingProps) {
             {newAvatarUrl && !updateSuccess && editing.avatar && (
               <div className={s.buttons}>
                 <Button
-                  aria-label="Cancel Update"
+                  aria-label={localeEntry.aria.label.cancel}
                   intent="secondary"
                   size="md"
                   type="button"
                   {...buttonDisabledProps}
                   onClick={handleAvatar.cancel}
                 >
-                  Cancel
+                  {localeEntry.cancel}
                 </Button>
                 <Button
-                  aria-label="Update"
                   intent="primary"
                   size="md"
                   type="button"
@@ -212,7 +223,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                   {form.processing ? (
                     <Spinner intent="primary" size="sm" />
                   ) : (
-                    "Upload"
+                    localeEntry.upload
                   )}
                 </Button>
               </div>
@@ -223,7 +234,7 @@ export default function Facing({ user }: ProfileFacingProps) {
         <div className={s.content}>
           {(editing.username || editing.legalName) && (
             <Button
-              aria-label="Stop Editing"
+              aria-label={localeEntry.aria.label.stopEdit}
               intent="exit ghost"
               size="md"
               onClick={() => setEditing({})}
@@ -235,7 +246,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                 <>
                   <h2 title={user.username}>{user.username}</h2>
                   <Button
-                    aria-label="Edit Username"
+                    aria-label={localeEntry.aria.label.editUsername}
                     iconBtn
                     onClick={() => handleSetEditing("username")}
                   >
@@ -254,7 +265,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                   noBots
                 >
                   <Input
-                    label="Username"
+                    label={localeEntry.general.form.user.username}
                     intent="primary"
                     size="lrg"
                     id="username"
@@ -264,7 +275,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                     disabled={form.processing}
                     Button={
                       <Button
-                        aria-label="Update"
+                        aria-label={localeEntry.general.update}
                         intent="primary"
                         size="lrg"
                         type="submit"
@@ -291,15 +302,13 @@ export default function Facing({ user }: ProfileFacingProps) {
                     <p title={`${user.legal_name.first} ${user.legal_name.last}`} aria-roledescription="subtitle">
                       {user.legal_name.first} {user.legal_name.last}
                     </p>
-                    {/* TODO: Languages Flags */}
                     <Image
-                      src="/images/no-image.webp"
+                      src="https://flagcdn.com"
                       alt="Country Flag"
                       className={s.flag}
-                      load={false}
                     />
                     <Button
-                      aria-label="Edit Full Name"
+                      aria-label={localeEntry.aria.label.editName}
                       iconBtn
                       onClick={() => handleSetEditing("legalName")}
                     >
@@ -318,7 +327,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                     noBots
                   >
                     <Input
-                      label="First Name"
+                      label={localeEntry.general.form.user.firstName}
                       intent="primary"
                       id="first_name"
                       name="first_name"
@@ -328,7 +337,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                       onInput={() => setError("first_name", "")}
                     />
                     <Input
-                      label="Last Name"
+                      label={localeEntry.general.form.user.lastName}
                       intent="primary"
                       id="last_name"
                       name="last_name"
@@ -338,7 +347,6 @@ export default function Facing({ user }: ProfileFacingProps) {
                       onInput={() => setError("last_name", "")}
                     />
                     <Button
-                      aria-label="Update"
                       intent="primary"
                       size="lrg"
                       type="submit"
@@ -347,7 +355,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                       {form.processing ? (
                         <Spinner intent="primary" size="md" />
                       ) : (
-                        "Update"
+                        localeEntry.general.update
                       )}
                     </Button>
                   </Form>
@@ -362,7 +370,7 @@ export default function Facing({ user }: ProfileFacingProps) {
                   }}
                   className={s.visitorView}
                 >
-                  Visitor View
+                  {localeEntry.view}
                 </ModalTrigger>
               )}
             </div>
@@ -391,10 +399,10 @@ export default function Facing({ user }: ProfileFacingProps) {
               noBots
             >
               <header>
-                <h3 id="hEditBio" className="hUnderline">Edit Bio</h3>
+                <h3 id="hEditBio" className="hUnderline">{localeEntry.editBio}</h3>
                 {editing.bio && (
                   <Button
-                    aria-label="Update"
+                    aria-label={localeEntry.general.update}
                     intent="ghost"
                     size="md"
                     type="submit"
@@ -404,7 +412,9 @@ export default function Facing({ user }: ProfileFacingProps) {
                     <Icon aria-hidden="true" id="check-mark-18" fill="var(--c-status-green)" />
                   </Button>
                 )}
-                <span ref={bioCounterRef} id="bioCount" className={s.charCount}>0/338</span>
+                <span ref={bioCounterRef} id="bioCount" className={s.charCount}>
+                  {formatter.current.format(0)}/{formatter.current.format(338)}
+                </span>
               </header>
               <Input
                 ref={bioTextareaRef as any}

@@ -1,9 +1,11 @@
+import type { LocaleEntry } from "@typings/Locale";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { SetStableSearchParams } from "@hooks/useStableSearchParams";
 import type { GameDataState } from "../Home";
 
 export default function handleFilterActiveGames(
   e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.FormEvent<HTMLSelectElement>,
+  localeEntry: LocaleEntry,
   user: UserCredentials | null,
   searchParams: URLSearchParams,
   setStableSearchParams: SetStableSearchParams,
@@ -14,9 +16,9 @@ export default function handleFilterActiveGames(
     filter = e.currentTarget.value || target.innerText;
 
   let filteredGames = gameData.searched.length ? gameData.searched : gameData.initial;
-  if (filter !== "All") {
+  if (filter !== localeEntry.filterNames[0]) {
     filteredGames = filteredGames.filter((game) =>
-      filter === "Favourites"
+      filter === localeEntry.filterNames[localeEntry.filterNames.length - 1]
         ? game.title === (user?.favourites[game.title] || "")
         : game.category === filter.toLowerCase()
     );

@@ -1,4 +1,5 @@
 import type { UserCredentials, MinUserWithBioCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { LocaleEntry } from "@typings/Locale";
 
 import { useState } from "react";
 
@@ -23,6 +24,7 @@ export interface SettingsOptionEntry {
 }
 
 interface SettingsOptionProps extends SettingsOptionEntry {
+  localeEntry: LocaleEntry;
   user: UserCredentials;
   blkUser?: MinUserWithBioCredentials,
   selectedOptions: React.MutableRefObject<SelectedOptions>;
@@ -35,6 +37,7 @@ function toSnakeCase(txt: string) {
 }
 
 export default function Option({
+  localeEntry,
   type = "" as any,
   title,
   text,
@@ -90,17 +93,19 @@ export default function Option({
               },
               ...(type === "switch"
                 ? {
-                    "aria-label": isEnabled ? `Disable ${title}` : `Enable ${title}`,
+                    "aria-label": isEnabled
+                      ? localeEntry.aria.label.disable.replace("{{title}}", title)
+                      : localeEntry.aria.label.enable.replace("{{title}}", title),
                     "aria-checked": isEnabled
                   }
                 : {
-                    "aria-label": "Open Block List",
+                    "aria-label": localeEntry.aria.label.open,
                     "aria-controls": "blockList",
                     "aria-expanded": props.blockListOpened
                   }),
             }
           : blkUser && {
-              "aria-label": `Unblock ${blkUser.username}`,
+              "aria-label": localeEntry.aria.label.unblock.replace("{{username}}", blkUser.username),
               "data-checked": isEnabled
             })}
       >

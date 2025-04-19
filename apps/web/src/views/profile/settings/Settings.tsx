@@ -1,3 +1,4 @@
+import type { LocaleContent } from "@typings/Locale";
 import type DeepReadonly from "@qc/typescript/typings/DeepReadonly";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { SelectedOptions, SettingsOptionEntry } from "./_Option";
@@ -6,7 +7,9 @@ import type { UpdateUserSettingsDto } from "@qc/typescript/dtos/UpdateUserDto";
 import { useRef, useEffect, useState, useMemo } from "react";
 
 import getStorageKey from "@utils/getStorageKey";
+import injectElementInText from "@utils/injectElementInText";
 
+import useLocale from "@hooks/useLocale";
 import useUser from "@authFeat/hooks/useUser";
 
 import { useAppDispatch } from "@redux/hooks";
@@ -22,6 +25,7 @@ import Option from "./_Option";
 import s from "./settings.module.css";
 
 interface SettingsSectionProps {
+  localeContent: LocaleContent;
   title: string;
   user: UserCredentials | null;
   selectedOptions: React.MutableRefObject<SelectedOptions>;
@@ -30,40 +34,31 @@ interface SettingsSectionProps {
 }
 
 interface BlockListProps {
+  localeContent: LocaleContent;
   user: UserCredentials;
   selectedOptions: React.MutableRefObject<Omit<Partial<UserCredentials["settings"]>, "blocked_list">>;
   blockListOpened: boolean;
   setBlockListOpened: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const OPTIONS: DeepReadonly<{ general: SettingsOptionEntry[]; privacy: SettingsOptionEntry[] }> = {
-  general: [
-    {
+const getOptions = (localeSectionContent: LocaleContent["section"]): DeepReadonly<{ general: SettingsOptionEntry[]; privacy: SettingsOptionEntry[] }> => ({
+  general: localeSectionContent.general.optTitle.map((title: string, i: number) => ({
+      type: i === 0 ? "switch" : "list",
+      title,
+      text: localeSectionContent.general.optText[i]
+    })
+  ),
+  privacy: localeSectionContent.privacy.optTitle.map((title: string, i: number) => ({
       type: "switch",
-      title: "Notifications",
-      text: "Enable the sound effect on new notifications and indicator."
-    },
-    {
-      type: "list",
-      title: "Blocked List",
-      text: "Add or delete any profile you have blocked."
-    }
-  ],
-  privacy: [
-    {
-      type: "switch",
-      title: "Visibility",
-      text: "Let others see your game activity and statistics when viewing your profile."
-    },
-    {
-      type: "switch",
-      title: "Block Cookies",
-      text: "Block cookies that are not essential for the app to run properly."
-    }
-  ]
-};
+      title,
+      text: localeSectionContent.privacy.optText[i]
+    })
+  )
+});
 
 export default function Settings() {
+  const { content } = useLocale();
+
   const user = useUser();
 
   const [patchUpdateProfile] = useUpdateProfileMutation(),
@@ -87,7 +82,7 @@ export default function Settings() {
         }).finally(() => localStorage.removeItem(key));
       }
     }
-  }
+  };
 
   useEffect(() => {
     window.removeEventListener("beforeunload", handlePatchPendingSettings);
@@ -95,11 +90,11 @@ export default function Settings() {
     handlePatchPendingSettings();
     if (user)
       window.addEventListener("beforeunload", handlePatchPendingSettings);
-    
+
     return () => {
       window.removeEventListener("beforeunload", handlePatchPendingSettings);
       handlePatchPendingSettings();
-    }
+    };
   }, [user?.member_id]);
 
   return (
@@ -107,8 +102,9 @@ export default function Settings() {
       {["General", "Privacy"].map((title, i) => (
         <Section
           key={title}
+          localeContent={content}
           title={title}
-          {...OPTIONS[title.toLowerCase() as keyof typeof OPTIONS]}
+          {...getOptions(content.section)[title.toLowerCase() as keyof ReturnType<typeof getOptions>]}
           user={user}
           selectedOptions={selectedOptions}
           {...(i === 0 && {
@@ -121,7 +117,7 @@ export default function Settings() {
   );
 }
 
-function Section({ title, user, blockListOpened, ...props }: SettingsSectionProps) {
+function Section({ localeContent, title, user, blockListOpened, ...props }: SettingsSectionProps) {
   const dispatch = useAppDispatch();
 
   return (
@@ -139,11 +135,14 @@ function Section({ title, user, blockListOpened, ...props }: SettingsSectionProp
             id={title === "General" ? "settings-32" : "lock-32"}
             scaleWithText
           />
-          <h2 id={`h${title}`}>{blockListOpened ? "Blocked List" : title}</h2>
+          <h2 id={`h${title}`}>
+            {blockListOpened ? localeContent.section.general.optTitle[1] : localeContent.section[title.toLowerCase()].title}
+          </h2>
         </hgroup>
         {user?.settings ? (
           blockListOpened ? (
             <BlockedList
+              localeContent={localeContent}
               user={user}
               selectedOptions={props.selectedOptions}
               blockListOpened={blockListOpened}
@@ -151,34 +150,38 @@ function Section({ title, user, blockListOpened, ...props }: SettingsSectionProp
             />
           ) : (
             <ul aria-live="polite" className={s.options}>
-              {OPTIONS[title.toLowerCase() as keyof typeof OPTIONS].map((entry) => (
-                  <Option
-                    key={entry.title}
-                    {...entry}
-                    user={user}
-                    selectedOptions={props.selectedOptions}
-                    blockListOpened={blockListOpened}
-                    setBlockListOpened={props.setBlockListOpened}
-                  />
-                )
-              )}
+              {getOptions(localeContent.section)[title.toLowerCase() as keyof ReturnType<typeof getOptions>].map((entry) => (
+                <Option
+                  key={entry.title}
+                  localeEntry={localeContent.Option}
+                  {...entry}
+                  user={user}
+                  selectedOptions={props.selectedOptions}
+                  blockListOpened={blockListOpened}
+                  setBlockListOpened={props.setBlockListOpened}
+                />
+              ))}
             </ul>
           )
         ) : (
           <p role="alert">
-            We encountered an unexpected issue with your user settings. Please
-            try logging in again,{" "}
-            <Link asChild intent="primary" to="">
-              <Button
-                id="settingsErrBtn"
-                onClick={() =>
-                  handleLogoutButton(dispatch, user?.username || "", "settingsErrBtn")
-                }
-              >
-                Logout
-              </Button>
-            </Link>
-            .
+            {injectElementInText(
+              localeContent.error.para,
+              null,
+              (text) => (
+                <Link asChild intent="primary" to="">
+                  <Button
+                    id="settingsErrBtn"
+                    onClick={() =>
+                      handleLogoutButton(dispatch, user?.username || "", "settingsErrBtn")
+                    }
+                  >
+                    {text}
+                  </Button>
+                </Link>
+              ),
+              { localeMarker: true }
+            )}
           </p>
         )}
       </div>
@@ -186,22 +189,28 @@ function Section({ title, user, blockListOpened, ...props }: SettingsSectionProp
   );
 }
 
-function BlockedList({ user, setBlockListOpened, ...props }: BlockListProps) {
+function BlockedList({ localeContent, user, setBlockListOpened, ...props }: BlockListProps) {
   const blockedUsers = useMemo(() => Object.values((user.settings.blocked_list || {})), [user?.settings.blocked_list]);
 
   return (
     <>
       <Button
-        aria-label="Close Block List"
+        aria-label={localeContent.section.general.aria.label.close}
         intent="exit ghost"
         size="md"
         onClick={() => setBlockListOpened(false)}
       />
       {blockedUsers.length ? (
-        <ul aria-label="Your Blocked Users" aria-live="polite" id="blockList" className={s.options}>
+        <ul
+          aria-label={localeContent.section.general.aria.label.blockList}
+          aria-live="polite"
+          id="blockList"
+          className={s.options}
+        >
           {blockedUsers.map((blkUser) => (
             <Option
               key={blkUser.member_id}
+              localeEntry={localeContent.Option}
               title={blkUser.username}
               text={blkUser.bio || ""}
               user={user}
@@ -211,7 +220,7 @@ function BlockedList({ user, setBlockListOpened, ...props }: BlockListProps) {
           ))}
         </ul>
       ) : (
-        <p>No Results</p>
+        <p>{localeContent.general.noResults}</p>
       )}
     </>
   );

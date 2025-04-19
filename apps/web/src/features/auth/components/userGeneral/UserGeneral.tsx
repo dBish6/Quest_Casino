@@ -1,10 +1,11 @@
 import type { VariantProps } from "class-variance-authority";
-import type { MinUserWithBioCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { ViewUserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 
 import { useSearchParams } from "react-router-dom";
 import { Title } from "@radix-ui/react-dialog";
 import { cva } from "class-variance-authority";
 
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 
 import { useAppSelector, useAppDispatch } from "@redux/hooks";
@@ -33,11 +34,12 @@ const general = cva(s.generalInfo, {
 
 export interface UserGeneralProps extends React.ComponentProps<"div">,
   VariantProps<typeof general> {
-  user: MinUserWithBioCredentials;
+  user: ViewUserProfileCredentials;
 }
 
 export default function UserGeneral({ className, size, user, ...props }: UserGeneralProps) {
   const [_, setSearchParams] = useSearchParams(),
+    { content } = useLocale("UserGeneral"),
     { viewport } = useBreakpoint();
   
   const storedUser = useAppSelector(selectUserCredentials)! || {},
@@ -72,18 +74,17 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
                 >
                   {user.legal_name.first} {user.legal_name.last}
                 </p>
-                {/* TODO: Languages Flags */}
                 <Image
-                  src="/images/no-image.webp"
+                  src="https://flagcdn.com"
                   alt="Country Flag"
+                  country={user.country}
                   className={s.flag}
-                  load={false}
                 />
               </div>
             </hgroup>
             {user.bio && (
               <ScrollArea orientation="vertical" className={s.bio}>
-                <p aria-label="bio">{user.bio}</p>
+                <p aria-label={content.aria.label.bio}>{user.bio}</p>
               </ScrollArea>
             )}
           </div>
@@ -110,7 +111,7 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
                 });
               }}
             >
-              Send Message
+              {content.sendBtn}
             </Button>
           )}
           <Button
@@ -129,7 +130,7 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
                 size={viewport === "small" ? "sm" : "md"}
               />
             ) : (
-              isFriend ? "Unfriend" : "Add as Friend"
+              isFriend ? content.friendBtn[0] : content.friendBtn[1]
             )}
           </Button>
           {size === "full" ? (
@@ -156,12 +157,12 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
                   size={viewport === "small" ? "sm" : "md"}
                 />
               ) : (
-                isBlocked ? "Unblock" : "Block"
+                isBlocked ? content.blockBtn[0] : content.blockBtn[1]
               )}
             </Button>
           ) : (
             <ModalTrigger
-              aria-label="View Full Profile"
+              aria-label={content.aria.label.view}
               query={{ param: "prof", value: encodeURIComponent(user.username) }}
               buttonProps={{
                 intent: "primary",
@@ -169,7 +170,7 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
               }}
               className={s.visitorView}
             >
-              View Full
+              {content.view}
             </ModalTrigger>
           )}
         </div>

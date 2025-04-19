@@ -1,5 +1,6 @@
 import type { Game } from "@qc/typescript/dtos/GetGamesDto";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { LocaleContent } from "@typings/Locale";
 
 import { ScrollArea } from "@components/scrollArea";
 import GamesDev from "./GamesDev";
@@ -8,13 +9,14 @@ import GamesActive from "./GamesActive";
 import s from "../../home.module.css";
 
 interface GamesActiveProps {
+  localeContent: LocaleContent;
   status: "active" | "development";
   games: Game[];
   gamesLoading: boolean;
   user?: UserCredentials | null;
 }
 
-export function Games({ status, games, gamesLoading, user }: GamesActiveProps) {
+export function Games({ localeContent, status, games, gamesLoading, user }: GamesActiveProps) {
   const isActive = status === "active";
 
   return (
@@ -30,10 +32,18 @@ export function Games({ status, games, gamesLoading, user }: GamesActiveProps) {
               <ul
                 {...(isActive ? { id: "activeGames" } : { className: s.gamesSoon })}
               >
-                {isActive ? <GamesActive games={gamesToRender} user={user!} /> : <GamesDev games={gamesToRender} />}
+                {isActive ? (
+                  <GamesActive
+                    localeEntry={localeContent.section.games}
+                    games={gamesToRender}
+                    user={user!}
+                  />
+                ) : (
+                  <GamesDev games={gamesToRender} />
+                )}
               </ul>
             ) : (
-              <p>No Results</p>
+              <p>{localeContent.general.noResults}</p>
             );
         })()}
       </>

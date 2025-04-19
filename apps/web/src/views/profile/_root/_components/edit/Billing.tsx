@@ -7,14 +7,14 @@
  */
 
 import type { UserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
-import type DeepReadonly from "@qc/typescript/typings/DeepReadonly";
+import type { LocaleEntry } from "@typings/Locale";
+import type { UseLocale } from "@hooks/useLocale";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import CURRENT_YEAR from "@constants/CURRENT_YEAR";
 
 import getStorageKey from "@utils/getStorageKey";
-import { capitalize } from "@qc/utils";
 
 import useForm from "@hooks/useForm";
 
@@ -23,13 +23,13 @@ import { Button, Input, Select } from "@components/common/controls";
 import { Form } from "@components/form";
 import { ModalTrigger } from "@components/modals";
 import { ScrollArea } from "@components/scrollArea";
+import { Spinner } from "@components/loaders";
 
 import s from "../../profile.module.css";
-import { Spinner } from "@components/loaders";
 
 interface PaymentCard {
   title: string;
-  type: "Debit" | "Credit";
+  type: string;
   branch: "mastercard" | "visa";
   name: string;
   number: string;
@@ -48,6 +48,7 @@ interface SelectedState {
 }
 
 interface PaymentCardProps {
+  localeEntry: LocaleEntry;
   user: UserProfileCredentials;
   card: Partial<PaymentCard>;
   setPayments: React.Dispatch<React.SetStateAction<PaymentState>>;
@@ -56,6 +57,7 @@ interface PaymentCardProps {
 }
 
 interface PaymentThirdPartyConnectProps {
+  localeEntry: LocaleEntry;
   user: UserProfileCredentials;
   party: typeof THIRD_PARTIES[number];
   connected: boolean;
@@ -63,6 +65,8 @@ interface PaymentThirdPartyConnectProps {
 }
 
 interface ProfileBillingProps {
+  localeEntry: LocaleEntry;
+  numberFormat: UseLocale["numberFormat"];
   user: UserProfileCredentials;
 }
 
@@ -105,36 +109,37 @@ const formatCard = {
   }
 };
 
-const defaultPaymentsState = (user: UserProfileCredentials): DeepReadonly<PaymentState> => ({
-  cards: {
-    "Card 1": {
-      title: "Card 1",
-      type: "Debit",
-      branch: "mastercard",
-      name: `${user.legal_name?.first} ${user.legal_name?.last}`,
-      number: "0784 0784 0784 0784",
-      expiry: `04/${parseInt(CURRENT_YEAR) + 1}`,
-      CVV: "784",
-      def: false
-    }
-  },
-  thirdParty: { paypal: false, cashApp: false }
-});
-
 function toCamelCase(txt: string) {
   return txt.split(" ").map((parts, i) => (i === 0 ? parts.toLowerCase() : parts)).join("");
 }
 
-export default function Billing({ user }: ProfileBillingProps) {
+export default function Billing({ localeEntry, numberFormat, user }: ProfileBillingProps) {
   const [payments, setPayments] = useState<PaymentState>(() => {
       const init = JSON.parse(localStorage.getItem(getStorageKey(user.member_id, "pay-cards")) || "{}");
 
+      const defaultTitle = `${localeEntry.card} ${numberFormat().format(1)}`,
+        defaultState = {
+          cards: {
+            [defaultTitle]: {
+              title: defaultTitle,
+              type: "Debit",
+              branch: "mastercard",
+              name: `${user.legal_name?.first} ${user.legal_name?.last}`,
+              number: "0784 0784 0784 0784",
+              expiry: `04/${parseInt(CURRENT_YEAR) + 1}`,
+              CVV: "784",
+              def: false
+            }
+          },
+          thirdParty: { paypal: false, cashApp: false }
+        };
+
       return {
         cards: {
-          ...(!Object.values(init.cards || {}).length && defaultPaymentsState(user).cards)
+          ...(!Object.values(init.cards || {}).length && defaultState.cards)
         },
         thirdParty: {
-          ...(!Object.values(init.thirdParty || {}).length && defaultPaymentsState(user).thirdParty)
+          ...(!Object.values(init.thirdParty || {}).length && defaultState.thirdParty)
         },
         ...init
       };
@@ -146,19 +151,34 @@ export default function Billing({ user }: ProfileBillingProps) {
       <header>
         <hgroup className={s.title}>
           <Icon aria-hidden="true" id="debit-card-38" scaleWithText />
-          <h2 id="hPersonal">Billing</h2>
+          <h2 id="hPersonal">{localeEntry.title}</h2>
         </hgroup>
         <ModalTrigger 
           query={{ param: "phist" }}
           intent="primary"
         >
-          View Payment History
+          {localeEntry.view}
         </ModalTrigger>
       </header>
 
       <ul className={s.cards}>
-        {[...Object.values(payments.cards), { title: `Card ${Object.values(payments.cards).length + 1}` }].map((card: any, i) => (
-          <PaymentCard key={card?.title || i} user={user} card={card} setPayments={setPayments} selected={selected} setSelected={setSelected} />
+        {[
+          ...Object.values(payments.cards),
+          {
+            title: `${localeEntry.card} ${numberFormat().format(
+              Object.values(payments.cards).length + 1
+            )}`
+          }
+        ].map((card: any, i) => (
+          <PaymentCard
+            key={card?.title || i}
+            localeEntry={localeEntry}
+            user={user}
+            card={card}
+            setPayments={setPayments}
+            selected={selected}
+            setSelected={setSelected}
+          />
         ))}
       </ul>
 
@@ -166,6 +186,7 @@ export default function Billing({ user }: ProfileBillingProps) {
         {THIRD_PARTIES.map((party, i) => (
           <PaymentThirdPartyConnect
             key={i}
+            localeEntry={localeEntry}
             user={user}
             party={party}
             connected={payments.thirdParty[toCamelCase(party) as keyof typeof payments.thirdParty]}
@@ -177,14 +198,14 @@ export default function Billing({ user }: ProfileBillingProps) {
   );
 }
 
-function PaymentCard({ card, ...props }: PaymentCardProps) {
+function PaymentCard({ localeEntry, card, ...props }: PaymentCardProps) {
   return (
     <li className={s.paymentCard}>
       {!card.name ? (
         !props.selected.edit[card.title!] ? (
           <Button
             aria-labelledby="cAddTxt"
-            aria-description="Create a new payment card for your profile."
+            aria-description={localeEntry.aria.descrip.addBtn}
             onClick={() =>
               props.setSelected((prev) => ({
                 ...prev,
@@ -196,20 +217,27 @@ function PaymentCard({ card, ...props }: PaymentCardProps) {
               <div role="presentation">
                 <Icon id="add-15" />
               </div>
-              <p id="cAddTxt">Add New Card</p>
+              <p id="cAddTxt">{localeEntry.addBtn}</p>
             </div>
           </Button>
         ) : (
-          <PaymentCardFull card={card} {...props} />
+          <PaymentCardFull localeEntry={localeEntry} card={card} {...props} />
         )
       ) : (
-        <PaymentCardFull card={card} {...props} />
+        <PaymentCardFull localeEntry={localeEntry} card={card} {...props} />
       )}
     </li>
   );
 }
 
-function PaymentCardFull({ user, card, setPayments, selected, setSelected }: PaymentCardProps) {
+function PaymentCardFull({
+  localeEntry,
+  user,
+  card,
+  setPayments,
+  selected,
+  setSelected
+}: PaymentCardProps) {
   const isEditing = selected?.edit[card.title!];
 
   const { form, setLoading, setError } = useForm<Record<string, string>>(),
@@ -231,12 +259,15 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
         let value = field.value;
 
         if (!field.value.length) {
-          setError(key, `${key === "cvv" ? "CVV" : capitalize(key)} is required.`);
+          setError(
+            key,
+            `${field.previousSibling!.textContent} ${localeEntry.form.errors.required}`
+          );
           continue;
         }
 
         if (key === "number" && value.length !== 19) {
-          setError("number", "Card number must be 16 digits.")
+          setError("number", localeEntry.form.errors.number);
           continue;
         }
         if (key === "expiry") {
@@ -246,17 +277,17 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
             currentYear = currentDate.getFullYear();
 
           if (isNaN(month) || isNaN(year) || month < 1 || month > 12) {
-            setError("expiry", "Invalid month. Must be between 01 and 12.");
+            setError("expiry", localeEntry.form.errors.expiry[0]);
             continue;
           }
 
           if (year < currentYear || (year === currentYear && month < currentMonth)) {
-            setError("expiry", "Card expiry date must be in the future.");
+            setError("expiry", localeEntry.form.errors.expiry[1]);
             continue;
           }
         }
         if (key === "cvv") {
-          if (value.length !== 3) setError("cvv", "CVV must be 3 digits.");
+          if (value.length !== 3) setError("cvv", localeEntry.form.errors.ccv);
           else newCard.CVV = value;
           continue;
         }
@@ -267,7 +298,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
       if (branch === null)
         return setError(
           "global",
-          "We're sorry, but your card type is not supported. Currently, we only accept Mastercard or Visa."
+          localeEntry.form.errors.global[0]
         );
       
       newCard.branch = branch;
@@ -289,13 +320,13 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
           if (Object.values(newState.cards).length >= 4) {
             setError(
               "global",
-              "You've reached the maximum limit of 4 payment cards. Please remove an existing card to add a new one."
+              localeEntry.form.errors.global[1]
             );
             return prev;
           }
 
           localStorage.setItem(getStorageKey(user!.member_id, "pay-cards"), JSON.stringify(newState));
-          setSuccess("Payments successfully updated.");
+          setSuccess(localeEntry.form.success);
 
           return newState;
         });
@@ -314,14 +345,14 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
               <hgroup
                 {...(!isEditing && {
                   role: "group",
-                  "aria-roledescription": "heading group",
+                  "aria-roledescription": "heading group"
                 })}
               >
                 <h3>{card.title}</h3>
-                <p aria-roledescription="subtitle">{card.type} Card</p>
+                <p aria-roledescription="subtitle">{card.type} {localeEntry.card}</p>
               </hgroup>
               <Button
-                aria-label={`Edit ${card.title}`}
+                aria-label={`${localeEntry.edit} ${card.title}`}
                 intent="primary"
                 size="md"
                 onClick={() =>
@@ -331,7 +362,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                   }))
                 }
               >
-                <Icon aria-hidden="true" id="edit-14" /> Edit
+                <Icon aria-hidden="true" id="edit-14" /> {localeEntry.edit}
               </Button>
             </header>
 
@@ -339,16 +370,16 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
               <div className={s.imgContainer}>
                 <Image
                   src={`/images/${card.branch}.webp`}
-                  alt={`${card.branch} Logo`}
+                  alt={`${card.branch} ${localeEntry.logo}`}
                 />
               </div>
               <div className={s.info}>
                 <div>
                   <p>{card.name}</p>
-                  <span aria-label="Card Number">
+                  <span aria-label={localeEntry.aria.label.cardNumber}>
                     {formatCard.number(card.number!)}
                   </span>
-                  <time aria-label="Card Expiry" dateTime={card.expiry}>
+                  <time aria-label={localeEntry.aria.label.cardExp} dateTime={card.expiry}>
                     {card.expiry}
                   </time>
                 </div>
@@ -366,7 +397,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                       })
                     }
                   >
-                    {card.def ? "Unset Default" : "Set as Default"}
+                    {card.def ? localeEntry.defaultBtn[1] : localeEntry.defaultBtn[0]}
                   </Button>
                 </Link>
               </div>
@@ -376,7 +407,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
           <ScrollArea orientation="vertical">
             <div>
               <Button
-                aria-label="Exit Edit"
+                aria-label={localeEntry.aria.label.exitBtn}
                 intent="exit ghost"
                 size="md"
                 onClick={() => 
@@ -387,7 +418,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                 }
               />
               <Button
-                aria-label="Delete Card"
+                aria-label={localeEntry.aria.label.deleteBtn}
                 intent="ghost"
                 size="md"
                 iconBtn
@@ -415,7 +446,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
             >
               <div role="presentation" className={s.inline}>
                 <Input
-                  label="Title"
+                  label={localeEntry.form.title}
                   intent="primary"
                   size="md"
                   id="title"
@@ -426,7 +457,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                   onInput={() => setError("title", "")}
                 />
                 <Select
-                  label="Type"
+                  label={localeEntry.form.type}
                   intent="primary"
                   size="md"
                   id="type"
@@ -436,17 +467,17 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                   disabled={form.processing}
                   onInput={() => setError("type", "")}
                 >
-                  <option value="Debit">
-                    Debit
+                  <option value={localeEntry.debit}>
+                    {localeEntry.debit}
                   </option>
-                  <option value="Credit">
-                    Credit
+                  <option value={localeEntry.credit}>
+                    {localeEntry.credit}
                   </option>
                 </Select>
               </div>
               <div role="group" className={s.inline}>
                 <Input
-                  label="First Name"
+                  label={localeEntry.general.form.user.firstName}
                   intent="primary"
                   size="md"
                   id="first_name"
@@ -457,7 +488,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                   onInput={() => setError("first_name", "")}
                 />
                 <Input
-                  label="Last Name"
+                  label={localeEntry.general.form.user.lastName}
                   intent="primary"
                   size="md"
                   id="last_name"
@@ -469,7 +500,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                 />
               </div>
               <Input
-                label="Number"
+                label={localeEntry.form.cardNumber}
                 intent="primary"
                 size="md"
                 id="number"
@@ -484,7 +515,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
               />
               <div role="presentation" className={s.inline}>
                 <Input
-                  label="Expiry"
+                  label={localeEntry.form.cardExp}
                   intent="primary"
                   size="md"
                   id="expiry"
@@ -498,7 +529,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                   }}
                 />
                 <Input
-                  label="CVV"
+                  label={localeEntry.form.ccv}
                   intent="primary"
                   size="md"
                   id="cvv"
@@ -515,7 +546,7 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                 />
               </div>
               <Button
-                aria-label="Update"
+                aria-label={localeEntry.general.update}
                 aria-live="polite"
                 intent="primary"
                 size="md"
@@ -525,11 +556,11 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
                 {form.processing ? (
                   <Spinner intent="primary" size="sm" />
                 ) : (
-                  "Update"
+                  localeEntry.general.update
                 )}
               </Button>
             </Form>
-            <p className={s.disc}>You don't need to enter your real card information, this is just for fun.</p>
+            <p className={s.disc}>{localeEntry.disclaimer}</p>
           </ScrollArea>
         )}
       </article>
@@ -537,7 +568,13 @@ function PaymentCardFull({ user, card, setPayments, selected, setSelected }: Pay
   );
 }
 
-function PaymentThirdPartyConnect({ user, party, connected, setPayments }: PaymentThirdPartyConnectProps) {
+function PaymentThirdPartyConnect({
+  localeEntry,
+  user,
+  party,
+  connected,
+  setPayments
+}: PaymentThirdPartyConnectProps) {
   return (
     <Button 
       intent="secondary" 
@@ -556,16 +593,16 @@ function PaymentThirdPartyConnect({ user, party, connected, setPayments }: Payme
       <Image
         aria-hidden="true"
         src={`/images/${party.replace(" ", "-").toLowerCase()}.png`}
-        alt={`${party} Logo`}
+        alt={`${party} ${localeEntry.logo}`}
         load={false}
       />
       {connected ? (
         <>
-          {party} Connected
+          {party} {localeEntry.connectBtn[1]}
           <Icon id="check-mark-18" fill="var(--c-status-green)" />
         </>
       ) : (
-        <>Connect {party}</>
+        <>{localeEntry.connectBtn[0]} {party}</>
       )}
     </Button>
   );

@@ -1,6 +1,5 @@
 import type { UserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 
-import { Icon } from "@components/common";
 import { UserStatistics } from "@authFeat/components/userStatistics";
 
 import s from "../../profile.module.css";

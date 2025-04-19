@@ -136,6 +136,7 @@
                     & label {
                       font: var(--para-xx-small);
                       font-style: italic;
+                      text-align: center;
                     }
 
                     &form {
@@ -491,6 +492,7 @@
                       & button {
                         align-self: flex-start;
                         line-height: normal;
+                        text-align: left;
                       }
                     }
                   }

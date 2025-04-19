@@ -20,9 +20,10 @@ export function prepareHeadersAndOptions(custom?: { state: RootState }): Record<
             const csrfToken = getState().auth.user.token.csrf;
             if (csrfToken) headers.set("x-xsrf-token", csrfToken);
 
+            headers.set("Accept-Language", document.documentElement.lang);
             headers.set("Content-Type", "application/json");
             return headers;
-          },
+          }
         }
       : (() => {
           const csrfToken = custom.state.auth.user.token.csrf;
@@ -39,7 +40,7 @@ export function prepareHeadersAndOptions(custom?: { state: RootState }): Record<
 
 const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.MODE === "production" ? import.meta.env.VITE_API_URL : "api/v2",
+    baseUrl: import.meta.env.MODE === "production" ? import.meta.env.VITE_API_URL : "/api/v2",
     ...prepareHeadersAndOptions(),
     timeout: 15000
   }),
