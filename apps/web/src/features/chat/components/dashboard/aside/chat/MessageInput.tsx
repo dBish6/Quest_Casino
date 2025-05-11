@@ -1,3 +1,4 @@
+import type { LocaleEntry } from "@typings/Locale";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { DragPointsKey } from "../Aside";
 
@@ -14,12 +15,13 @@ import { Form } from "@components/form";
 
 import s from "./chat.module.css";
 
-interface MessageInputProps { 
+interface MessageInputProps {
+  localeEntry: LocaleEntry;
   user: UserCredentials | null; 
   asideState: DragPointsKey;
 }
 
-export default function MessageInput({ user, asideState }: MessageInputProps) {
+export default function MessageInput({ localeEntry, user, asideState }: MessageInputProps) {
   const inputRef = useRef<HTMLInputElement>(null),
     typingMsgRef = useRef<HTMLParagraphElement>(null);
 
@@ -38,7 +40,12 @@ export default function MessageInput({ user, asideState }: MessageInputProps) {
         room_id: chatRoom.currentId,
         avatar_url: user!.avatar_url,
         username: user!.username,
-        message: inputRef.current!.value
+        message: inputRef.current!.value,
+        ...(chatRoom.accessType === "global" && {
+          legal_name: user!.legal_name,
+          country: user!.country,
+          bio: user!.bio
+        })
       });
 
       if (res.data?.status === "ok") inputRef.current!.value = "";
@@ -67,7 +74,7 @@ export default function MessageInput({ user, asideState }: MessageInputProps) {
     <div className={s.formContainer} data-restriction={restriction.started}>
       {chatRoom.targetFriend?.isTyping && (
         <p ref={typingMsgRef} className={s.typingMessage}>
-          <span>{chatRoom.targetFriend.friend!.username}</span> is typing...
+          <span>{chatRoom.targetFriend.friend!.username}</span> {localeEntry.typing}
         </p>
       )}
 
@@ -79,7 +86,7 @@ export default function MessageInput({ user, asideState }: MessageInputProps) {
       >
         <Input
           ref={inputRef}
-          label="Message"
+          label={localeEntry.message}
           intent="primary"
           size={asideState === "enlarged" ? "xl" : "lrg"}
           id="messenger"
@@ -108,8 +115,7 @@ export default function MessageInput({ user, asideState }: MessageInputProps) {
           // user here is useUser and it's undefined on the server and loaded on the client, so user helps with hydration issues also.
           error={user && restriction.started && (
             <>
-              Restriction expires in:{" "}
-              <span id="coolCounter"></span>
+              {localeEntry.restriction} <span id="coolCounter"></span>
             </>
           )}
           disabled={disableInput}

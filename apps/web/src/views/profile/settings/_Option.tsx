@@ -1,4 +1,4 @@
-import type { UserCredentials, MinUserWithBioCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { UserCredentials, MinUserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { LocaleEntry } from "@typings/Locale";
 
 import { useState } from "react";
@@ -19,14 +19,14 @@ export interface SelectedOptions extends Omit<Partial<UserCredentials["settings"
 
 export interface SettingsOptionEntry {
   type?: "switch" | "list";
-  title: string;
-  text: string;
+  title?: string;
+  text?: string;
 }
 
 interface SettingsOptionProps extends SettingsOptionEntry {
   localeEntry: LocaleEntry;
   user: UserCredentials;
-  blkUser?: MinUserWithBioCredentials,
+  blkUser?: MinUserCredentials,
   selectedOptions: React.MutableRefObject<SelectedOptions>;
   blockListOpened?: boolean;
   setBlockListOpened?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,7 +48,7 @@ export default function Option({
 }: SettingsOptionProps) {
   const { viewport } = useBreakpoint()
 
-  const titleSnake = toSnakeCase(title) as keyof typeof selectedOptions["current"],
+  const titleSnake = toSnakeCase(title || "") as keyof typeof selectedOptions["current"],
     [isEnabled, setIsEnabled] = useState(!!user.settings[titleSnake]);
 
   const handleSettingSelected = (e: React.MouseEvent<Element, MouseEvent>) => {

@@ -1,35 +1,46 @@
-import type { NotificationTypes, Notification, GetNotificationsResponseDto } from "@qc/typescript/dtos/NotificationsDto";
 import type { MinUserCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { NotificationTypes, Notification, GetNotificationsResponseDto } from "@qc/typescript/dtos/NotificationsDto";
+import type { LocaleEntry } from "@typings/Locale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 
 import { Fragment, useRef, useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, m } from "framer-motion";
 import { Title } from "@radix-ui/react-dialog";
 
-import { capitalize } from "@qc/utils";
 import { fadeInOut } from "@utils/animations";
-import parseMessageWithLink from "@authFeat/utils/parseMessageWithLink";
+import injectElementInText from "@utils/injectElementInText";
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
+import useLocale from "@hooks/useLocale";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
 
 import { useLazyGetUserQuery, useDeleteUserNotificationsMutation, useManageFriendRequestMutation } from "@authFeat/services/authApi";
 
 import { ModalTemplate, ModalQueryKey } from "@components/modals";
-import { Icon, Avatar } from "@components/common";
-import { Button } from "@components/common/controls";
-
-import s from "./notificationsModal.module.css";
+import { Icon, Link, Avatar } from "@components/common";
 import { ScrollArea } from "@components/scrollArea";
+import { Button } from "@components/common/controls";
 import { Spinner } from "@components/loaders";
 
+import s from "./notificationsModal.module.css";
+
+interface FriendRequestCardProps extends MinUserCredentials {
+  locale: string;
+  localeEntry: LocaleEntry
+}
+
 interface NotificationCardProps {
+  dateTimeFormat: LocaleContextValues["dateTimeFormat"];
   notif: Notification;
   selectNotifs: Map<string, Notification> | null;
   setSelectNotifs: React.Dispatch<React.SetStateAction<Map<string, Notification> | null>>;
 }
 
 interface NotificationSectionProps extends Omit<NotificationCardProps, "notif"> {
+  localeEntry: LocaleEntry;
+  numberFormat: LocaleContextValues["numberFormat"];
+  dateTimeFormat: LocaleContextValues["dateTimeFormat"];
   type: NotificationTypes | null;
   notifs: Notification[];
 }
@@ -37,6 +48,8 @@ interface NotificationSectionProps extends Omit<NotificationCardProps, "notif"> 
 export default function NotificationsModal() {
   const [searchParams] = useSearchParams(),
     modalParam = searchParams.get(ModalQueryKey.NOTIFICATIONS_MODAL);
+
+  const { type, content, numberFormat, dateTimeFormat } = useLocale("NotificationsModal");
 
   const fadeVariant = fadeInOut({ in: 0.3, out: 0.58 });
 
@@ -133,7 +146,7 @@ export default function NotificationsModal() {
 
   return (
     <ModalTemplate
-      aria-description="Manage your notifications and friend requests here. You can view and sort your notifications, delete selected ones, and respond to friend requests."
+      aria-description={content.aria.descrip.modal}
       queryKey={ModalQueryKey.NOTIFICATIONS_MODAL}
       width="455px"
       className={s.modal}
@@ -144,7 +157,7 @@ export default function NotificationsModal() {
           <hgroup className="head">
             <Icon aria-hidden="true" id="bell-45" />
             <Title asChild>
-              <h2>Notifications</h2>
+              <h2>{content.title}</h2>
             </Title>
           </hgroup>
 
@@ -153,7 +166,7 @@ export default function NotificationsModal() {
               <m.div
                 role="dialog"
                 aria-labelledby="deleteBtn"
-                aria-description="Delete the selected notifications."
+                aria-description={content.aria.descrip.deleteBtn}
                 id="delete"
                 className={s.confirmDelete}
                 variants={fadeVariant}
@@ -162,7 +175,6 @@ export default function NotificationsModal() {
                 exit="hidden"
               >
                 <Button
-                  aria-label="Confirm Delete"
                   aria-live="polite"
                   intent="primary"
                   size="md"
@@ -174,7 +186,7 @@ export default function NotificationsModal() {
                   {deletionLoading ? (
                     <Spinner intent="primary" size="sm" />
                   ) : (
-                    "Confirm Delete"
+                    content.deleteBtn
                   )}
                 </Button>
               </m.div>
@@ -186,28 +198,36 @@ export default function NotificationsModal() {
           ) : (
             <div>
               <section aria-labelledby="hRequest" className={s.friendRequests}>
-                <h3 id="hRequest">Friend Requests</h3>
+                <h3 id="hRequest">{content.section.requests.title}</h3>
 
                 {userNotifData?.friend_requests.length ? (
                   <ScrollArea id="friendScroll" orientation="horizontal">
-                    <ul aria-label="Search Results" aria-live="polite">
+                    <ul aria-live="polite">
                       {userNotifData.friend_requests.map((friendRequest, i) => (
                         <li key={i}>
-                          <FriendRequestCard {...friendRequest} />
+                          <FriendRequestCard
+                            locale={type}
+                            localeEntry={content.section.requests}
+                            {...friendRequest}
+                          />
                         </li>
                       ))}
                     </ul>
                   </ScrollArea>
                 ) : (
-                  <p>No friend requests.</p>
+                  <p>{content.section.requests.noResults}</p>
                 )}
               </section>
 
               <div aria-live="polite" className={s.notifications}>
-                <div role="region" aria-label="Notifications Controls" className={s.controls}>
+                <div
+                  role="region"
+                  aria-label={content.aria.descrip.notifControls}
+                  className={s.controls}
+                >
                   <Button
-                    title="Toggle Sort by Category"
-                    aria-label="Sort by Category"
+                    title={content.aria.title.sort}
+                    aria-label={content.aria.label.sort}
                     aria-pressed={categorize.current}
                     intent="primary"
                     size="lrg"
@@ -217,8 +237,8 @@ export default function NotificationsModal() {
                     <Icon aria-hidden="true" id="border-horizontal-24" />
                   </Button>
                   <Button
-                    title="Delete Notifications"
-                    aria-label="Delete Notifications"
+                    title={content.aria.title.delete}
+                    aria-label={content.aria.label.delete}
                     aria-haspopup="true"
                     aria-expanded={!!selectNotifs}
                     aria-controls="radio"
@@ -234,18 +254,30 @@ export default function NotificationsModal() {
                 {Array.isArray(notifications) ? (
                   notifications.length ? (
                     <NotificationSection
+                      localeEntry={{
+                        ...content.section.notif,
+                        localeGeneral: content.general
+                      }}
+                      numberFormat={numberFormat}
+                      dateTimeFormat={dateTimeFormat}
                       type={null}
                       notifs={notifications}
                       selectNotifs={selectNotifs}
                       setSelectNotifs={setSelectNotifs}
                     />
                   ) : (
-                    <p>You have no notifications.</p>
+                    <p>{content.noResults}</p>
                   )
                 ) : (
                   categorizedNotificationsArr.map(([type, notifs]) => (
                     <NotificationSection
                       key={type}
+                      localeEntry={{
+                        ...content.section.notif,
+                        localeGeneral: content.general
+                      }}
+                      numberFormat={numberFormat}
+                      dateTimeFormat={dateTimeFormat}
                       type={type as NotificationTypes}
                       notifs={notifs}
                       selectNotifs={selectNotifs}
@@ -263,20 +295,32 @@ export default function NotificationsModal() {
 }
 
 // TODO: Make the content in the sections collapsible when length.
-function NotificationSection({ type, notifs, selectNotifs, setSelectNotifs }: NotificationSectionProps) {
+function NotificationSection({
+  localeEntry,
+  numberFormat,
+  dateTimeFormat,
+  type,
+  notifs,
+  selectNotifs,
+  setSelectNotifs,
+}: NotificationSectionProps) {
   const Element = type ? "section" : Fragment;
 
   return (
     <Element {...(type && { "aria-labelledby": type })}>
       <div className={s.sectionHead} data-categories={!!type}>
-        {type && <h3 id={type}>{capitalize(type)}</h3>}
-        <small>{notifs.length} Results</small>
+        {type && <h3 id={type}>{localeEntry[type]}</h3>}
+        <small>
+          {numberFormat().format(notifs.length)}{" "}
+          {localeEntry.localeGeneral.results}
+        </small>
       </div>
 
-      <ul aria-label={`${type} notifications`}>
+      <ul aria-label={localeEntry.aria.label.list.replace("{{type}}", localeEntry[type || ""])}>
         {notifs.map((notif) => (
           <li key={notif.notification_id}>
             <NotificationCard
+              dateTimeFormat={dateTimeFormat}
               notif={{ ...notif, type: type ?? notif.type }}
               selectNotifs={selectNotifs}
               setSelectNotifs={setSelectNotifs}
@@ -288,7 +332,7 @@ function NotificationSection({ type, notifs, selectNotifs, setSelectNotifs }: No
   );
 }
 
-function NotificationCard({ notif, selectNotifs, setSelectNotifs }: NotificationCardProps) {
+function NotificationCard({ dateTimeFormat, notif, selectNotifs, setSelectNotifs }: NotificationCardProps) {
   const btnRef = useRef<HTMLButtonElement>(null),
     { title, message, link, created_at } = notif;
   
@@ -316,19 +360,25 @@ function NotificationCard({ notif, selectNotifs, setSelectNotifs }: Notification
       <div>
         <h4>{title}</h4>
         <time dateTime={created_at}>
-          {new Date(created_at).toLocaleString("en-CA", {
+          {dateTimeFormat({
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
             hour: "2-digit",
             minute: "2-digit",
             hour12: false
-          }).replace(",", "")}
+          }).format(new Date(created_at))}
         </time>
       </div>
 
       <div>
-        <p>{parseMessageWithLink(message, link)}</p>
+        <p>
+          {injectElementInText(message, link?.sequence, (text) => (
+            <Link intent="primary" to={link!.to}>
+              {text}
+            </Link>
+          ))}
+        </p>
       
         {selectNotifs && (
           <Button
@@ -350,7 +400,7 @@ function NotificationCard({ notif, selectNotifs, setSelectNotifs }: Notification
   );
 }
 
-function FriendRequestCard(friend: MinUserCredentials) {
+function FriendRequestCard({ locale, localeEntry, ...friend }: FriendRequestCardProps) {
   const { avatar_url, legal_name, username } = friend,
     actions = ["add", "decline"] as const;
 
@@ -375,7 +425,10 @@ function FriendRequestCard(friend: MinUserCredentials) {
     <>
       <article
         title={`${username} | ${legal_name.first} ${legal_name.last}`}
-        aria-label={`Accept ${username}'s Friend Request`}
+        aria-label={localeEntry.aria.label.accept.replace(
+          "{{username}}",
+          locale === "en" ? username + "'s" : username
+        )}
         {...(loading.fulfilled && { style: { opacity: 0.68 } })}
       >
         <div>
@@ -387,13 +440,11 @@ function FriendRequestCard(friend: MinUserCredentials) {
         </div>
         <div>
           {actions.map((action) => {
-            const label = action === "add" ? "Accept" : "Decline",
-              loadingAction = loading[action as keyof typeof loading];
+            const loadingAction = loading[action as keyof typeof loading];
 
             return (
               <Button
                 key={action}
-                aria-label={label}
                 aria-live="polite"
                 {...((resError || manageFriendsData) && { "aria-describedby": "msg" })}
                 intent={action === "add" ? "primary" : "ghost"}
@@ -402,7 +453,13 @@ function FriendRequestCard(friend: MinUserCredentials) {
                 disabled={loadingAction || loading.fulfilled}
                 onClick={() => handleAction(action)}
               >
-                {loadingAction ? <Spinner intent="primary" size="sm" /> : label}
+                {loadingAction ? (
+                  <Spinner intent="primary" size="sm" />
+                ) : action === "add" ? (
+                  localeEntry.accept
+                ) : (
+                  localeEntry.decline
+                )}
               </Button>
             );
           })}

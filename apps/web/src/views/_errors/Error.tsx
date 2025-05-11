@@ -41,7 +41,7 @@ export default function Error({ status }: ErrorPageProps) {
       <hgroup role="group" aria-roledescription="heading group">
         <h2>
           {injectElementInText(
-            title.replace("{{status}}", status),
+            title,
             null,
             (text) => (
               <span>{text}</span>
@@ -66,9 +66,9 @@ export default function Error({ status }: ErrorPageProps) {
                 onClick: () => history.replacePath("/home")
               })}
         >
-          {title.includes("Page") ? (
+          {content.home ? (
             <Link aria-label={content.general.aria.label.logoTitle} to="/home">
-              Home
+              {content.home}
             </Link>
           ) : (
             content.general.refresh

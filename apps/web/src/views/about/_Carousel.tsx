@@ -1,5 +1,5 @@
 import type { AnimationControls } from "framer-motion";
-import type { UseLocale } from "@hooks/useLocale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 import type Direction from "@typings/Direction";
 
 import { useRef, useState, useEffect } from "react";
@@ -11,8 +11,8 @@ import { Icon, Avatar, Image, Blob } from "@components/common";
 import s from "./about.module.css";
 
 interface CarouselProps {
-  localeEntry: UseLocale["content"];
-  numberFormat: UseLocale["numberFormat"];
+  localeEntry: ReturnType<LocaleContextValues["getContent"]>;
+  numberFormat: LocaleContextValues["numberFormat"];
 }
 
 interface Testimonial {
@@ -244,7 +244,7 @@ function Indicators({ localeEntry, numberFormat, numTestimonials, currentSlide }
     <div
       className={s.indicators}
       role="list"
-      aria-label={localeEntry.aria.label.indicators}
+      aria-label={localeEntry.general.indicators}
     >
       {Array.from({ length: numTestimonials }).map((_, i) => {
         const selected = currentSlide === 0 ? 5 : currentSlide;
@@ -253,8 +253,8 @@ function Indicators({ localeEntry, numberFormat, numTestimonials, currentSlide }
           <span
             key={i}
             role="listitem"
-            aria-label={`${localeEntry.aria.label.indicator[0]} ${numberFormat().format(i + 1)}${
-              i + 1 === selected ? localeEntry.aria.label.indicator[1] : ""
+            aria-label={`${localeEntry.general.indicator[0]} ${numberFormat().format(i + 1)}${
+              i + 1 === selected ? localeEntry.general.indicator[1] : ""
             }`}
             aria-current={i + 1 === selected}
           />

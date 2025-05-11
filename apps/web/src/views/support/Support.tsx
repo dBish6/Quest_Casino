@@ -13,7 +13,7 @@ export default function Support() {
       <p>{content.para}</p>
       <ul>
         {content.list.map((item: string, i: number) => (
-          <li>
+          <li key={i}>
             {i === 0 ? (
               <>
                 {item}{" "}

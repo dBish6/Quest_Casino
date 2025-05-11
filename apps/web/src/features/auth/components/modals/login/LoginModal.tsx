@@ -4,8 +4,7 @@ import type NullablePartial from "@qc/typescript/typings/NullablePartial";
 import { useEffect, useState } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
-import { capitalize } from "@qc/utils";
-
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useSwitchModal from "@authFeat/hooks/useSwitchModal";
 import { useLoginMutation, useLoginGoogleMutation } from "@authFeat/services/authApi";
@@ -18,9 +17,13 @@ import { LoginWithGoogle } from "@authFeat/components/loginWithGoogle";
 import { Spinner } from "@components/loaders";
 
 import s from "./loginModal.module.css";
+import injectElementInText from "@utils/injectElementInText";
 
 export default function LoginModal() {
+  const { content } = useLocale("LoginModal");
+
   const { form, setLoading, setError, setErrors } = useForm<LoginBodyDto>();
+
   const { handleSwitch } = useSwitchModal("login");
 
   const [
@@ -67,7 +70,10 @@ export default function LoginModal() {
         const key = field.name as keyof LoginBodyDto;
 
         if (!field.value.length) {
-          setError(key, `${capitalize(key)} is required.`);
+          setError(
+            key,
+            `${field.previousSibling!.textContent} ${content.general.form.user.error.required}`
+          );
           continue;
         }
         reqBody[key] = field.value || null;
@@ -84,7 +90,7 @@ export default function LoginModal() {
 
   return (
     <ModalTemplate
-      aria-description="Login with your Quest Casino profile by providing the details below."
+      aria-description={content.aria.descrip.modal}
       queryKey="login"
       width="368px"
       className={s.modal}
@@ -95,7 +101,7 @@ export default function LoginModal() {
           <hgroup className="head">
             <Icon aria-hidden="true" id="enter-45" />
             <Title asChild>
-              <h2>Login</h2>
+              <h2>{content.title}</h2>
             </Title>
           </hgroup>
 
@@ -107,7 +113,7 @@ export default function LoginModal() {
           >
             <div className="inputs">
               <Input
-                label="Email"
+                label={content.general.form.user.email}
                 intent="primary"
                 size="lrg"
                 id="email"
@@ -118,7 +124,7 @@ export default function LoginModal() {
                 onInput={() => setError("email", "")}
               />
               <Input
-                label="Password"
+                label={content.general.form.user.password}
                 intent="primary"
                 size="lrg"
                 id="password"
@@ -137,12 +143,11 @@ export default function LoginModal() {
                 intent="primary"
                 onClick={(e) => handleSwitch(e)}
               >
-                Forgot Password?
+                {content.forgot}
               </ModalTrigger>
             </div>
 
             <Button
-              aria-label="Log In"
               aria-live="polite"
               intent="primary"
               size="xl"
@@ -153,7 +158,7 @@ export default function LoginModal() {
               {processingForm ? (
                 <Spinner intent="primary" size="md" />
               ) : (
-                "Log In"
+                content.submitBtn
               )}
             </Button>
           </Form>
@@ -165,19 +170,25 @@ export default function LoginModal() {
             processing={{
               google: googleLoading,
               form: processingForm,
-              all: processing,
+              all: processing
             }}
           />
 
           <span className={s.haveAcc}>
-            Don't have an account?{" "}
-            <ModalTrigger
-              query={{ param: "register" }}
-              intent="primary"
-              onClick={(e) => handleSwitch(e)}
-            >
-              Register
-            </ModalTrigger>
+            {injectElementInText(
+              content.noAccount,
+              null,
+              (text) => (
+                <ModalTrigger
+                query={{ param: "register" }}
+                intent="primary"
+                onClick={handleSwitch}
+                >
+                  {text}
+                </ModalTrigger>
+              ),
+              { localeMarker: true }
+            )}
           </span>
         </>
       )}

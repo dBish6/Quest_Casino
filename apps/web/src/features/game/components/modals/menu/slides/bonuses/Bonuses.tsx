@@ -1,3 +1,5 @@
+import type { LocaleEntry } from "@typings/Locale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 import type { Bonus } from "@qc/typescript/dtos/GetBonusesDto";
 
 import { useSearchParams } from "react-router-dom";
@@ -17,7 +19,13 @@ import { Icon } from "@components/common";
 
 import s from "./bonuses.module.css";
 
-interface BonusCardProps {
+interface BonusesProps {
+  localeEntry: LocaleEntry;
+  numberFormat: LocaleContextValues["numberFormat"];
+  setRenewsIn: React.Dispatch<React.SetStateAction<string>>;
+}
+
+interface BonusCardProps extends Omit<BonusesProps, "setRenewsIn"> {
   current?: number;
   activated?: number;
   bonus: Bonus;
@@ -29,7 +37,7 @@ interface BonusCardProps {
   >;
 }
 
-export default function Bonuses({ setRenewsIn }: { setRenewsIn: React.Dispatch<React.SetStateAction<string>> }) {
+export default function Bonuses({ localeEntry, numberFormat, setRenewsIn }: BonusesProps) {
     const [searchParams] = useSearchParams(),
       slide = searchParams.get(ModalQueryKey.MENU_MODAL) === "Bonuses";
 
@@ -54,7 +62,7 @@ export default function Bonuses({ setRenewsIn }: { setRenewsIn: React.Dispatch<R
   return (
     <div
       role="group"
-      aria-label="Bonuses"
+      aria-label={localeEntry.title}
       aria-roledescription="slide"
       id="lSlide"
       className={s.bonuses}
@@ -66,6 +74,8 @@ export default function Bonuses({ setRenewsIn }: { setRenewsIn: React.Dispatch<R
           {activeBonuses.map((bonus) => (
             <BonusCard
               key={bonus.title}
+              localeEntry={localeEntry}
+              numberFormat={numberFormat}
               current={user!.statistics.progress.bonus[bonus.title]?.current}
               activated={user!.statistics.progress.bonus[bonus.title]?.activated}
               bonus={bonus}
@@ -75,13 +85,15 @@ export default function Bonuses({ setRenewsIn }: { setRenewsIn: React.Dispatch<R
           ))}
         </ul>
       ) : (
-        <p>Unexpectedly no bonuses.</p>
+        <p>{localeEntry.noResults}</p>
       )}
     </div>
   );
 }
 
 function BonusCard({
+  localeEntry,
+  numberFormat,
   current = 0,
   activated = 0,
   bonus,
@@ -116,14 +128,16 @@ function BonusCard({
       >
         <hgroup role="group" aria-roledescription="heading group">
           <h3 id={label.current.title} className="hUnderline">{bonus.title}</h3>
-          <p aria-roledescription="subtitle">X{bonus.multiplier} Bonus</p>
+          <p aria-roledescription="subtitle">
+            {localeEntry.multiplier.replace("{{multiplier}}", bonus.multiplier)}
+          </p>
         </hgroup>
         
         {!activatable ? (
           <div className={s.progress}>
             <div
               role="meter"
-              aria-label="Bonus Progress"
+              aria-label={localeEntry.aria.label.progress}
               aria-describedby={label.current.progress}
               aria-valuemin={0}
               aria-valuemax={bonus.cap}
@@ -133,7 +147,9 @@ function BonusCard({
               <div className={s.fill} style={{ width: `${(current / bonus.cap) * 100}%` }} />
             </div>
             <div className={s.completion}>
-              <span id={label.current.progress}>{current}/{bonus.cap}</span>
+              <span id={label.current.progress}>
+                {numberFormat().format(current)}/{numberFormat().format(bonus.cap)}
+              </span>
             </div>
           </div>
         ) : (
@@ -148,10 +164,10 @@ function BonusCard({
             {manageProgressLoading[bonus.title] ? (
               <Spinner intent="primary" size="md" />
             ) : activated > Date.now() ? (
-              "Activated"
+              localeEntry.activated
             ) : !!activated ? (
               <>
-                Claimed
+                {localeEntry.claimed}
                 <Icon
                   aria-label="Completed"
                   id="check-mark-16"
@@ -159,7 +175,7 @@ function BonusCard({
                 />
               </>
             ) : (
-              "Claim"
+              localeEntry.claim
             )}
           </Button>
         )}

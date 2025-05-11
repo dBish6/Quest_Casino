@@ -5,7 +5,6 @@ import { useEffect, useRef, useMemo, useState } from "react";
 import { cva } from "class-variance-authority";
 
 import { calcWinRate } from "@qc/utils";
-import LocaleManager from "@utils/LocaleManager";
 
 import useLocale from "@hooks/useLocale";
 
@@ -73,7 +72,7 @@ export default function UserStatistics({
 }: UserStatisticsProps) {
   const questsContainerRef = useRef<HTMLDivElement>(null);
 
-  const { type, content, numberFormat } = useLocale("UserStatistics"),
+  const { type, getContent, content, numberFormat } = useLocale("UserStatistics"),
     formatter = useRef(numberFormat());
 
   const record = useMemo(() => initializeRecord(stats), [stats]),
@@ -182,12 +181,12 @@ export default function UserStatistics({
                 <div
                   role="row"
                   title={
-                    numberFormat({ style: "percent" }).format(category.winRate) + " " + content.rate
+                    numberFormat({ style: "percent" }).format(category.winRate / 100) + " " + content.rate
                   }
                 >
                   <span role="rowheader">{content.rate}</span>
                   <span role="cell">
-                    {numberFormat({ style: "percent" }).format(category.winRate)}
+                    {numberFormat({ style: "percent" }).format(category.winRate / 100)}
                   </span>
                 </div>
               </div>
@@ -216,7 +215,7 @@ export default function UserStatistics({
                 <div
                   role="row"
                   title={
-                    `${formatter.current.format(record.gamesPlayed.table)} ${content.table} ${content.games} ${content.played}`
+                    `${formatter.current.format(record.gamesPlayed.table)} ${content.table} ${content.general.games} ${content.played}`
                   }
                 >
                   <span role="rowheader">{content.table}</span>
@@ -227,7 +226,7 @@ export default function UserStatistics({
                 <div
                   role="row"
                   title={
-                    `${formatter.current.format(record.gamesPlayed.slots)} ${content.slots} ${content.games} ${content.played}`
+                    `${formatter.current.format(record.gamesPlayed.slots)} ${content.slots} ${content.general.games} ${content.played}`
                   }
                 >
                   <span role="rowheader">{content.slots}</span>
@@ -238,7 +237,7 @@ export default function UserStatistics({
                 <div
                   role="row"
                   title={
-                    `${formatter.current.format(record.gamesPlayed.dice)} ${content.dice} ${content.games} ${content.played}`
+                    `${formatter.current.format(record.gamesPlayed.dice)} ${content.dice} ${content.general.games} ${content.played}`
                   }
                 >
                   <span role="rowheader">{content.dice}</span>
@@ -249,7 +248,7 @@ export default function UserStatistics({
                 <div
                   role="row"
                   title={
-                    `${formatter.current.format(record.gamesPlayed.total)} ${content.total} ${content.games} ${content.played}`
+                    `${formatter.current.format(record.gamesPlayed.total)} ${content.total} ${content.general.games} ${content.played}`
                   }
                 >
                   <span role="rowheader">{content.total}</span>
@@ -299,13 +298,13 @@ export default function UserStatistics({
             </div>
 
             <div className={s.played}>
-              <h4>{content.total} {content.games}</h4>
+              <h4>{content.total} {content.general.games}</h4>
               <p>{formatter.current.format(record.gamesPlayed.total)}</p>
             </div>
 
             <div className={s.rate}>
               <h4>{content.rate}</h4>
-              <p>{numberFormat({ style: "percent" }).format(category.winRate)}</p>
+              <p>{numberFormat({ style: "percent" }).format(category.winRate / 100)}</p>
             </div>
           </>
         }
@@ -335,7 +334,7 @@ export default function UserStatistics({
         </div>
         {intent === "block" && gameHistory && (
           <ResentGame
-            localeEntry={LocaleManager.getInstance().getContent("UserGameHistory")}
+            localeEntry={getContent("UserGameHistory")}
             gameHistory={gameHistory}
           />
         )}

@@ -16,14 +16,15 @@ import s from "./form.module.css";
 export interface FormProps extends Omit<React.ComponentProps<"form">, "aria-errormessage"> {
   fetcher?: FetcherWithComponents<any>;
   formLoading?: boolean;
-  resSuccessMsg?: string | JSX.Element | false;
+  resSuccessMsg?: React.ReactNode;
   resError?: FetchBaseQueryError | SerializedError | string | JSX.Element;
   clearErrors?: () => void;
   noBots?: boolean;
+  provideLang?: boolean;
 }
 
 const Form = forwardRef<HTMLFormElement, React.PropsWithChildren<FormProps>>(
-  ({ children, fetcher, formLoading, resSuccessMsg, resError, clearErrors, noBots, className, ...props }, ref) => {
+  ({ children, fetcher, formLoading, resSuccessMsg, resError, clearErrors, noBots, provideLang, className, ...props }, ref) => {
     const FormElm = (fetcher ? fetcher.Form : "form") as React.ElementType<React.ComponentProps<"form">>;
 
     useEffect(() => {
@@ -94,6 +95,15 @@ const Form = forwardRef<HTMLFormElement, React.PropsWithChildren<FormProps>>(
         >
           {children}
           {noBots && <input type="hidden" id="bot" name="bot" />}
+          {/* For react router actions. */}
+          {(provideLang || props.action === "/action/user/validate") && (
+            <input
+              type="hidden"
+              id="lang"
+              name="lang"
+              value={typeof document !== "undefined" ? document.documentElement.lang : ""}
+            />
+          )}
         </FormElm>
       </>
     );

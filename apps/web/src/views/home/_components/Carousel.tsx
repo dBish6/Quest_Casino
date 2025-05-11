@@ -343,7 +343,7 @@ const Slide = {
             )
           ) : (
             <p>
-              {injectElementInText(localeEntry.general.loginRequired, null, 
+              {injectElementInText(localeEntry.loginRequired, null,
                 (text) => (
                   <ModalTrigger query={{ param: "login" }} intent="primary">
                     {text}
@@ -423,15 +423,15 @@ function Indicators({
   interaction
 }: IndicatorsProps) {
   return (
-    <div className={s.indicators} role="group" aria-label={localeEntry.aria.label.indicators}>
+    <div className={s.indicators} role="group" aria-label={localeEntry.general.indicators}>
       {heroSlides.map((slideName) => {
         const currSlide = slideName === currentSlide;
 
         return (
           <button
             key={slideName}
-            aria-label={`${slideName} ${localeEntry.aria.label.indicator[0]}${
-              currSlide ? localeEntry.aria.label.indicator[1] : ""
+            aria-label={`${slideName} ${localeEntry.general.indicator[0]}${
+              currSlide ? localeEntry.general.indicator[1] : ""
             }`}
             aria-pressed={currSlide}
             disabled={interaction && currSlide}

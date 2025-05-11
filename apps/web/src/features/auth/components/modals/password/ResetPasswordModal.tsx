@@ -1,8 +1,7 @@
 import { useSearchParams, useFetcher } from "react-router-dom";
 import { Title } from "@radix-ui/react-dialog";
 
-import TOKEN_EXPIRED_MESSAGE from "@authFeat/constants/TOKEN_EXPIRED_MESSAGE";
-
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useSwitchModal from "@authFeat/hooks/useSwitchModal";
 import useHandleUserValidationResponse from "@authFeat/hooks/useHandleUserValidationResponse";
@@ -24,6 +23,8 @@ interface FormFields {
 
 function ResetPasswordModal() {
   const [searchParams] = useSearchParams();
+
+  const { content } = useLocale("ResetPasswordModal");
 
   const fetcher = useFetcher(),
     { formRef, form, setLoading, setError, setErrors } = useForm<FormFields>();
@@ -50,7 +51,12 @@ function ResetPasswordModal() {
           [401, 403].includes(error.status as number) &&
           (error.data?.ERROR || "").includes("expired", -1)
         ) {
-          setError("global", TOKEN_EXPIRED_MESSAGE("confirm password"));
+          setError(
+            "global",
+            (error.data?.ERROR || "").includes("missing", -1)
+              ? content.form.error.tokenExpired
+              : content.form.error.tokenExpired.replace(/{[^{}]*}/g, "")
+          );
         } else if (error.status === 429) {
           setError("global", error.data!.ERROR);
         }
@@ -61,7 +67,7 @@ function ResetPasswordModal() {
 
   return (
     <ModalTemplate
-      aria-description="Reset your password by entering a new password in the fields below."
+      aria-description={content.aria.descrip.modal}
       queryKey="reset"
       width="368px"
       className={s.modal}
@@ -73,7 +79,7 @@ function ResetPasswordModal() {
       {() => (
         <>
           <Title asChild>
-            <h2 className="head">Reset</h2>
+            <h2 className="head">{content.title}</h2>
           </Title>
 
           <Form
@@ -94,7 +100,7 @@ function ResetPasswordModal() {
           >
             <div className="inputs">
               <Input
-                label="Password"
+                label={content.general.form.user.password}
                 intent="primary"
                 size="lrg"
                 id="password"
@@ -106,7 +112,7 @@ function ResetPasswordModal() {
                 onInput={() => setError("password", "")}
               />
               <Input
-                label="Confirm Password"
+                label={content.general.form.user.con_password}
                 intent="primary"
                 size="lrg"
                 id="con_password"
@@ -119,7 +125,9 @@ function ResetPasswordModal() {
               />
             </div>
             <Button
-              aria-label="Submit User Email"
+              {...(!form.processing && {
+                "aria-label": content.aria.label.submitBtn
+              })}
               aria-live="polite"
               intent="primary"
               size="xl"
@@ -130,7 +138,7 @@ function ResetPasswordModal() {
               {form.processing ? (
                 <Spinner intent="primary" size="md" />
               ) : (
-                "Submit"
+                content.general.submit
               )}
             </Button>
           </Form>
@@ -141,7 +149,7 @@ function ResetPasswordModal() {
               intent="primary"
               onClick={(e) => handleSwitch(e)}
             >
-              Back to Login
+              {content.back}
             </ModalTrigger>
           </div>
         </>

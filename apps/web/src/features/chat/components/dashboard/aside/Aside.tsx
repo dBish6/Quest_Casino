@@ -8,6 +8,7 @@ import { debounce } from "tiny-throttle";
 
 import { fadeInOut } from "@utils/animations";
 
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 import useUser from "@authFeat/hooks/useUser";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
@@ -46,7 +47,8 @@ function keyboardTrap(e: KeyboardEvent, focusableElems: HTMLElement[]) {
 };
 
 export default function Aside() {
-  const { viewport } = useBreakpoint(),
+  const { content } = useLocale("AsideChat"),
+    { viewport } = useBreakpoint(),
     onMobile = useRef(isMobile()); // TODO: Check on a phone.
 
   const [searchParams, setSearchParams] = useSearchParams(),
@@ -66,7 +68,7 @@ export default function Aside() {
     if (
       onMobile.current
         ? (e.target as HTMLElement).closest("input, textarea, select")
-        : document.activeElement?.ariaLabel !== "Drag Panel"
+        : document.activeElement?.ariaLabel !== content.aria.label.dragBtn
     )
       return;
 
@@ -88,8 +90,8 @@ export default function Aside() {
     snapControls.start({
       width: breakpoints[point],
       transition: {
-        width: { type: "spring", duration: ANIMATION_DURATION / 1000 },
-      },
+        width: { type: "spring", duration: ANIMATION_DURATION / 1000 }
+      }
     });
 
   const handleSnapPoint = (key?: string, override?: DragPointsKey) => {
@@ -206,7 +208,7 @@ export default function Aside() {
           data-aside-state={asideState}
         >
           <Button
-            aria-label="Drag Panel"
+            aria-label={content.aria.label.dragBtn}
             aria-controls="asideDrawer"
             aria-expanded={asideState === "enlarged"}
             className={s.dragger}
@@ -223,7 +225,7 @@ export default function Aside() {
                   {...(!searchParams.has("chat") && {
                     role: "button",
                     tabIndex: 0,
-                    "aria-label": "Uncover Friends",
+                    "aria-label": content.aria.label.shrinkBtn,
                     "aria-controls": "chat",
                     "aria-expanded": !searchParams.has("chat"),
                     onClick: () =>
@@ -234,7 +236,7 @@ export default function Aside() {
                   })}
                 >
                   <Icon aria-hidden="true" id="user-24" />
-                  <h3 aria-label="Your Friends">Friends</h3>
+                  <h3 aria-label={content.aria.label.title}>{content.title}</h3>
                 </div>
               </hgroup>
             )}

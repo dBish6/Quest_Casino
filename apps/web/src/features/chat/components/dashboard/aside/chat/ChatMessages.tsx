@@ -1,3 +1,4 @@
+import type { LocaleEntry } from "@typings/Locale";
 import type { UserCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { DragPointsKey } from "../Aside";
 import type { MutationActionCreatorResult } from "@reduxjs/toolkit/query";
@@ -7,6 +8,7 @@ import type { LastChatMessageDto } from "@qc/typescript/dtos/ChatMessageEventDto
 import { useRef, memo, useState, useMemo, useEffect, cloneElement } from "react";
 
 import { logger, capitalize } from "@qc/utils";
+import injectElementInText from "@utils/injectElementInText";
 import CircularQueue from "@chatFeat/utils/CircularQueue";
 
 import useResourceLoader from "@hooks/useResourceLoader";
@@ -25,21 +27,23 @@ import Timestamp from "../Timestamp";
 
 import s from "./chat.module.css";
 
-interface ChatMessagesProps {
-  user: UserCredentials | null;
-  asideState: DragPointsKey;
-}
-
-interface ChatMessageBubbleDefaultProps { 
+interface ChatMessageBubbleDefaultProps {
+  localeEntry: LocaleEntry;
   user: UserCredentials | null;
   chatMsg: ChatMessage | null;
 }
 
-interface ChatMessageBubbleEnlargedProps extends ChatMessageBubbleDefaultProps { 
+interface ChatMessageBubbleEnlargedProps extends ChatMessageBubbleDefaultProps {
   groupLevel?: "top" | "bottom" | "single" | "mid"
 }
 
-export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
+interface ChatMessagesProps {
+  localeEntry: LocaleEntry;
+  user: UserCredentials | null;
+  asideState: DragPointsKey;
+}
+
+export default function ChatMessages({ localeEntry, user, asideState }: ChatMessagesProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const chatMsgs = useRef<CircularQueue | null>(null),
@@ -192,14 +196,14 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
     if (!chatRoom.loading && chatMsgCount) {
       const viewport = scrollContainerRef.current!.children.item(1)!;
 
-      if (!messageInputHeight.current) 
+      if (!messageInputHeight.current)
         messageInputHeight.current = parseInt(
           window.getComputedStyle(viewport)
             .getPropertyValue(asideState === "enlarged" ? "--_input-height-full" : "--_input-height"),
           10
         );
 
-      viewport.scrollTo({ 
+      viewport.scrollTo({
         top: viewport.scrollHeight - messageInputHeight.current,
         behavior: "smooth"
        })
@@ -240,7 +244,9 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
           chatMsgsJSX.push(
             <ChatBubbleComponent
               key={`${chatMsg.username}-${i}`}
-              user={user} chatMsg={chatMsg}
+              localeEntry={localeEntry}
+              user={user}
+              chatMsg={chatMsg}
               groupLevel="top"
             />
           );
@@ -249,8 +255,9 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
         } else {
           chatMsgsJSX.push(
             <ChatBubbleComponent 
-              key={`${chatMsg.username}-${i}`} 
-              user={user} 
+              key={`${chatMsg.username}-${i}`}
+              localeEntry={localeEntry}
+              user={user}
               chatMsg={chatMsg}
               groupLevel={(next?.done || next!.value.username !== chatMsg.username) ? "bottom" : "mid"}
             />
@@ -268,7 +275,12 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
     } else {
       for (const chatMsg of chatMsgs.current?.values() || []) {
         chatMsgsJSX.push(
-          <ChatBubbleComponent key={`${chatMsg.username} ${i}`} user={user} chatMsg={chatMsg} />
+          <ChatBubbleComponent
+            key={`${chatMsg.username}-${i}`}
+            localeEntry={localeEntry}
+            user={user}
+            chatMsg={chatMsg}
+          />
         );
         i++;
       }
@@ -282,7 +294,11 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
       ref={scrollContainerRef}
       role="log"
       aria-roledescription="chat conversation"
-      aria-label={`${chatRoom.loading ? "Loading " : ""}Chat Conversation`}
+      aria-label={
+        chatRoom.loading
+          ? localeEntry.aria.label.chat.replace(/[{}]/g, "")
+          : localeEntry.aria.label.chat.replace(/\s*{[^{}]*}\s*/g, "")
+      }
       orientation="vertical"
       id="chatMsgs"
       className={s.chatConversation}
@@ -292,20 +308,24 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
           <>
             {Array.from({ length: 10 }).map((_, i) => {
               const ChatBubbleComponent = ChatMessageBubble[capitalize(asideState) as keyof typeof ChatMessageBubble];
-              return <ChatBubbleComponent key={i} user={null} chatMsg={null} groupLevel="bottom" />
+              return <ChatBubbleComponent key={i} localeEntry={localeEntry} user={null} chatMsg={null} groupLevel="bottom" />
             })}
           </>
         ) : !chatMsgCount ? (
-          <p>Empty chat room.</p>
+          <p>{localeEntry.empty}</p>
         ) : (
           <>{chatMessages}</>
         )
       ) : (
         <p>
-          <ModalTrigger query={{ param: "login" }} intent="primary">
-            Login
-          </ModalTrigger>{" "}
-          to see the chat.
+          {injectElementInText(localeEntry.loginRequired, null,
+            (text) => (
+              <ModalTrigger query={{ param: "login" }} intent="primary">
+                {text}
+              </ModalTrigger>
+            ),
+            { localeMarker: true }
+          )}
         </p>
       )}
     </ScrollArea>
@@ -313,11 +333,11 @@ export default function ChatMessages({ user, asideState }: ChatMessagesProps) {
 }
 
 const ChatMessageBubble = {
-  Default: memo(({ user, chatMsg }: ChatMessageBubbleDefaultProps) => {
+  Default: memo(({ localeEntry, user, chatMsg }: ChatMessageBubbleDefaultProps) => {
     return (
       <div 
         role="group" 
-        aria-roledescription="chat message" 
+        aria-roledescription="chat message"
         className={s[`message${!chatMsg ? "Skeleton" : ""}`]}
       >
         <div
@@ -327,8 +347,10 @@ const ChatMessageBubble = {
           <div className={s.nameAva}>
             {chatMsg ? (
               <>
-                <Avatar user={{ avatar_url: chatMsg.avatar_url }} />
-                <h4 title={chatMsg.username}>{chatMsg?.username === user?.username ? "You" : chatMsg.username}</h4>
+                <Avatar user={chatMsg} linkProfile={false} />
+                <h4 title={chatMsg.username}>
+                  {chatMsg?.username === user?.username ? localeEntry.you : chatMsg.username}
+                </h4>
               </>
             ) : (
               <>
@@ -356,7 +378,7 @@ const ChatMessageBubble = {
               size="paraXSmall"
               className={s.paraSkel}
               {...(i === 2 && {
-                style: { width: Math.random() < 0.5 ? "30%" : "55%" },
+                style: { width: Math.random() < 0.5 ? "30%" : "55%" }
               })}
             />
           ))
@@ -365,7 +387,7 @@ const ChatMessageBubble = {
     );
   }),
 
-  Enlarged: memo(({ user, chatMsg, groupLevel }: ChatMessageBubbleEnlargedProps) => {
+  Enlarged: memo(({ localeEntry, user, chatMsg, groupLevel }: ChatMessageBubbleEnlargedProps) => {
     const isCurrentUser = chatMsg ? chatMsg?.username === user?.username : Math.random() < 0.5;
     
     return (
@@ -386,7 +408,9 @@ const ChatMessageBubble = {
             <div className={s.bubble}>
               {["top", "single"].includes(groupLevel!) && (
                 <div className={s.header}>
-                  <h4 title={chatMsg.username}>{chatMsg.username === user?.username ? "You" : chatMsg.username}</h4>
+                  <h4 title={chatMsg.username}>
+                    {chatMsg.username === user?.username ? localeEntry.you : chatMsg.username}
+                  </h4>
                   <Timestamp aria-hidden="true" activity={{ timestamp: chatMsg.created_at }}/>
                 </div>
               )}
@@ -412,5 +436,5 @@ const ChatMessageBubble = {
         </>
       </div>
     );
-  }),
+  })
 };

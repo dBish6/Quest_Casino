@@ -228,6 +228,7 @@
                           & img.flag {
                             width: 28px;
                             height: 20.46px;
+                            object-fit: contain;
                           }
                         }
 

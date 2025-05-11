@@ -1,12 +1,21 @@
 import type { ActivityStatuses } from "@qc/typescript/typings/UserCredentials";
+import type { LocaleContextValues } from "@components/LocaleProvider";
+
 import { useRef } from "react";
+
+import useLocale from "@hooks/useLocale";
 
 interface TimestampProps extends Omit<React.ComponentProps<"span">, "prefix"> {
   activity: { status?: ActivityStatuses, timestamp?: string };
   prefix?: boolean;
 }
 
-function handleTimestamp(date: string, prefix?: boolean) {
+function handleTimestamp(
+  localeContent: ReturnType<LocaleContextValues["getContent"]>,
+  dateTimeFormat: LocaleContextValues["dateTimeFormat"],
+  date: string,
+  prefix?: boolean
+) {
   const timestamp = new Date(date),
     currentDate = new Date();
 
@@ -15,32 +24,33 @@ function handleTimestamp(date: string, prefix?: boolean) {
 
   if (timestamp >= startOfToday) {
     // Timestamp is within today.
-    return `${prefix ? "Today at " : ""}${timestamp.toLocaleString("en-CA", {
+    return `${prefix ? localeContent.para[2] : ""}${dateTimeFormat({
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false 
-    })}`;
+      hour12: false
+    }).format(timestamp)}`;
   } else if (timestamp >= startOfYesterday && timestamp < startOfToday) {
     // Timestamp is within yesterday.
-    return "Yesterday";
+    return localeContent.para[3];
   }
 
-  return timestamp.toLocaleDateString("en-CA");
+  return dateTimeFormat().format(timestamp);
 }
 
 
 export default function Timestamp({ activity, prefix, ...props }: TimestampProps) {
-  const timestamp = useRef(
-     !activity.timestamp
-      ? "Very Long Ago"
-      : activity.status === "online"
-        ? "Just Now"
-        : handleTimestamp(activity.timestamp, prefix)
-  );
+  const { content, dateTimeFormat } = useLocale("Timestamp"),
+    timestamp = useRef(
+      !activity.timestamp
+        ? content.para[0]
+        : activity.status === "online"
+        ? content.para[1]
+        : handleTimestamp(content, dateTimeFormat, activity.timestamp, prefix)
+    );
 
   return (
     <span className="timestamp" {...props}>
-      {prefix ? "Last Seen " : ""}
+      {prefix ? content.lastSeen : ""}
       <time dateTime={activity.timestamp}>{timestamp.current}</time>
     </span>
   );

@@ -34,7 +34,10 @@ export default function About() {
           <p key={i}>{para}</p>
         ))}
 
-        <Carousel localeEntry={content.Carousel} numberFormat={numberFormat} />
+        <Carousel
+          localeEntry={{ ...content.Carousel, general: content.general }}
+          numberFormat={numberFormat}
+        />
       </section>
 
       <footer>

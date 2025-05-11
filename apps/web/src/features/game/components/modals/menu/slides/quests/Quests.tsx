@@ -1,3 +1,4 @@
+import type { LocaleEntry } from "@typings/Locale";
 import type { GetQuestsResponseDto } from "@qc/typescript/dtos/GetQuestsDto";
 
 import { useSearchParams } from "react-router-dom";
@@ -15,7 +16,12 @@ import { QuestCard } from "@gameFeat/components/questCard";
 
 import s from "./quests.module.css";
 
-export default function Quests({ setRenewsIn }: { setRenewsIn: React.Dispatch<React.SetStateAction<string>> }) {
+interface QuestsProps {
+  localeEntry: LocaleEntry;
+  setRenewsIn: React.Dispatch<React.SetStateAction<string>>
+}
+
+export default function Quests({ localeEntry, setRenewsIn }: QuestsProps) {
   const [searchParams] = useSearchParams(),
     slide = searchParams.get(ModalQueryKey.MENU_MODAL) === "Quests";
 
@@ -39,7 +45,7 @@ export default function Quests({ setRenewsIn }: { setRenewsIn: React.Dispatch<Re
   return (
     <div
       role="group"
-      aria-label="Quests"
+      aria-label={localeEntry.title}
       aria-roledescription="slide"
       id="lSlide"
       className={s.quests}
@@ -58,7 +64,7 @@ export default function Quests({ setRenewsIn }: { setRenewsIn: React.Dispatch<Re
           ))}
         </ul>
       ) : (
-        <p>Unexpectedly no quests.</p>
+        <p>{localeEntry.noResults}</p>
       )}
     </div>
   );

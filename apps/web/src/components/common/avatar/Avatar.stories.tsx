@@ -19,12 +19,16 @@ const meta: Meta<typeof Avatar> = {
     size: {
       control: { type: "select" },
       options: ["sm", "md", "lrg", "xl", "xxl"]
+    },
+    showShortView: {
+      control: { type: "boolean" }
     }
   },
   args: { linkProfile: true },
   decorators: [
     (Story, { args }) => {
       const mockUser = useMockSelector((state) => state.auth.user.credentials)!;
+      console.log("mockUser", mockUser);
       return <Story args={{ ...args, user: mockUser }} />;
     }
   ]
@@ -42,12 +46,14 @@ export const Default: Story = {
   },
   NoHoverCard: Story = {
     args: {
+      showShortView: false,
       linkProfile: false
     }
   },
   NoUser: Story = {
     argTypes: {
-      linkProfile: { table: { disable: true } },
+      showShortView: { table: { disable: true } },
+      linkProfile: { table: { disable: true } }
     },
     render: () => <Avatar user={undefined} />
   };

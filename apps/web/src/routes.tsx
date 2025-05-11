@@ -1,7 +1,9 @@
 import type { CarouselContentResponseDto } from "@views/home/_components/Carousel";
+import { LocaleInitialization } from "@typings/Locale";
 
 import { type RouteObject, Navigate } from "react-router-dom";
 
+import LocaleProvider from "@components/LocaleProvider";
 import { ResourceLoaderProvider } from "@components/loaders";
 import BreakpointProvider from "@components/BreakpointProvider";
 import { LeaderboardProvider } from "@gameFeat/components/modals/menu/slides";
@@ -37,21 +39,31 @@ export const getCarouselContentLoader = async () => {
   }
 };
 
-export const routes: RouteObject[] = [
+/**
+ * Sheared component layout optimized for the server (striped out components that's not needed for the server).
+ */
+export function AppCore({ children }: React.PropsWithChildren) {
+  return (
+    <ResourceLoaderProvider>
+      <BreakpointProvider>
+        <LeaderboardProvider>
+          <Dashboard />
+
+          <ModalsProvider />
+          {children}
+        </LeaderboardProvider>
+      </BreakpointProvider>
+    </ResourceLoaderProvider>
+  );
+}
+
+export const routes = (locale: LocaleInitialization): RouteObject[] => [
   {
     path: "/:locale/",
     element: (
-      <>
-        <ResourceLoaderProvider>
-          <BreakpointProvider>
-            <LeaderboardProvider>
-              <Dashboard />
-
-              <ModalsProvider />
-            </LeaderboardProvider>
-          </BreakpointProvider>
-        </ResourceLoaderProvider>
-      </>
+      <LocaleProvider locale={locale.type} initialData={locale.data}>
+        <AppCore />
+      </LocaleProvider>
     ),
     children: [
       {

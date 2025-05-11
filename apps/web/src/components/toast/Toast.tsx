@@ -4,7 +4,10 @@ import type { ToastPayload } from "@redux/toast/toastSlice";
 
 import { useRef, Fragment } from "react";
 import { Provider, Root, Title, Description, Close, Viewport } from "@radix-ui/react-toast";
+import { Portal } from "@radix-ui/react-portal";
 import { cva } from "class-variance-authority";
+
+import useLocale from "@hooks/useLocale";
 
 import { useAppSelector, useAppDispatch } from "@redux/hooks";
 import { selectToasts } from "@redux/toast/toastSelectors";
@@ -14,7 +17,6 @@ import { Button } from "@components/common/controls";
 import { Icon, Link } from "@components/common";
 
 import s from "./toast.module.css";
-import { Portal } from "@radix-ui/react-portal";
 
 const toast = cva(s.toast, {
   variants: {
@@ -36,11 +38,6 @@ export interface ToastProps
   close: () => void;
 }
 
-const defaultTitles = {
-  success: "Success!",
-  error: "Error",
-  info: "Info"
-};
 
 const ANIMATION_DURATION = 490;
 
@@ -53,6 +50,8 @@ export default function Toast({
   options,
   ...props
 }: ToastProps) {
+  const { content } = useLocale("Toast");
+
   const toastRef = useRef<HTMLLIElement>(null),
     { link, button } = options || {};
 
@@ -96,7 +95,7 @@ export default function Toast({
         )}
       </div>
       <Title asChild>
-        <h3>{title ?? defaultTitles[intent || "info"]}</h3>
+        <h3>{title ?? content[intent || "info"]}</h3>
       </Title>
       <Description asChild>
         <p>

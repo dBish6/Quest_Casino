@@ -60,6 +60,7 @@ export default function UserGeneral({ className, size, user, ...props }: UserGen
           <Avatar
             size={size === "full" ? "xxxl" : "xxl"}
             user={user}
+            showShortView={false}
             linkProfile={false}
           />
           <div>

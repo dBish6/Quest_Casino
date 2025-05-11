@@ -7,7 +7,7 @@
 
 import type { Request as ERequest, Response as EResponse } from "express";
 import type { ViteDevServer } from "vite"; 
-import type { LocaleContent, LocaleMeta } from "@typings/Locale";
+import type { LocaleMeta } from "@typings/Locale";
 import type { AuthState } from "@authFeat/redux/authSlice";
 
 import { readFile } from "fs/promises";
@@ -145,17 +145,15 @@ async function setupServer() {
       // console.log("template", template);
       // console.log("render", render);
 
-      // console.log("locale", req.locale);
-      // console.log("restPath", req.restPath);
-
       const localeData = await readFile(
-        join(_dirname, `./public/locales/${req.locale}.json`),
+        join(_dirname, `./src/locales/${req.locale}.json`),
         "utf-8"
       );
 
       const parsedLocaleData: any = JSON.parse(localeData),
-        pageLocaleData: LocaleContent = parsedLocaleData.page[req.restPath],
-        pageMeta: LocaleMeta = pageLocaleData.meta;
+        pageMeta: LocaleMeta = (
+          parsedLocaleData.page[req.restPath] || parsedLocaleData.page["/error-404-page"]
+        ).meta;
 
       try {
         const { preloadedStateScript, store } = getInitialReduxState();
@@ -198,7 +196,7 @@ async function setupServer() {
 
 function redirect(res: EResponse, error: any) {
   if ("statusCode" in error && "location" in error) {
-    if (error.statusCode === 404) return res.redirect("/error-404-page");
+    if (error.statusCode === 404) return res.redirect(301, "/error-404-page");
   } else if (
     error instanceof Response &&
     error.status >= 300 &&

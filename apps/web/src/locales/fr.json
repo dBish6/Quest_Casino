@@ -1,0 +1,1426 @@
+{
+  "page": {
+    "/about": {
+      "meta": {
+        "title": "À propos de",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Bienvenue au Quest Casino! Nous sommes un casino unique en son genre : au-delà du jeu, c'est aussi un lieu de rencontre et de convivialité. C'est un havre de paix pour les joueurs en quête d'une expérience de casino en ligne sûre, transparente et équitable. Votre expérience est notre priorité absolue."
+          },
+          {
+            "name": "keywords",
+            "content": "casino transparent, casino nouvelle génération"
+          }
+        ]
+      },
+      "content": {
+        "section": {
+          "welcome": {
+            "title": "Bienvenue !",
+            "para": "Bienvenue au Quest Casino, où votre expérience de jeu est notre priorité. Nous avons construit cette plate-forme avec un engagement envers la transparence, la convivialité et, surtout, votre sécurité. Nous comprenons les préoccupations de nombreux joueurs ont eu avec d'autres casinos en ligne, et nous sommes là pour changer cela."
+          },
+          "safety": {
+            "title": "Sécurité et sécurité!",
+            "para": "Chez Quest Casino, nous prenons votre sécurité au sérieux. Notre plateforme utilise des mesures de sécurité de pointe pour protéger vos données et vos transactions financières. Vous pouvez profiter de vos jeux préférés en toute confiance, en sachant que vos informations sont protégées."
+          },
+          "fair": {
+            "title": "Jeu équitable et transparence",
+            "para": "Contrairement à de nombreux autres casinos en ligne, Quest Casino s'engage à la transparence. Nous vous fournissons un aperçu de nos opérations, y compris de nos chances et de leur fonctionnement ; vous pouvez voir les chances de parties en appuyant sur l'icône info du jeu. Nous pensons que chaque joueur mérite de connaître les entrées et sorties des jeux qu'il aime."
+          },
+          "community": {
+            "title": "Communauté et Connexions",
+            "para": [
+              "Au-delà du jeu, Quest Casino est également votre lieu de rencontre avec une communauté dynamique de joueurs. Partagez vos expériences, faites des amis et améliorez l'aspect social de votre voyage de jeux.",
+              "Quest Casino est bien plus qu'une simple plateforme de jeu ; c'est un havre pour les joueurs à la recherche d'une expérience de casino en ligne sûre, transparente et agréable. Rejoignez-nous dès aujourd'hui et devenez membre de notre communauté grandissante ! Nous sommes là pour vous offrir un nouveau standard en matière de jeux d'argent en ligne."
+            ]
+          }
+        },
+        "Carousel": {
+          "quotes": [
+            "« Les quêtes sont vraiment amusantes. Avoir un objectif en jouant ajoute un tout nouveau niveau d'excitation ! »",
+            "« Les casinos en ligne se sont toujours sentis croquis pour moi, mais Quest Casino a changé d'avis. »",
+            "« Quest Casino est différent de n'importe quel site de jeu en ligne. J'ai même fait des amis en discutant, et nous jouons ensemble. C'est aussi un centre social. »",
+            "« Quest Casino est autre chose, c'est clair, pas comme les autres sites où vous ne savez jamais ce qui se passe. »",
+            "« Quest Casino est mon parcours à partir de maintenant, aucun autre casino n'est aussi transparent que celui-ci. »"
+          ],
+          "aria": {
+            "alt": {
+              "star": "Étoiles"
+            },
+            "label": {
+              "testimonials": "Témoignages",
+              "btn": [
+                "Diapositive précédente",
+                "Diapositive suivante"
+              ]
+            }
+          }
+        },
+        "footer": {
+          "aria": {
+            "title": {
+              "portfolio": "Le créateur du site Web personnel du Casino de Quête"
+            }
+          },
+          "para": "en savoir plus sur le créateur :"
+        }
+      }
+    },
+    "/home": {
+      "meta": {
+        "title": "Domicile",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Découvrez notre sélection de jeux de casino : jeux de table, machines à sous, jeux de dés ou même choisissez parmi vos favoris. Restez informé des prochaines versions, consultez les événements de la communauté, lisez nos actualités ou rencontrez de nouveaux joueurs et discutez !"
+          },
+          {
+            "name": "keywords",
+            "content": "liste de jeux, versions à venir, événements, actualités"
+          }
+        ]
+      },
+      "content": {
+        "section": {
+          "Carousel": {
+            "news": "Actualités",
+            "events": "Évènements",
+            "players": "Joueurs",
+            "meet": "Rencontrez quelqu'un !",
+            "friendsVerify": "Vous devez vérifier votre profil pour rencontrer et ajouter des amis, {send verification email}.",
+            "noUsersFound": "Nous n'avons trouvé aucun utilisateur pour le moment. Veuillez réessayer plus tard!",
+            "loginRequired": "{Se connecter} pour voir les autres joueurs.",
+            "aria": {
+              "title": {
+                "refreshBtn": "Rafraîchir les utilisateurs"
+              },
+              "label": {
+                "section": "Dernières Actualités, Prochaines Événements ou Rencontrez des Joueurs",
+                "chips": "Choisir Slide à afficher",
+                "carousel": "Bienvenue",
+                "meet": "Utilisateurs à rencontrer"
+              }
+            }
+          },
+          "soon": {
+            "title": "Jeux à venir"
+          },
+          "games": {
+            "odds": "Chances :",
+            "filterNames": [
+              "Tous",
+              "Tableau",
+              "Emplacements",
+              "Dés",
+              "Favoris"
+            ],
+            "redirectError": "D'une manière ou d'une autre, ce jeu n'a pas de lien de jeu, nous travaillons à résoudre ce problème dès que possible.",
+            "TEMPmessage": "La fondation des jeux est actuellement en construction alors que nous migrons de Quest Casino v1 à v2. Les jeux auront leur propre serveur dédié, ce n'est pas une petite tâche ! Pour l'instant, les jeux présentés ne sont que des démos car il n'y a aucun moyen de synchroniser les données utilisateur de cette application aux jeux. Alors, restez attentif et passionnant !",
+            "search": "Chercher",
+            "searchType": "Type de texte",
+            "aria": {
+              "label": {
+                "filters": "Filtrer les jeux par catégorie",
+                "search": "Rechercher des jeux par titre dans la liste active",
+                "favBtn": {
+                  "true": "Ajouter {{title}} à vos favoris",
+                  "false": "Retirer {{title}} de vos favoris"
+                },
+                "odds": "Ratio de la Cote du Jeu"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile": {
+      "meta": {
+        "title": "Profil",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Gérez votre profil. Modifiez vos informations personnelles de base et configurez les options de facturation. Suivez vos statistiques de jeu, vos totaux de victoire/perte, votre taux de victoire, vos totaux joués, vos quêtes complétées et aussi votre historique de jeu pour chaque partie jouée."
+          },
+          {
+            "name": "keywords",
+            "content": "éditer le profil, les statistiques, les statistiques des joueurs, l'historique des joueurs"
+          }
+        ]
+      },
+      "content": {
+        "loading": "Chargement du profil...",
+        "error": {
+          "title": "Données de profil introuvables",
+          "para": "Nous n'avons pas pu trouver les données de votre profil. Notre serveur s'est peut-être arrêté de façon inattendue ou il y a eu une erreur de serveur inattendue. Essayez de rafraîchir la page."
+        },
+        "Facing": {
+          "profilePic": "Cliquez dessus pour ajouter une nouvelle image",
+          "cancel": "Abandonner",
+          "upload": "Charger",
+          "view": "Vue visiteur",
+          "editBio": "Modifier la biographie",
+          "aria": {
+            "alt": {
+              "profilePic": "Photo de profil"
+            },
+            "title": {
+              "profilePic": "Ajouter une nouvelle photo de profil"
+            },
+            "label": {
+              "section": "Information principale",
+              "charUsed": "Caractères utilisés",
+              "cancel": "Annuler la mise à jour",
+              "stopEdit": "Arrêter l'édition",
+              "editUsername": "Modifier le nom d'utilisateur",
+              "editName": "Modifier le nom complet"
+            }
+          }
+        },
+        "Personal": {
+          "title": "Informations personnelles",
+          "oldPassword": "Ancien mot de passe",
+          "newPassword": "Nouveau mot de passe"
+        },
+        "Billing": {
+          "title": "Facturation",
+          "view": "Voir l'historique des paiements",
+          "card": "Cartes",
+          "addBtn": "Ajouter une nouvelle carte",
+          "edit": "Éditer",
+          "logo": "Logo",
+          "defaultBtn": [
+            "Définir comme valeur par défaut",
+            "Retirer par défaut"
+          ],
+          "debit": "Débit",
+          "credit": "Crédit",
+          "disclaimer": "Vous n'avez pas besoin d'entrer les informations de votre carte réelle, c'est juste pour le plaisir.",
+          "connectBtn": [
+            "Connecter",
+            "Connecté"
+          ],
+          "form": {
+            "title": "Titre de la page",
+            "type": "Type de texte",
+            "cardNumber": "Numéros",
+            "cardExp": "Expiration",
+            "ccv": "CCV",
+            "error": {
+              "number": "Le numéro de la carte doit comporter 16 chiffres.",
+              "expiry": [
+                "Mois invalide. Doit être compris entre 01 et 12.",
+                "La date d'expiration de la carte doit être dans le futur."
+              ],
+              "cvv": "Le code CVV doit comporter 3 chiffres.",
+              "global": [
+                "Nous sommes désolés, mais votre type de carte n'est pas pris en charge. Actuellement, nous n'acceptons que Mastercard ou Visa.",
+                "Vous avez atteint la limite maximale de 4 cartes de paiement. Veuillez retirer une carte existante pour en ajouter une nouvelle."
+              ]
+            },
+            "success": "Paiements mis à jour avec succès."
+          },
+          "aria": {
+            "label": {
+              "cardNumber": "Numéro de carte",
+              "cardExp": "Expiration de la carte",
+              "exitBtn": "Quitter l'édition",
+              "deleteBtn": "Supprimer la carte"
+            },
+            "descrip": {
+              "addBtn": "Créez une nouvelle carte de paiement pour votre profil."
+            }
+          }
+        }
+      }
+    },
+    "/profile/settings": {
+      "meta": {
+        "title": "Réglages",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Configurez les options de personnalisation de votre profil. Ajustez les préférences de notification, gérez les paramètres de confidentialité et éditez votre liste de joueurs bloqués."
+          },
+          {
+            "name": "keywords",
+            "content": "paramètres de profil, paramètres, paramètres de notification, paramètres de confidentialité, joueurs bloqués"
+          }
+        ]
+      },
+      "content": {
+        "error": {
+          "para": "Nous avons rencontré un problème inattendu avec vos paramètres utilisateur. Veuillez essayer de vous connecter à nouveau, {Déconnexion}."
+        },
+        "section": {
+          "general": {
+            "optTitle": [
+              "Notifications",
+              "Liste bloquée"
+            ],
+            "optText": [
+              "Activer l'effet sonore sur les nouvelles notifications et l'indicateur.",
+              "Ajouter ou supprimer tout profil que vous avez bloqué."
+            ],
+            "title": "Généraux",
+            "aria": {
+              "label": {
+                "close": "Fermer la liste de blocage",
+                "blockList": "Vos utilisateurs bloqués"
+              }
+            }
+          },
+          "privacy": {
+            "optTitle": [
+              "Visibilité",
+              "Bloquer les cookies"
+            ],
+            "optText": [
+              "Laissez les autres voir votre activité de jeu et vos statistiques lorsque vous consultez votre profil.",
+              "Bloquer les cookies qui ne sont pas essentiels au bon fonctionnement de l'application."
+            ],
+            "title": "Confidentialité"
+          }
+        },
+        "Option": {
+          "aria": {
+            "label": {
+              "disable": "Désactiver {{title}}",
+              "enable": "Activer {{title}}",
+              "open": "Ouvrir la liste des blocs",
+              "unblock": "Débloquer {{username}}"
+            }
+          }
+        }
+      }
+    },
+    "/support": {
+      "meta": {
+        "title": "Soutien",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Besoin d'aide ? Notre équipe de support est ici, accédez à notre chat de support en direct ou contactez-nous par e-mail pour plus de renseignements. Nous sommes là pour vous aider."
+          },
+          {
+            "name": "keywords",
+            "content": "contact, support client, chat en direct, email, centre d'aide"
+          }
+        ]
+      },
+      "content": {
+        "para": "Besoin d'aide ? Vous avez une question, besoin d'aide ou souhaitez partager vos commentaires ? Contactez notre équipe d'assistance par e-mail ou utilisez notre chat d'assistance en direct. Nous sommes là pour vous aider.",
+        "list": [
+          "Courriel :",
+          "Chat en direct à venir dans le futur."
+        ]
+      }
+    },
+    "/privacy-policy": {
+      "meta": {
+        "title": "Politique de confidentialité",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Lisez notre politique de confidentialité pour savoir comment Quest Casino gère les données utilisateur, la sécurité et la conformité aux règles de confidentialité. Nous accordons la priorité à votre vie privée et assurons la gestion sécurisée des données."
+          },
+          {
+            "name": "keywords",
+            "content": "politique de confidentialité, protection des données, confidentialité des utilisateurs, sécurité, conformité, RGPD"
+          }
+        ]
+      },
+      "content": {
+        "header": {
+          "lastUpdated": "Dernière mise à jour :",
+          "para": [
+            "Cette politique de confidentialité décrit nos politiques et procédures en matière de collecte, l'utilisation et la divulgation de vos renseignements personnels lorsque vous utilisez le Service et vous informe de vos droits à la vie privée et de la façon dont la loi vous protège.",
+            "Nous utilisons vos données personnelles pour fournir et améliorer le Service. En utilisant le Service, vous acceptez la collecte et l'utilisation des informations conformément à la présente Politique de confidentialité."
+          ]
+        },
+        "section": {
+          "interAndDef": {
+            "title": "Interprétation et définitions",
+            "sub": {
+              "interpretation": {
+                "title": "Interprétation",
+                "para": "Les mots dont la lettre initiale est en majuscule ont des significations définies dans les conditions suivantes. Les définitions suivantes auront le même sens, que ce soit au singulier ou au pluriel."
+              },
+              "definitions": {
+                "title": "Définitions",
+                "para": "Aux fins de la présente politique de confidentialité:",
+                "list": [
+                  "{Profile} refers to a unique profile created for You to access and interact with Our Service or parts of Our Service.",
+                  "{Affiliate} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où \"contrôle\" désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
+                  "{Application} fait référence au Quest Casino, le logiciel fourni par la Société.",
+                  "{Company} (referred to as either \"the Company\", \"We\", \"Us\"; or \"Our\" in this Agreement) refers to Quest Casino.",
+                  "{Country} refers to: Newfoundland and Labrador, Canada",
+                  "{Device} means any device that can access the Service such as a computer, a cellphone or a digital tablet.",
+                  "{Personal Data} is any information that relates to an identified or identifiable individual.",
+                  "{Service} fait référence à l'application.",
+                  "{Service Provider} désigne toute personne physique ou morale qui traite les données au nom de la Société. Il se réfère à des entreprises ou individus tiers employés par la Société pour faciliter le Service, pour fournir le Service au nom de la Société, d’effectuer des services liés au Service ou d’aider la Société à analyser la façon dont le Service est utilisé.",
+                  "{Usage Data} fait référence aux données collectées automatiquement, soit générée par l'utilisation du Service soit par l'infrastructure du Service lui-même (par exemple, la durée d'une visite de la page).",
+                  "{You} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
+                ]
+              }
+            }
+          },
+          "eligibility": {
+            "title": "Admissibilité",
+            "para": [
+              "Vous devez être au moins {18 years old} pour utiliser notre service. Nous n'autorisons personne de moins de 18 ans à accéder au Service ou à l'utiliser.",
+              "Si nous découvrons qu'une personne de moins de 18 ans nous a fourni des données personnelles, Nous prendrons immédiatement des mesures pour supprimer ces informations de nos serveurs."
+            ]
+          },
+          "collectingData": {
+            "title": [
+              "Collecte et utilisation de vos données personnelles",
+              "Types de données collectées"
+            ],
+            "sub": {
+              "personal": {
+                "title": "Données personnelles",
+                "para": "Lors de l’utilisation de Notre Service, nous pouvons vous demander de nous fournir certains renseignements personnels qui peuvent être utilisés pour vous contacter ou vous identifier. Les informations personnellement identifiables peuvent inclure, mais ne sont pas limitées à:",
+                "list": [
+                  "Adresse e-mail",
+                  "Prénom et nom",
+                  "Numéro de téléphone",
+                  "Etat, Province, Pays",
+                  "Données d'utilisation"
+                ]
+              },
+              "usage": {
+                "title": "Données d'utilisation",
+                "para": [
+                  "Les données d'utilisation sont collectées automatiquement lors de l'utilisation du Service.",
+                  "Les données d'utilisation peuvent inclure des informations telles que l'adresse de protocole Internet de votre appareil (p. ex. Adresse IP), type de navigateur, version du navigateur, les pages de notre Service que Vous visitez, l'heure et la date de votre visite, le temps passé sur ces pages, identificateurs de périphériques uniques et autres données de diagnostic.",
+                  "Lorsque vous accédez au Service par ou via un appareil mobile, nous pouvons collecter certaines informations automatiquement, incluant, mais sans s'y limiter, le type d'appareil mobile que vous utilisez, L'ID unique de votre appareil mobile, l'adresse IP de votre appareil mobile, votre système d'exploitation mobile, votre système d'exploitation mobile le type de navigateur Internet mobile que vous utilisez, les identifiants uniques de l'appareil et d'autres données de diagnostic.",
+                  "Nous pouvons également recueillir des informations que votre navigateur envoie chaque fois que vous visitez notre Service ou lorsque vous accédez au Service par un appareil mobile ou par l'intermédiaire de celui-ci."
+                ]
+              },
+              "usePersonal": {
+                "title": "Utilisation de vos données personnelles",
+                "para": [
+                  "L'entreprise peut utiliser les données personnelles aux fins suivantes :",
+                  "Nous pouvons partager vos informations personnelles dans les situations suivantes :"
+                ],
+                "list": [
+                  [
+                    "{To provide and maintain our Service}, including to monitor the usage of our Service.",
+                    "{To manage Your Profile:} to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.",
+                    "{To contact You:} Pour vous contacter par courriel, appels téléphoniques, SMS ou autres formes équivalentes de communication électronique. comme les notifications push d'une application mobile concernant les mises à jour ou les communications informatives liées aux fonctionnalités, produits ou services contractuels, y compris les mises à jour de sécurité, si nécessaire ou raisonnable pour leur implémentation.",
+                    "{To provide You} avec des nouvelles, des offres spéciales et des informations générales sur d'autres biens, les services et les événements que nous offrons qui sont similaires à ceux que vous avez déjà achetés ou sollicités à moins que vous ayez choisi de ne pas recevoir de tels renseignements.",
+                    "{To manage Your requests:} To attend and manage Your requests to Us.",
+                    "{For business transfers:} We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding, in which Personal Data held by Us about our Service users is among the assets transferred.",
+                    "{For other purposes:} We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience."
+                  ],
+                  [
+                    "{With Service Providers:} We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.",
+                    "{For business transfers:} We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.",
+                    "{With business partners:} We may share Your information with Our business partners to offer You certain products, services or promotions.",
+                    "{With other users:} when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.",
+                    "{With Your consent:} We may disclose Your personal information for any other purpose with Your consent."
+                  ]
+                ]
+              },
+              "retention": {
+                "title": "Conservation de vos données personnelles",
+                "para": [
+                  "La Société ne conservera vos données personnelles que pour la durée nécessaire aux fins énoncées dans la présente Politique de confidentialité. Nous conserverons et utiliserons vos données personnelles dans la mesure nécessaire pour nous conformer à nos obligations légales (par exemple, si nous sommes tenus de conserver vos données afin de nous conformer aux lois applicables), de résoudre les différends et de mettre en œuvre nos conventions et politiques juridiques.",
+                  "La société conservera également les données d’utilisation à des fins d’analyse interne. Les données d'utilisation sont généralement conservées pour une période plus courte, sauf lorsque ces données sont utilisées pour renforcer la sécurité ou pour améliorer la fonctionnalité de notre service, ou nous sommes légalement tenus de conserver ces données pour des périodes plus longues."
+                ]
+              },
+              "transfer": {
+                "title": "Transfert de vos données personnelles",
+                "para": [
+                  "Vos informations, y compris vos données personnelles, est traité dans les bureaux d'exploitation de la Société et dans tout autre endroit où se trouvent les parties impliquées dans le traitement. Cela signifie que ces informations peuvent être transférées à des ordinateurs situés en dehors de votre état, de votre province, pays ou autre juridiction gouvernementale où les lois sur la protection des données peuvent différer de celles de votre juridiction.",
+                  "Nous prenons des mesures pour nous assurer que vos données personnelles sont traitées en toute sécurité et conformément aux lois en vigueur en matière de protection des données. Cela inclut l'utilisation de cryptage et les transferts de données sécurisés. En soumettant vos informations, vous consentez au transfert de vos données, sous réserve des mesures que nous avons mises en œuvre pour garantir le respect des lois applicables en matière de protection des données.",
+                  "Votre consentement à la présente politique de confidentialité suivie de la soumission de ces informations représente votre accord à ce transfert.",
+                  "La Société prendra toutes les mesures raisonnablement nécessaires pour s'assurer que vos données sont traitées en toute sécurité et conformément à la présente Politique de confidentialité, et aucun transfert de Vos données personnelles ne se fera à une organisation ou à un pays à moins qu'il n'y ait des contrôles adéquats, y compris la sécurité de vos données et d'autres informations personnelles."
+                ]
+              },
+              "delete": {
+                "title": "Supprimer vos données personnelles",
+                "para": [
+                  "Vous avez le droit de supprimer ou de demander que Nous aidions à supprimer les données personnelles que nous avons collectées à votre sujet.",
+                  "Notre Service peut vous donner la possibilité de supprimer certaines informations vous concernant de l'intérieur du Service.",
+                  "Vous pouvez mettre à jour, modifier ou supprimer vos informations à tout moment en vous connectant à Votre profil, si vous en avez un, et en visitant la section Modifier votre profil qui vous permet de gérer vos informations personnelles. Vous pouvez également communiquer avec Nous pour nous demander l’accès, la correction ou la suppression de tout renseignement personnel que vous nous avez fourni.",
+                  "Veuillez toutefois noter que nous pourrions devoir conserver certaines informations lorsque nous avons une obligation légale ou une base légale pour le faire."
+                ]
+              },
+              "disclosure": {
+                "title": "Divulgation de vos données personnelles"
+              },
+              "businessTran": {
+                "title": "Transactions commerciales",
+                "para": "Si la société est impliquée dans une fusion, acquisition ou vente d'actifs, vos données personnelles peuvent être transférées. Nous vous informerons avant que vos données personnelles ne soient transférées et ne soient soumises à une politique de confidentialité différente."
+              },
+              "law": {
+                "title": "Service de police",
+                "para": "Dans certaines circonstances, La Société peut être tenue de divulguer vos données personnelles si elle y est tenue par la loi ou en réponse aux demandes valides des autorités publiques (e. . - un tribunal ou une agence gouvernementale)."
+              },
+              "otherLegal": {
+                "title": "Autres exigences légales",
+                "para": "La société peut divulguer vos données personnelles en toute bonne foi croyant qu'une telle action est nécessaire à:",
+                "list": [
+                  "Se conformer à une obligation légale",
+                  "Protéger et défendre les droits ou la propriété de la société",
+                  "Empêcher ou enquêter sur d'éventuels actes répréhensibles en relation avec le Service",
+                  "Protéger la sécurité personnelle des Utilisateurs du Service ou du public",
+                  "Protéger contre la responsabilité juridique"
+                ]
+              },
+              "security": {
+                "title": "Sécurité de vos données personnelles",
+                "para": "La sécurité de vos données personnelles est importante pour nous, mais rappelez-vous qu’aucune méthode de transmission sur Internet ou méthode de stockage électronique n’est 100 % sécurisée. Bien que nous nous efforcions d'utiliser des moyens commercialement acceptables pour protéger vos données personnelles, nous ne pouvons pas garantir leur sécurité absolue."
+              }
+            }
+          },
+          "externalLinks": {
+            "title": "Liens vers d'autres sites web",
+            "para": [
+              "Notre Service peut contenir des liens vers d'autres sites Web qui ne sont pas exploités par nous. Si vous cliquez sur un lien tiers, Vous serez dirigé vers le site de ce tiers. Nous vous conseillons fortement de consulter la politique de confidentialité de chaque site que vous visitez.",
+              "Nous n'avons aucun contrôle sur le contenu, les politiques de confidentialité ou les pratiques des sites ou services de tiers et nous n'assumons aucune responsabilité à cet égard."
+            ]
+          },
+          "changes": {
+            "title": "Modifications de cette politique de confidentialité",
+            "para": [
+              "Il se peut que nous mettions à jour notre politique de confidentialité de temps à autre. Nous vous informerons de tout changement en publiant la nouvelle politique de confidentialité sur cette page.",
+              "Nous vous informerons par e-mail et/ou par un avis important sur Notre Service, avant que le changement ne prenne effet et met à jour la date de la « dernière mise à jour » en haut de la présente Politique de confidentialité.",
+              "Nous vous conseillons de consulter cette politique de confidentialité périodiquement pour tout changement. Les modifications apportées à cette politique de confidentialité sont en vigueur lorsqu'elles sont affichées sur cette page."
+            ]
+          },
+          "contact": {
+            "title": "Contactez-nous",
+            "para": "Si vous avez des questions au sujet de cette politique de confidentialité, vous pouvez nous contacter :",
+            "list": [
+              "Par courriel :",
+              "En visitant :"
+            ]
+          }
+        }
+      }
+    },
+    "/terms": {
+      "meta": {
+        "title": "Conditions d'utilisation",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Examinez les conditions d'utilisation du casino de quête. Comprenez les règles, les responsabilités et les droits lors de l'utilisation de notre plateforme, y compris l'utilisation du compte, la propriété du contenu et les politiques."
+          },
+          {
+            "name": "keywords",
+            "content": "conditions d'utilisation, conditions générales, conditions d'utilisation, politiques, règles de compte"
+          }
+        ]
+      },
+      "content": {
+        "header": {
+          "lastUpdated": "Dernière mise à jour :",
+          "para": "Veuillez lire attentivement les conditions d'utilisation avant d'utiliser notre service."
+        },
+        "section": {
+          "interAndDef": {
+            "title": "Interprétation et définitions",
+            "sub": {
+              "interpretation": {
+                "title": "Interprétation",
+                "para": "Les mots dont la lettre initiale est en majuscule ont des significations définies dans les conditions suivantes. Les définitions suivantes auront le même sens, que ce soit au singulier ou au pluriel."
+              },
+              "definitions": {
+                "title": "Définitions",
+                "para": "Aux fins des conditions d'utilisation :",
+                "list": [
+                  "{Application} signifie le logiciel fourni par la Société, le Casino de Quête",
+                  "{Affiliate} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où \"contrôle\" désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
+                  "{Country} refers to: Newfoundland and Labrador, Canada",
+                  "{Company} (referred to as either \"the Company\", \"We\", \"Us\"; or \"Our\" in this Agreement) refers to Quest Casino.",
+                  "{Device} means any device that can access the Service such as a computer, a cellphone or a digital tablet.",
+                  "{Service} fait référence à l'application.",
+                  "{Terms of Service} (également appelé \"Conditions\") désigne les Conditions d'utilisation qui constituent l'intégralité de l'accord entre vous et la Société concernant l'utilisation du Service.",
+                  "{Third-party Social Media Service} désigne tous les services ou contenus (y compris les données, les informations, les informations produits ou services) fournis par un tiers qui peut être affiché, inclus ou mis à disposition par le Service.",
+                  "{{CAD}} refers to Canadian dollars.",
+                  "{You} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
+                ]
+              }
+            }
+          },
+          "acknowledgment": {
+            "title": "Reconnaissance",
+            "para": [
+              "Il s'agit des Conditions d'utilisation régissant l'utilisation de ce Service et de l'accord qui opère entre vous et la Société. Les présentes conditions énoncent les droits et obligations de tous les utilisateurs en ce qui concerne l'utilisation du Service.",
+              "Votre accès et votre utilisation du Service sont conditionnés à votre acceptation et à votre conformité aux Conditions d’utilisation. Les présentes conditions s'appliquent à tous les visiteurs, utilisateurs et autres qui accèdent ou utilisent le Service.",
+              "En accédant au Service ou en l'utilisant, vous acceptez d'être lié par ces Conditions. Si vous n'êtes pas d'accord avec une partie quelconque des Conditions d'utilisation, vous ne pouvez pas accéder au Service.",
+              "Vous déclarez que vous avez plus de 18 ans et que la Société ne permet pas à ceux qui ont moins de 18 ans d'utiliser le Service.",
+              "Votre accès et votre utilisation du Service sont également conditionnés à votre acceptation et respect de la Politique de confidentialité de la Société. Notre politique de confidentialité décrit nos politiques et procédures sur la collecte, l'utilisation et la divulgation de vos renseignements personnels lorsque vous utilisez l'application ou le site Web et vous informe sur vos droits en matière de confidentialité et sur la façon dont la loi vous protège. Veuillez lire attentivement notre politique de confidentialité avant d'utiliser notre service."
+            ]
+          },
+          "profiles": {
+            "title": "Profils de l'utilisateur",
+            "para": [
+              "Vous pouvez créer un compte.",
+              "Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe. Toute activité effectuée via votre compte est de votre responsabilité.",
+              "Nous nous réservons le droit de résilier les comptes qui violent nos règles."
+            ],
+            "sub": {
+              "generated": {
+                "title": "Contenu généré par l'utilisateur",
+                "para": [
+                  "Les utilisateurs peuvent télécharger du contenu (textes, images, etc.), mais vous devez vous assurer que votre contenu est conforme à nos politiques et aux lois applicables.",
+                  "Nous nous réservons le droit de supprimer ou de restreindre tout contenu qui viole les présentes Conditions."
+                ]
+              }
+            }
+          },
+          "property": {
+            "title": "Propriété intellectuelle",
+            "para": [
+              "Tous les logos, marques de commerce et contenus originaux de ce site Web sont notre propriété.",
+              "Vous ne pouvez pas utiliser notre image de marque sans autorisation écrite préalable, sauf dans la mesure permise par une licence Creative Commons valide avec attribution."
+            ]
+          },
+          "externalLinks": {
+            "title": "Liens vers d'autres sites web",
+            "para": [
+              "Notre Service peut contenir des liens vers des sites Web ou des services de tiers qui ne sont pas détenus ou contrôlés par la Société.",
+              "La Société n'a aucun contrôle et n'assume aucune responsabilité quant au contenu, aux politiques de confidentialité ou aux pratiques des sites ou services Web de tiers. Vous reconnaissez en outre et acceptez que la Société ne soit pas responsable ou responsable, directement ou indirectement, pour tout dommage ou perte causé ou supposé être causé par ou en relation avec l'utilisation ou la confiance d'un tel contenu, biens ou services disponibles sur ou par l'intermédiaire de tels sites ou services.",
+              "Nous vous conseillons fortement de lire les conditions de service et les politiques de confidentialité de tout site Web ou service tiers que vous visitez."
+            ]
+          },
+          "termination": {
+            "title": "Résiliation",
+            "para": [
+              "Nous pouvons résilier ou suspendre votre accès immédiatement, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris sans limitation si vous enfreignez les conditions d'utilisation.",
+              "En cas de résiliation, votre droit d’utiliser le Service cessera immédiatement."
+            ]
+          },
+          "liability": {
+            "title": "Limitation de responsabilité",
+            "para": [
+              "Dans toute la mesure permise par la loi applicable, la responsabilité totale de l'entreprise et de ses fournisseurs pour toute réclamation liée au Service sera limitée au montant effectivement payé par vous pour le Service, ou {{$100 CAD}} si vous n'avez fait aucun achat via le Service.",
+              "En aucun cas la Société ou ses fournisseurs ne peuvent être tenus responsables de quelque nature que ce soit indirecte, accessoire, spéciale, dommages consécutifs, ou punitifs, y compris, mais sans s'y limiter, la perte de profits, la perte de données, l'interruption de l'entreprise, une blessure corporelle, ou une perte de confidentialité, due ou liée à l'utilisation ou à l'incapacité d'utiliser le service, des logiciels tiers ou du matériel utilisés avec le Service, même s'il est avisé de la possibilité de tels dommages.",
+              "Certaines provinces et certains territoires ne permettent pas l'exclusion ou la limitation de certains dommages ou garanties implicites. Dans de tels cas, les limites ci-dessus ne s'appliquent que dans la mesure permise par les lois de votre juridiction.",
+              "Rien dans ces conditions ne peut exclure ou limiter toute responsabilité dans la mesure où cette exclusion ou limitation est interdite par les lois canadiennes applicables sur la protection des consommateurs y compris, mais sans s'y limiter, les lois régissant les pratiques commerciales trompeuses, les contrats de consommation et la responsabilité pour les dommages causés par la négligence."
+            ]
+          },
+          "asIs": {
+            "title": "Clause de non-responsabilité « TEL QUEL » et « TEL QUEL »",
+            "para": [
+              "Quest Casino est un jeu virtuel à des fins de divertissement seulement. Aucun argent réel n'est parié ou gagné. Cette plateforme ne fournit aucune forme de jeu d'argent réel et n'est pas réglementée en tant que service de jeu en vertu de la loi.",
+              "Le Service vous est fourni \"TEL QUEL\" et \"TEL QUEL DISPONIBLE\" et avec tous les défauts et défauts sans garantie d'aucune sorte. Dans la mesure maximale permise par la loi applicable, la Société, en son propre nom et au nom de ses affiliés et de ses concédants de licence et fournisseurs de services respectifs, rejette expressément toute garantie, qu'elle soit expresse, implicite, légale ou autre, en ce qui concerne le Service, y compris toutes les garanties implicites de qualité marchande, d'adaptation à un usage particulier, le titre et la non-contrefaçon, ainsi que les garanties qui peuvent découler de la négociation, du cours de performance, de l'utilisation ou de la pratique commerciale. Sans limitation de ce qui précède, la Société ne fournit aucune garantie ou engagement, et ne fait aucune représentation d'aucune sorte que le Service répondra à vos exigences, atteindra les résultats escomptés, être compatible ou travailler avec tout autre logiciel, application, système ou services, fonctionner sans interruption, satisfont à toutes les normes de performance ou de fiabilité ou sont exemptes d’erreurs ou de défauts qui peuvent ou seront corrigés.",
+              "Sans limiter ce qui précède, ni la Société ni aucun des fournisseurs de l'entreprise ne fait de représentation ou de garantie d'aucune sorte, expresse ou implicite: (i) quant à l’opération ou à la disponibilité du Service, ou aux informations, contenus, matériaux ou produits qui y sont inclus ; (ii) que le Service soit ininterrompu ou sans erreur; (iii) quant à l'exactitude, la fiabilité ou l'actualité de toute information ou contenu fourni par l'intermédiaire du Service ; ou (iv) que le Service, ses serveurs, le contenu ou les e-mails envoyés par ou pour le compte de la Société sont exempts de virus, scripts, chevaux de Troie, vers, logiciels malveillants, bombes à retardement ou autres composants nocifs.",
+              "Certaines juridictions n'autorisent pas l'exclusion de certains types de garanties ou de limitations sur les droits statutaires applicables d'un consommateur, de sorte que certaines ou toutes les exclusions et limitations ci-dessus peuvent ne pas s’appliquer à vous. Mais dans un tel cas, les exclusions et les limites énoncées dans le présent article seront appliquées dans la plus grande mesure possible en vertu de la loi applicable."
+            ]
+          },
+          "governingLaw": {
+            "title": "Loi Gouvernante",
+            "para": [
+              "Les présentes modalités et votre utilisation du Service seront régies par et interprétées conformément aux lois de la province de Terre-Neuve-et-Labrador et aux lois fédérales du Canada qui y sont applicables, à l'exclusion de toute disposition en conflit de lois qui appliquerait les lois d'une autre juridiction.",
+              "Votre utilisation de la Demande peut également être assujettie à d'autres lois municipales, provinciales ou fédérales au Canada."
+            ]
+          },
+          "disputes": {
+            "title": "Résolution des différends",
+            "para": "Si vous avez des préoccupations ou des différends au sujet du Service, vous acceptez d’abord de tenter de résoudre le différend de façon informelle en contactant la Société."
+          },
+          "european": {
+            "title": "Pour les utilisateurs de l'Union européenne (UE)",
+            "para": "Si vous êtes un consommateur de l'Union européenne, vous bénéficierez de toutes les dispositions obligatoires de la loi du pays dans lequel vous résidez."
+          },
+          "unitedStates": {
+            "title": "Conformité juridique des États-Unis",
+            "para": "Vous déclarez et garantissez que (i) vous n'êtes pas situé dans un pays soumis à l'embargo du gouvernement américain, ou qui a été désigné par le gouvernement des États-Unis comme un pays de soutien aux terroristes, et (ii) Vous n'êtes inscrit sur aucune liste de parties interdites ou restreintes du gouvernement des États-Unis."
+          },
+          "severAndWaiver": {
+            "title": "Séparabilité et dispense",
+            "sub": {
+              "severability": {
+                "title": "Séparabilité",
+                "para": "Si l'une des dispositions de ces conditions est jugée inexécutable ou invalide, une telle disposition sera modifiée et interprétée de manière à atteindre les objectifs de cette disposition dans la mesure du possible en vertu de la loi applicable, et les autres dispositions demeureront pleinement en vigueur."
+              },
+              "waiver": {
+                "title": "Abandon",
+                "para": "Sauf si fourni dans les présentes, le fait de ne pas exercer un droit ou d'exiger l'exécution d'une obligation en vertu des présentes conditions n'affecte pas la capacité d'une partie à exercer ce droit ou à exiger une telle exécution à aucun moment par la suite et la renonciation à une infraction ne constituera pas une renonciation à toute violation subséquente."
+              }
+            }
+          },
+          "translation": {
+            "title": "Interprétation de traduction",
+            "para": "Les conditions d'utilisation peuvent avoir été traduites si nous vous les avons mises à disposition sur notre Service. Vous convenez que le texte original anglais prévaudra en cas de litige."
+          },
+          "changes": {
+            "title": "Modifications des conditions d'utilisation",
+            "para": [
+              "Nous nous réservons le droit, à notre entière discrétion, de modifier ou de remplacer ces conditions à tout moment. Si une révision est importante, Nous ferons des efforts raisonnables pour fournir au moins 30 jours de préavis avant toute nouvelle entrée en vigueur. Ce qui constitue un changement important sera déterminé à notre seule discrétion.",
+              "En continuant à accéder ou à utiliser Notre Service après l'entrée en vigueur de ces révisions, vous acceptez d'être lié par les conditions révisées. Si vous n’acceptez pas les nouvelles modalités, en tout ou en partie, veuillez cesser d’utiliser le site Web et le Service."
+            ]
+          },
+          "contact": {
+            "title": "Contactez-nous",
+            "para": "Si vous avez des questions au sujet des conditions d'utilisation, vous pouvez nous contacter :",
+            "list": [
+              "Par courriel :",
+              "En visitant :"
+            ]
+          }
+        }
+      }
+    },
+    "/error-401": {
+      "meta": {
+        "title": "Erreur 401",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Accès non autorisé. L'autorisation de l'utilisateur est manquante ou requise."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 401, erreur du serveur, accès non autorisé, connexion requise"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 401 : {Non Autorisé}"
+      }
+    },
+    "/error-403": {
+      "meta": {
+        "title": "Erreur 403",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Accès interdit. Requête malveillante ou autorisation de l'utilisateur n'est pas valide."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 403, erreur du serveur, accès interdit, permission refusée"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 403 : {Interdit}",
+        "para": "Requête malveillante ou autorisation de l'utilisateur n'est pas valide."
+      }
+    },
+    "/error-404-page": {
+      "meta": {
+        "title": "Erreur 404",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Page introuvable. La page que vous cherchez n'existe pas ou a été déplacée ou supprimée."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 404, page introuvable"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 404 : {Page Introuvable}",
+        "para": "La page que vous cherchez n'existe pas ou a été déplacée ou supprimée.",
+        "home": "Domicile"
+      }
+    },
+    "/error-404-user": {
+      "meta": {
+        "title": "Erreur 404",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Utilisateur introuvable. Nous n'avons pas pu trouver votre profil sur notre serveur."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 404, erreur serveur, utilisateur introuvable"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 404 : {Utilisateur Introuvable}",
+        "para": "Nous n'avons pas pu trouver votre profil sur notre serveur."
+      }
+    },
+    "/error-429": {
+      "meta": {
+        "title": "Erreur 429",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Trop de requêtes. Vous avez fait trop de requêtes sur notre serveur en un court laps de temps, Quest Casino est temporairement verrouillé pour vous. Veuillez revenir à nouveau dans une heure."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 429, erreur serveur, trop de requêtes, limite de taux dépassée"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 429 : {Trop de Requêtes}",
+        "para": "Vous avez fait trop de demandes sur notre serveur en peu de temps, Quest Casino est temporairement verrouillé pour vous. Veuillez revenir à nouveau dans une heure."
+      }
+    },
+    "/error-500": {
+      "meta": {
+        "title": "Erreur 500",
+        "tags": [
+          {
+            "name": "description",
+            "content": "Erreur serveur inattendue ou impossible d'établir une connexion."
+          },
+          {
+            "name": "keywords",
+            "content": "erreur 500, erreur du serveur, problème interne du serveur"
+          }
+        ]
+      },
+      "content": {
+        "title": "Erreur 500 : {Erreur de Serveur Interne}",
+        "para": "Erreur serveur inattendue ou impossible d'établir une connexion."
+      }
+    }
+  },
+  "component": {
+    "Header": {
+      "balance": "Solde",
+      "aria": {
+        "label": {
+          "balance": "Solde actuel",
+          "bank": "Effectuer un paiement"
+        }
+      }
+    },
+    "AsideGeneral": {
+      "total": "Total",
+      "wins": "Victoires",
+      "winStreak": "Série de victoires",
+      "streak": "Série",
+      "logout": "Déconnexion",
+      "login": "Se connecter",
+      "footer": {
+        "para": "Droits d'auteur © {{year}} Quest Casino"
+      }
+    },
+    "Nav": {
+      "profile": "Profil",
+      "viewEditProfile": "Voir/Modifier le profil",
+      "settings": "Réglages",
+      "menu": "Menu",
+      "leaderboard": "Classement",
+      "quests": "Quêtes",
+      "bonuses": "Bonus",
+      "about": "À propos de nous",
+      "support": "Contacter le support",
+      "terms": "Conditions d'utilisation",
+      "policy": "Politique de confidentialité",
+      "language": "Langue"
+    },
+    "Icon": {
+      "aria": {
+        "label": {
+          "add": "Ajouter",
+          "bell": "Notifications",
+          "check-mark": "Succès",
+          "debit-card": "Carte de paiement",
+          "delete": "Supprimez",
+          "discord": "Discord",
+          "edit": "Modifier l'élément",
+          "exit": "Quitter",
+          "expand": "Agrandir",
+          "facebook": "Facebook",
+          "gift": "Des bonus",
+          "menu": "Menu",
+          "heart": "Favori",
+          "info": "Infos",
+          "instagram": "Instagram",
+          "list": "Classement",
+          "quote": "Devis",
+          "refresh": "Rafraîchir les utilisateurs",
+          "scroll": "Quêtes",
+          "search": "Chercher",
+          "send": "Envoyer",
+          "warning": "Avertissement"
+        }
+      }
+    },
+    "Input": {
+      "aria": {
+        "label": {
+          "showPassword": "Afficher le mot de passe",
+          "hidePassword": "Cacher le mot de passe"
+        }
+      }
+    },
+    "OverlayLoader": {
+      "para": "Juste un instant..."
+    },
+    "ResourceLoader": {
+      "para": [
+        "Chargement de l'animation magique...",
+        "Synchronisation avec les autres...",
+        "Cela prend plus de temps que prévu..."
+      ]
+    },
+    "Toast": {
+      "success": "Succès !",
+      "error": "Erreur",
+      "info": "Infos"
+    },
+    "LoginWithGoogle": {
+      "orLogin": "Ou connectez-vous avec",
+      "aria": {
+        "label": {
+          "orLogin": "Ou inscrire/se connecter avec d'autres services tiers."
+        }
+      }
+    },
+    "AddFriendsModal": {
+      "title": "Ajouter des amis",
+      "form": {
+        "search": "Recherche par nom d'utilisateur"
+      },
+      "aria": {
+        "descrip": {
+          "modal": "Rechercher des utilisateurs à ajouter en tant qu'amis en entrant leur nom d'utilisateur. Voir les résultats de recherche et gérer les demandes d'amitié en attente."
+        }
+      },
+      "section": {
+        "results": {
+          "add": "Ajouter {{username}}",
+          "aria": {
+            "label": {
+              "section": "Résultats de recherche",
+              "list": "Utilisateurs"
+            }
+          }
+        },
+        "requests": {
+          "title": "Demandes d'ami en attente",
+          "aria": {
+            "label": {
+              "pending": "En attente {{username}}"
+            }
+          }
+        }
+      }
+    },
+    "LoginModal": {
+      "title": "Se connecter",
+      "forgot": "Mot de passe oublié ?",
+      "submitBtn": "Se connecter",
+      "noAccount": "Vous n'avez pas de compte ? {Inscription}",
+      "aria": {
+        "descrip": {
+          "modal": "Connectez-vous avec votre profil de Quest Casino en fournissant les détails ci-dessous."
+        }
+      }
+    },
+    "NotificationsModal": {
+      "title": "Notifications",
+      "deleteBtn": "Confirmer la suppression",
+      "noResults": "Vous n'avez aucune notification.",
+      "aria": {
+        "title": {
+          "sort": "Activer/désactiver le tri par catégorie",
+          "delete": "Activer/désactiver les notifications de suppression"
+        },
+        "label": {
+          "sort": "Trier par catégorie",
+          "delete": "Supprimer les notifications"
+        },
+        "descrip": {
+          "modal": "Gérez vos notifications et vos demandes d'amis ici. Vous pouvez voir et trier vos notifications, supprimer celles sélectionnées, et répondre aux demandes d'ami.",
+          "deleteBtn": "Supprimer les notifications sélectionnées.",
+          "notifControls": "Contrôles des notifications"
+        }
+      },
+      "section": {
+        "requests": {
+          "title": "Demandes d'amis",
+          "noResults": "Aucune demande d'ami.",
+          "accept": "Accepter",
+          "decline": "Refuser",
+          "aria": {
+            "label": {
+              "accept": "Accepter la demande d'ami {{username}}"
+            }
+          }
+        },
+        "notif": {
+          "news": "Actualités",
+          "system": "Système",
+          "general": "Général",
+          "aria": {
+            "label": {
+              "list": "Notifications {{type}}"
+            }
+          }
+        }
+      }
+    },
+    "ForgotPasswordModal": {
+      "title": "Oublié",
+      "para": "Entrez votre email ci-dessous et nous vous enverrons un lien de réinitialisation du mot de passe.",
+      "back": "Retour à la connexion",
+      "aria": {
+        "label": {
+          "title": "Mot de passe oublié",
+          "submitBtn": "Soumettre l'email de l'utilisateur"
+        }
+      }
+    },
+    "ResetPasswordModal": {
+      "title": "Réinitialisation",
+      "back": "Retour à la connexion",
+      "form": {
+        "error": {
+          "tokenExpired": "Il semble que votre lien de réinitialisation ait expiré{ou qu'il n'ait pas été envoyé}. Veuillez en demander un nouveau."
+        }
+      },
+      "aria": {
+        "label": {
+          "submitBtn": "Soumettre l'email de l'utilisateur"
+        },
+        "descrip": {
+          "modal": "Réinitialisez votre mot de passe en entrant un nouveau mot de passe dans les champs ci-dessous."
+        }
+      }
+    },
+    "RegisterModal": {
+      "title": "Inscription",
+      "required": "Obligatoire",
+      "agreement": "En enregistrant un profil, vous acceptez les {Conditions d'utilisation} et {Politique de confidentialité} du Quest Casino.",
+      "already": "Vous avez déjà un compte ? {Se connecter}",
+      "aria": {
+        "descrip": {
+          "modal": "Enregistrez un profil au Quest Casino en fournissant les détails ci-dessous ou en appuyant sur le bouton Google."
+        }
+      }
+    },
+    "ViewPaymentHistoryModal": {
+      "title": "Historique des paiements",
+      "para": "Seuls les 50 derniers paiements sont affichés ici.",
+      "filterBy": "Filtrer par",
+      "all": "Tous",
+      "deposit": "Dépôt",
+      "withdraw": "Retirer",
+      "aria": {
+        "descrip": {
+          "modal": "Votre historique de paiement."
+        }
+      }
+    },
+    "ViewCompletedQuestsModal": {
+      "title": "Quêtes terminées",
+      "section": {
+        "active": {
+          "title": "Actif pour la manche",
+          "aria": {
+            "label": {
+              "section": "Quêtes Actives Terminées"
+            }
+          }
+        },
+        "previous": {
+          "title": "Précédent",
+          "aria": {
+            "label": {
+              "section": "Quêtes précédentes accomplies"
+            }
+          }
+        }
+      },
+      "aria": {
+        "descrip": {
+          "modal": "Historique des quêtes accomplies pour {{username}}."
+        }
+      }
+    },
+    "ViewProfileModal": {
+      "error": {
+        "unexpected": "Une erreur serveur inattendue s'est produite. Essayez de rafraîchir la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}.",
+        "unknown": "Une erreur inconnue s'est produite. Le serveur pourrait être en panne ou il y a eu un problème lors du traitement de votre requête. Essayez d'actualiser la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}."
+      },
+      "section": {
+        "general": {
+          "aria": {
+            "label": {
+              "section": "Informations générales"
+            }
+          }
+        }
+      },
+      "aria": {
+        "descrip": {
+          "modal": "Le profil d'un utilisateur, y compris sa photo de profil, sa biographie, ses statistiques et son historique de jeu. Vous pouvez également envoyer un message, l'ajouter en tant qu'ami ou les bloquer."
+        }
+      }
+    },
+    "UserGameHistory": {
+      "title": "Activité",
+      "caption": "Votre historique de jeu.",
+      "game": "Jeu",
+      "result": "Résultat",
+      "timestamp": "Horodatage",
+      "win": "Victoire",
+      "draw": "Dessiner",
+      "loss": "Perte",
+      "resentGame": "Renvoyer la partie",
+      "noGame": "Pas de partie",
+      "aria": {
+        "label": {
+          "result": [
+            "Résultat de tri par ordre croissant",
+            "Résultat de tri par ordre décroissant"
+          ],
+          "timestamp": [
+            "Trier l'horodatage par ordre alphabétique",
+            "Trier l'horodatage par ordre alphabétique inverse"
+          ]
+        }
+      }
+    },
+    "UserGeneral": {
+      "sendBtn": "Envoyer un message",
+      "friendBtn": [
+        "Retirer de l'ami",
+        "Ajouter comme ami"
+      ],
+      "blockBtn": [
+        "Débloquer",
+        "Bloquer"
+      ],
+      "view": "Voir le plein",
+      "aria": {
+        "label": {
+          "bio": "bio",
+          "view": "Voir le profil complet"
+        }
+      }
+    },
+    "UserStatistics": {
+      "title": "Statistiques",
+      "total": "Total",
+      "table": "Tableau",
+      "slots": "Emplacements",
+      "dice": "Dés",
+      "wins": "Victoires",
+      "losses": "Pertes",
+      "rate": "Taux de victoire",
+      "played": "Joué",
+      "section": {
+        "winLoss": {
+          "title": "Victoire/Perte",
+          "changeCat": "Changer de catégorie",
+          "caption": "Votre record de victoire et de perte pour la catégorie sélectionnée."
+        },
+        "gamesPlayed": {
+          "title": "Jeux joués",
+          "caption": "Votre total de parties jouées pour toutes les catégories."
+        },
+        "quests": {
+          "title": "Quêtes",
+          "completed": "Terminé",
+          "viewBtn": "Voir les quêtes",
+          "aria": {
+            "label": {
+              "summary": "Sommaire des quêtes",
+              "viewBtn": "Voir toutes les quêtes accomplies {{username}}"
+            }
+          }
+        }
+      }
+    },
+    "AsideChat": {
+      "title": "Amis",
+      "aria": {
+        "label": {
+          "title": "Vos amis",
+          "dragBtn": "Panneau de glissement",
+          "shrinkBtn": "Révéler les amis"
+        }
+      }
+    },
+    "Chat": {
+      "title": "Chat",
+      "global": "Global",
+      "private": "Privé",
+      "select": "Sélectionnez un Salon de Discussion",
+      "aria": {
+        "label": {
+          "enlarge": "Agrandir le chat",
+          "shrink": "Réduire le chat",
+          "switchBtn": "Basculez vers la salle de chat {{type}}."
+        }
+      },
+      "ChatMessages": {
+        "empty": "Salon de discussion vide.",
+        "loginRequired": "{Se connecter} pour voir le chat.",
+        "you": "Vous",
+        "aria": {
+          "label": {
+            "chat": "{Chargement} Conversation de Chat"
+          },
+          "descrip": {}
+        }
+      },
+      "MessageInput": {
+        "typing": "écrit…",
+        "message": "Message",
+        "restriction": "Restriction expire dans :"
+      }
+    },
+    "FriendsDefault": {
+      "add": "Ajouter des amis",
+      "loginRequired": "{Se connecter} pour voir des amis.",
+      "noFriends": "Rencontrez des gens en jouant à des jeux ! Ou regardez quelques {joueurs suggérés}.",
+      "message": "Message",
+      "aria": {
+        "label": {
+          "list": "Vos amis ajoutés",
+          "noFriends": "Aucun ami trouvé"
+        }
+      }
+    },
+    "FriendsEnlarged": {
+      "selectRecipient": "Sélectionner un destinataire",
+      "search": "Chercher",
+      "prevChats": "Chats précédents",
+      "friends": "Amis",
+      "add": "Ajouter des amis",
+      "introduce": "Présentez-vous à {{username}}!",
+      "aria": {
+        "title": {
+          "friendBtn": [
+            "Entrer dans la conversation précédente",
+            "Démarrer ou entrer dans la conversation précédente"
+          ]
+        },
+        "label": {
+          "selectRecipient": [
+            "Destinataire sélectionné",
+            "Sélectionnez un destinataire pour démarrer une conversation"
+          ],
+          "search": "Rechercher des amis ou des conversations précédentes",
+          "friendBtn": [
+            "Entrez dans la conversation précédente avec {{username}}",
+            "Commencer une nouvelle conversation avec {{username}}"
+          ]
+        },
+        "descrip": {
+          "group": "Gestion de la salle de discussion."
+        }
+      }
+    },
+    "Timestamp": {
+      "para": [
+        "Très long il y a",
+        "Juste maintenant",
+        "Aujourd'hui à ",
+        "Hier"
+      ],
+      "lastSeen": "Dernière vue "
+    },
+    "BankModal": {
+      "title": [
+        "Ajouter fonds",
+        "Encaisser"
+      ],
+      "deposit": "Dépôt",
+      "withdraw": "Retirer",
+      "amount": "Montant",
+      "orUse": "Ou utiliser",
+      "help": "Des problèmes ? {Contacter le support}",
+      "disclaimer": "Ce casino est juste \"pour le plaisir\" il n'y a pas de paiements réels. Entrez un numéro ci-dessus pour ajouter à votre solde.",
+      "aria": {
+        "label": {
+          "orUse": "Ou utiliser d'autres services tiers pour déposer des fonds."
+        },
+        "descrip": {
+          "modal": "Déposez un montant ci-dessous en entrant le montant ou en choisissant l'un des autres services de tiers. Gardez à l'esprit que ce casino est juste pour le plaisir, un développeur qui joue autour, de sorte qu'aucun argent réel n'est impliqué."
+        }
+      }
+    },
+    "MenuModal": {
+      "notFound": "Slide introuvable.",
+      "renewsIn": "Renouvellement dans",
+      "infoBtn": "Infos",
+      "info": "Infos {{slide}}",
+      "renew": "Les {{type}} se renouvellent avec de nouveaux {{type}} toutes les 2 semaines.",
+      "aria": {
+        "label": {
+          "menu": "Menu",
+          "left": "Déplacer vers la gauche",
+          "right": "Déplacer vers la droite"
+        },
+        "descrip": {
+          "modal": "Diapositives du menu. Utilisez les flèches pour naviguer entre les diapositives, ou sélectionnez des diapositives spécifiques en utilisant les indicateurs en bas pour voir le classement de nos jeux, gérer les bonus, ou gérer les quêtes."
+        }
+      },
+      "Bonuses": {
+        "title": "Bonus",
+        "info": [
+          "Consultez la {titre du bonus} sur la carte de bonus pour comprendre l'objectif de la réclamation d'un bonus.",
+          "Certains bonus suivent la progression à l'aide d'un {compteur}, tel que « 5 connexions quotidiennes ». Par exemple, après 2 connexions, votre progression {affichera 2/5}.",
+          "Les bonus vous récompensent avec des boosts dans les jeux. Par exemple, avec une {10× bonus}, si vous {gagnez 100 $}, vous obtiendrez 10 $ supplémentaires (10 % de vos gains totaux).",
+          [
+            "Chaque bonus a une {plafond glissant} qui dépend de vos gains totaux et de l' {plafond maximum absolu} du jeu. Le bouchon coulissant est toujours 10 % de vos gains, mais le {plafond maximum absolu} est une limite fixe que les bonus ne peuvent pas dépasser. Par exemple :",
+            [
+              "Si votre mise est de 100 $ et que vos gains sont de 1 000 $ {avec un multiplicateur de 10×}, la limite glissante serait de 10 % de 1 000 $ = 100 $. Si le maximum absolu est de $80, votre bonus sera plafonné à 80 $.",
+              "Si votre mise est de 50 $ et que vos gains sont de 200 $ {avec un multiplicateur de 4×}, le plafond glissant serait de 10 % de 200 $ = 20 $. Comme 20 $ est inférieur au plafond absolu, votre bonus sera de 20 $."
+            ]
+          ],
+          "Une fois qu'un bonus est terminé, {appuyez sur « Réclamer »} pour activer le multiplicateur de bonus pour l'utiliser dans nos jeux. {Tous les bonus durent 24 heures} et {un seul bonus peut être activé à la fois}."
+        ],
+        "noResults": "Aucun bonus, de manière inattendue.",
+        "multiplier": "×{{multiplier}} Bonus",
+        "activated": "Activé",
+        "claimed": "Réclamée",
+        "claim": "Réclamer",
+        "aria": {
+          "label": {
+            "innerList": "Exemples de bonus",
+            "progress": "Progression du Bonus"
+          }
+        }
+      },
+      "Leaderboard": {
+        "title": "Classement",
+        "section": {
+          "topUsers": {
+            "categories": [
+              "Taux de victoire",
+              "Victoires totales"
+            ],
+            "noResults": "Contre toute attente, aucun utilisateur.",
+            "rate": "Taux",
+            "total": "Total",
+            "aria": {
+              "label": {
+                "section": "Meilleurs utilisateurs",
+                "changeCat": "Changer le Classement",
+                "leaders": "Meilleurs joueurs",
+                "topUser": "{{rank}} {{username}} {{stat}} {{type}}"
+              }
+            }
+          },
+          "selectedUser": {
+            "select": "Sélectionnez un utilisateur depuis le tableau.",
+            "aria": {
+              "label": {
+                "section": "Utilisateur sélectionné"
+              }
+            }
+          }
+        }
+      },
+      "Quests": {
+        "title": "Quêtes",
+        "info": [
+          "Consultez la {description de la quête} sur la carte de quête pour voir quel objectif vous devez accomplir.",
+          "Suivez votre progression; le {compteur} se remplira au fur et à mesure que vous vous approcherez de l'achèvement. Par exemple, si la quête est de gagner 8 parties de blackjack, et que vous avez gagné 2 parties, la progression sera {montrer 2/8}. Certaines quêtes ont des étapes simples (p. ex. 1/1).",
+          "Complétez l'objectif en {jouant à nos jeux}.",
+          "Une fois que vous avez terminé la quête, {appuyez sur « Réclamer »} pour recevoir la récompense décrite sur la carte de quête. Les récompenses peuvent inclure des récompenses {argent} ou {spécifiques au jeu} comme des Spins Gratuits."
+        ],
+        "noResults": "Contre toute attente, aucune quête."
+      }
+    },
+    "QuestCard": {
+      "reward": "Récompense :",
+      "freeSpins": "Spins Gratuits",
+      "aria": {
+        "label": {
+          "progress": "Progression de la quête",
+          "completed": "Complété"
+        }
+      }
+    }
+  },
+  "api": {
+    "message": {
+      "error": {
+        "unexpected": "Une erreur serveur inattendue est survenue. Veuillez essayer de rafraîchir la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}.",
+        "unexpectedIDK": "{An unexpected error occurred.}{ Please try refreshing the page.} If the error persists, feel free to reach out to {support}."
+      }
+    },
+    "resetPassword": {
+      "message": {
+        "error": {
+          "tokenExpired": "Il semble que votre lien de confirmation ait expiré{ ou qu'il n'ait pas été envoyé}. Veuillez réessayer."
+        }
+      }
+    },
+    "action": {
+      "validateUser": {
+        "avatar_url": "Avatar",
+        "new_password": "Nouveau mot de passe",
+        "error": {
+          "avatar_url": [
+            "Erreur de l'application.",
+            "Échec de l'envoi.",
+            "Format de fichier invalide. Le fichier doit être un jpg, jpeg, png, ou webp.",
+            "La taille du fichier dépasse la taille maximale de 500 Ko."
+          ],
+          "username": [
+            "Vous pouvez faire un meilleur nom d'utilisateur que cela.",
+            "Le nom d'utilisateur ne peut pas contenir plus de 24 caractères"
+          ],
+          "email": "Adresse e-mail invalide",
+          "password": [
+            "{{name}} doit avoir au moins 6 caractères.",
+            "Maximum de 128 caractères dépassés.",
+            "{{name}} doit contenir au moins une lettre majuscule."
+          ],
+          "con_password": [
+            "Veuillez confirmer votre mot de passe.",
+            "Les mots de passe ne correspondent pas."
+          ],
+          "old_password": "Votre mot de passe actuel est requis.",
+          "phone_number": [
+            "Le numéro de téléphone est invalide.",
+            "Entrez votre code d'appel."
+          ]
+        }
+      }
+    }
+  },
+  "general": {
+    "noResults": "Aucun résultat",
+    "games": "Jeux",
+    "indicators": "Indicateurs de diapositives",
+    "indicator": [
+      "Diapositive",
+      " Actif"
+    ],
+    "refresh": "Rafraîchir",
+    "results": "Résultats",
+    "submit": "Soumettre",
+    "update": "Mise à jour",
+    "unauthorized": "L'autorisation de l'utilisateur est manquante ou requise.",
+    "form": {
+      "user": {
+        "first_name": "Prénom",
+        "last_name": "Nom de famille",
+        "email": "Courriel",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "con_password": "Confirmer le mot de passe",
+        "country": "Pays",
+        "region": "Région",
+        "calling_code": "Code",
+        "phone_number": "Numéro de téléphone",
+        "error": {
+          "required": "est obligatoire."
+        }
+      }
+    },
+    "aria": {
+      "label": {
+        "logoTitle": "Accueil du Casino de Quête"
+      }
+    }
+  }
+}

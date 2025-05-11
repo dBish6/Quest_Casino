@@ -1,3 +1,8 @@
+export interface LocaleInitialization {
+  type: string;
+  data: LocaleData;
+}
+
 /**
  * Makers like "{}" are used for server data or something else that needs to be inserted in that place.
  * This is similar to i18next, but they do not do not do single, {}. i18next is never needed, it's a
@@ -43,6 +48,15 @@ export interface LocaleEntry {
     label: any;
     descrip: any;
   };
+
+  form: {
+    [key: string]: any;
+    error: {
+      // [key: string]: string | string[];
+      [key: string]: any;
+    }
+  }
+
   [key: string]: any;
 }
 
@@ -61,15 +75,16 @@ export interface LocaleEntry {
  */
 export interface LocaleContent extends LocaleEntry {
   section: {
-    [name: string]: any;
-    sub: {
-      [name: string]: any;
+    [name: string]: LocaleEntry & {
+      sub: {
+        [name: string]: LocaleEntry;
+      };
     };
   };
   [key: string]: any;
 }
 
-export interface Locale {
+export interface LocaleData {
   page: {
     [path: string]: {
       meta: LocaleMeta;
@@ -82,16 +97,18 @@ export interface Locale {
   api: {
     // TODO: Not sure yet.
     message: {
-      [route: string]: Record<string, string | string[]>;
+      [route: string]: { [key: string]: any };
     };
     action: {
-      [action: string]: Record<string, string | string[]>;
-    }
+      [action: string]: { [key: string]: any };
+    };
   };
   general: {
     noResults: string;
     loginRequired: string;
     refresh: string;
+    results: string;
+    submit: string;
     update: string;
     unauthorized: string;
     form: {
@@ -106,6 +123,9 @@ export interface Locale {
         region: string;
         callingCode: string;
         phoneNumber: string;
+        error: {
+          required: string;
+        }
       }
     },
   };

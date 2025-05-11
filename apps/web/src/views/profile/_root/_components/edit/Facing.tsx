@@ -1,5 +1,5 @@
 import type { LocaleEntry } from "@typings/Locale";
-import type { UseLocale } from "@hooks/useLocale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 import type { UserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 
 import { useEffect, useRef, useState } from "react";
@@ -19,7 +19,7 @@ import s from "../../profile.module.css";
 
 interface ProfileFacingProps {
   localeEntry: LocaleEntry;
-  numberFormat: UseLocale["numberFormat"];
+  numberFormat: LocaleContextValues["numberFormat"];
   user: UserProfileCredentials;
 }
 
@@ -120,6 +120,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
   
         const formData = new FormData();
         formData.append(e.currentTarget.name, file);
+        formData.append("lang", document.documentElement.lang);
         formData.append("isProfile", "true");
   
         fetcher.submit(formData, {
@@ -166,7 +167,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
               action: "/action/user/validate", // We use this action programmatically, but it's still here as a safeguard if something somehow submits the form.
               formLoading: form.processing,
               resSuccessMsg,
-              resError,
+              resError: resError || form.error.avatar_url,
               clearErrors: () => setErrors({}),
               noBots: true
             })}
@@ -327,7 +328,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
                     noBots
                   >
                     <Input
-                      label={localeEntry.general.form.user.firstName}
+                      label={localeEntry.general.form.user.first_name}
                       intent="primary"
                       id="first_name"
                       name="first_name"
@@ -337,7 +338,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
                       onInput={() => setError("first_name", "")}
                     />
                     <Input
-                      label={localeEntry.general.form.user.lastName}
+                      label={localeEntry.general.form.user.last_name}
                       intent="primary"
                       id="last_name"
                       name="last_name"
@@ -394,7 +395,6 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
                 resError: resError
               })}
               resSuccessMsg={updateData?.user?.bio && resSuccessMsg}
-              resError={resError}
               clearErrors={() => setErrors({})}
               noBots
             >

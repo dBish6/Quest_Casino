@@ -111,7 +111,7 @@ export default function Home() {
         {title.games && (
           <hgroup>
             <Icon aria-hidden="true" id="joystick-32" scaleWithText />
-            <h2 id="hGames">{content.section.games.title}</h2>
+            <h2 id="hGames">{content.general.games}</h2>
           </hgroup>
         )}
         <div className={s.content}>
@@ -119,7 +119,7 @@ export default function Home() {
             {!title.games && (
               <hgroup>
                 <Icon aria-hidden="true" id="joystick-32" scaleWithText />
-                <h2 id="hGames">{content.section.games.title}</h2>
+                <h2 id="hGames">{content.general.games}</h2>
               </hgroup>
             )}
 

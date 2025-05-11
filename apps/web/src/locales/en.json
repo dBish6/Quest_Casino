@@ -54,9 +54,7 @@
               "btn": [
                 "Previous slide",
                 "Next slide"
-              ],
-              "indicators": "Slide indicators",
-              "indicator": ["Slide", " Active"]
+              ]
             }
           }
         },
@@ -91,9 +89,10 @@
             "news": "News",
             "events": "Events",
             "players": "Players",
+            "meet": "Meet Someone!",
             "friendsVerify": "You must verify your profile to meet and add friends, {send verification email}.",
             "noUsersFound": "We couldn't find any users at the moment. Please try again later!",
-            "meet": "Meet Someone!",
+            "loginRequired": "{Login} to see other players.",
 
             "aria": {
               "title": {
@@ -103,9 +102,7 @@
                 "section": "Latest News, Upcoming Events, or Meet Players",
                 "chips": "Choose Slide to Display",
                 "carousel": "Welcome",
-                "meet": "Users to Meet",
-                "indicators": "Slide indicators",
-                "indicator": ["Slide", " Active"]
+                "meet": "Users to Meet"
               }
             }
           },
@@ -113,7 +110,6 @@
             "title": "Games Coming Soon"
           },
           "games": {
-            "title": "Games",
             "odds": "Odds:",
             "filterNames": ["All", "Table", "Slots", "Dice", "Favourites"],
             "redirectError": "Somehow this game has no game link, we're working to resolve this issue as soon as possible.",
@@ -209,8 +205,7 @@
             "cardNumber": "Number",
             "cardExp": "Expiry",
             "ccv": "CCV",
-            "errors": {
-              "required": "is required.",
+            "error": {
               "number": "Card number must be 16 digits.",
               "expiry": [
                 "Invalid month. Must be between 01 and 12.",
@@ -727,7 +722,8 @@
 
       "content": {
         "title": "Error 404: {Page Not Found}",
-        "para": "The page you are looking for doesn't exist or was moved or deleted."
+        "para": "The page you are looking for doesn't exist or was moved or deleted.",
+        "home": "Home"
       }
     },
     "/error-404-user": {
@@ -802,27 +798,278 @@
         }
       }
     },
+    "AsideGeneral": {
+      "total": "Total",
+      "wins": "Wins",
+      "winStreak": "Win Streak",
+      "streak": "Streak",
+      "logout": "Logout",
+      "login": "Login",
+      "footer": {
+        "para": "Copyright © {{year}} Quest Casino"
+      }
+    },
+    "Nav": {
+      "profile": "Profile",
+      "viewEditProfile": "View/Edit Profile",
+      "settings": "Settings",
+      "menu": "Menu",
+      "leaderboard": "Leaderboard",
+      "quests": "Quests",
+      "bonuses": "Bonuses",
+      "about": "About Us",
+      "support": "Contact Support",
+      "terms": "Terms of Service",
+      "policy": "Privacy Policy",
+      "language": "Language"
+    },
 
+    "Icon": {
+      "aria": {
+        "label": {
+          "add": "Add",
+          "bell": "Notifications",
+          "check-mark": "Success",
+          "debit-card": "Payment Card",
+          "delete": "Delete",
+          "discord": "Discord",
+          "edit": "Edit Item",
+          "exit": "Exit",
+          "expand": "Expand",
+          "facebook": "Facebook",
+          "gift": "Bonuses",
+          "menu": "Menu",
+          "heart": "Favourite",
+          "info": "Info",
+          "instagram": "Instagram",
+          "list": "Leaderboard",
+          "quote": "Quote",
+          "refresh": "Refresh Users",
+          "scroll": "Quests",
+          "search": "Search",
+          "send": "Send",
+          "warning": "Warning"
+        }
+      }
+    },
+    "Input": {
+      "aria": {
+        "label": {
+          "showPassword": "Show Password",
+          "hidePassword": "Hide Password"
+        }
+      }
+    },
+    "OverlayLoader": {
+      "para": "Just a moment..."
+    },
+    "ResourceLoader": {
+      "para": [
+        "Loading animation magic...",
+        "Syncing You with Others...",
+        "Taking longer than expected..."
+      ]
+    },
+    "Toast": {
+      "success": "Success!",
+      "error": "Error",
+      "info": "Info"
+    },
+
+    "LoginWithGoogle": {
+      "orLogin": "Or Login With",
+      "aria": {
+        "label": {
+          "orLogin": "Or register/login with other third-party services."
+        }
+      }
+    },
+    "AddFriendsModal": {
+      "title": "Add Friends",
+      "form": {
+        "search": "Search by Username"
+      },
+      "aria": {
+        "descrip": {
+          "modal": "Search for users to add as friends by entering their username. View search results and manage pending friend requests."
+        }
+      },
+      "section": {
+        "results": {
+          "add": "Add {{username}}",
+          "aria": {
+            "label": {
+              "section": "Search Results",
+              "list": "Users"
+            }
+          }
+        },
+        "requests": {
+          "title": "Pending Friend Requests",
+          "aria": {
+            "label": {
+              "pending": "Pending {{username}}"
+            }
+          }
+        }
+      }
+    },
+    "LoginModal": {
+      "title": "Login",
+      "forgot": "Forgot Password?",
+      "submitBtn": "Log In",
+      "noAccount": "Don't have an account? {Register}",
+      "aria": {
+        "descrip": {
+          "modal": "Login with your Quest Casino profile by providing the details below."
+        }
+      }
+    },
+    "NotificationsModal": {
+      "title": "Notifications",
+      "deleteBtn": "Confirm Delete",
+      "noResults": "You have no notifications.",
+      "aria": {
+        "title": {
+          "sort": "Toggle Sort by Category",
+          "delete": "Toggle Delete Notifications"
+        },
+        "label": {
+          "sort": "Sort by Category",
+          "delete": "Delete Notifications"
+        },
+        "descrip": {
+          "modal": "Manage your notifications and friend requests here. You can view and sort your notifications, delete selected ones, and respond to friend requests.",
+          "deleteBtn": "Delete the selected notifications.",
+          "notifControls": "Notifications Controls"
+        }
+      },
+      "section": {
+        "requests": {
+          "title": "Friend Requests",
+          "noResults": "No friend requests.",
+          "accept": "Accept",
+          "decline": "Decline",
+          "aria": {
+            "label": {
+              "accept": "Accept {{username}} Friend Request"
+            }
+          }
+        },
+        "notif": {
+          "news": "News",
+          "system": "System",
+          "general": "General",
+
+          "aria": {
+            "label": {
+              "list": "{{type}} Notifications"
+            }
+          }
+        }
+      }
+    },
+    "ForgotPasswordModal": {
+      "title": "Forgot",
+      "para": "Enter your email below and we'll email you a password reset link.",
+      "back": "Back to Login",
+      "aria": {
+        "label": {
+          "title": "Forgot Password",
+          "submitBtn": "Submit User Email"
+        }
+      }
+    },
+    "ResetPasswordModal": {
+      "title": "Reset",
+      "back": "Back to Login",
+      "form": {
+        "error": {
+          "tokenExpired": "It appears your reset link has expired{ or wasn't sent at all}. Please request a new one."
+        }
+      },
+      "aria": {
+        "label": {
+          "submitBtn": "Submit User Email"
+        },
+        "descrip": {
+          "modal": "Reset your password by entering a new password in the fields below."
+        }
+      }
+    },
     "RegisterModal": {
-      "submitBtn": "Register"
+      "title": "Register",
+      "required": "Required",
+      "agreement": "By Registering a profile, you agree to Quest Casino's {Terms} and {Privacy Policy}.",
+      "already": "Already have a account? {Login}",
+      "aria": {
+        "descrip": {
+          "modal": "Register a profile at Quest Casino by providing the details below or by pressing the google button."
+        }
+      }
     },
     "ViewPaymentHistoryModal": {
       "title": "Payment History",
       "para": "Only the last 50 payments are shown here.",
+      "filterBy": "Filter by",
       "all": "All",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
-      "results": "Results",
       "aria": {
         "descrip": {
           "modal": "Your payment history."
         }
       }
     },
-
+    "ViewCompletedQuestsModal": {
+      "title": "Completed Quests",
+      "section": {
+        "active": {
+          "title": "Active for Round",
+          "aria": {
+            "label": {
+              "section": "Active Completed Quests"
+            }
+          }
+        },
+        "previous": {
+          "title": "Previous",
+          "aria": {
+            "label": {
+              "section": "Previous Completed Quests"
+            }
+          }
+        }
+      },
+      "aria": {
+        "descrip": {
+          "modal": "Completed quests history for {{username}}."
+        }
+      }
+    },
+    "ViewProfileModal": {
+      "error": {
+        "unexpected": "An unexpected server error occurred. Please try refreshing the page. If the error persists, feel free to reach out to {Support}.",
+        "unknown": "An unknown error occurred. The server might down or there was a issue processing your request. Please try refreshing the page. If the error persists, feel free to reach out to {Support}."
+      },
+      "section": {
+        "general": {
+          "aria": {
+            "label": {
+              "section": "General Information"
+            }
+          }
+        }
+      },
+      "aria": {
+        "descrip": {
+          "modal": "A user's profile, including their profile picture, bio, statistics, and game history. You can also send a message, add them as a friend, or block them."
+        }
+      }
+    },
     "UserGameHistory": {
       "title": "Activity",
-      "caption": "Your game history.", 
+      "caption": "Your game history.",
       "game": "Game",
       "result": "Result",
       "timestamp": "Timestamp",
@@ -833,10 +1080,7 @@
       "noGame": "No Game",
       "aria": {
         "label": {
-          "result": [
-            "Sort Result by Ascending",
-            "Sort Result by Descending"
-          ],
+          "result": ["Sort Result by Ascending", "Sort Result by Descending"],
           "timestamp": [
             "Sort Timestamp by Ascending",
             "Sort Timestamp by Descending"
@@ -865,7 +1109,6 @@
       "wins": "Wins",
       "losses": "Losses",
       "rate": "Win Rate",
-      "games": "Games",
       "played": "Played",
       "section": {
         "winLoss": {
@@ -889,42 +1132,287 @@
           }
         }
       }
+    },
+
+    "AsideChat": {
+      "title": "Friends",
+      "aria": {
+        "label": {
+          "title": "Your Friends",
+          "dragBtn": "Drag Panel",
+          "shrinkBtn": "Uncover Friends"
+        }
+      }
+    },
+    "Chat": {
+      "title": "Chat",
+      "global": "Global",
+      "private": "Private",
+      "select": "Select a Chat Room",
+      "aria": {
+        "label": {
+          "enlarge": "Enlarge Chat",
+          "shrink": "Shrink Chat",
+          "switchBtn": "Switch to {{type}} chat room."
+        }
+      },
+      "ChatMessages": {
+        "empty": "Empty chat room.",
+        "loginRequired": "{Login} to see the chat.",
+        "you": "You",
+        "aria": {
+          "label": {
+            "chat": "{Loading} Chat Conversation"
+          },
+          "descrip": {
+          }
+        }
+      },
+      "MessageInput": {
+        "typing": "is typing...",
+        "message": "Message",
+        "restriction": "Restriction expires in:"
+      }
+    },
+    "FriendsDefault": {
+      "add": "Add Friends",
+      "loginRequired": "{Login} to see friends.",
+      "noFriends": "Meet people by playing some games! Or look through some {suggested players}.",
+      "message": "Message",
+      "aria": {
+        "label": {
+          "list": "Your Added Friends",
+          "noFriends": "No Friends Found"
+        }
+      }
+    },
+    "FriendsEnlarged": {
+      "selectRecipient": "Select a Recipient",
+      "search": "Search",
+      "prevChats": "Previous Chats",
+      "friends": "Friends",
+      "add": "Add Friends",
+      "introduce": "Introduce yourself to {{username}}!",
+      "aria": {
+        "title": {
+          "friendBtn": [
+            "Enter Previous Chat Conversation",
+            "Start or Enter Previous Chat Conversation"
+          ]
+        },
+        "label": {
+          "selectRecipient": [
+            "Selected Recipient",
+            "Select a Recipient to Start a Conversation"
+          ],
+          "search": "Search for Friends or Previous Chats",
+          "friendBtn": [
+            "Enter Previous Chat Conversation With {{username}}",
+            "Start a New Chat Conversation With {{username}}"
+          ]
+        },
+        "descrip": {
+           "group": "Chat room management."
+        }
+      }
+    },
+    "Timestamp": {
+      "para": ["Very Long Ago", "Just Now", "Today at ", "Yesterday"],
+      "lastSeen": "Last Seen "
+    },
+
+    "BankModal": {
+      "title": ["Cash In", "Cash Out"],
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "amount": "Amount",
+      "orUse": "Or Use",
+      "help": "Having Problems? {Contact Support}",
+      "disclaimer": "This casino is just 'for fun' there is no actual payments processed. Enter a number above to add to your balance.",
+      "aria": {
+        "label": {
+          "orUse": "Or use other third party services to deposit funds."
+        },
+        "descrip": {
+          "modal": "Deposit a amount below by entering the amount or by choosing any of the other third-party services. Keep in mind, that this casino is just for fun, a developer playing around, so no real cash is involved."
+        }
+      }
+    },
+    "MenuModal": {
+      "notFound": "Slide not found.",
+      "renewsIn": "Renews in",
+      "infoBtn": "Info",
+      "info": "{{slide}} Info",
+      "renew": "{{type}} renew with new {{type}} every 2 weeks.",
+      "aria": {
+        "label": {
+          "menu": "Menu",
+          "left": "Move Left",
+          "right": "Move Right"
+        },
+        "descrip": {
+          "modal": "Menu slides. Use the arrow buttons to navigate between slides, or select specific slides using the indicators at the bottom to view the our games leaderboard, manage bonuses, or manage quests."
+        }
+      },
+      "Bonuses": {
+        "title": "Bonuses",
+        "info": [
+          "Check the {bonus title} on the bonus card to understand the objective for claiming a bonus.",
+          "Some bonuses track progress using a {meter}, such as \"5 Daily Logins\". For example, after 2 logins, your progress will {show 2/5}.",
+          "Bonuses reward you with boosts in games. For example, with a {10× bonus}, if you {win $100}, you'll get an extra $10 (10% of your total winnings).",
+          [
+            "Each bonus has a {sliding cap} that depends on your total winnings and the game's {absolute max cap}. The sliding cap is always 10% of your winnings, but the {absolute max cap} is a fixed limit that bonuses cannot exceed. For example:",
+            [
+              "If your bet is $100 and your winnings are $1,000 {with a 10× multiplier}, the sliding cap would be 10% of $1,000 = $100. If the absolute max cap is $80, your bonus will be capped at $80.",
+              "If your bet is $50 and your winnings are $200 {with a 4× multiplier}, the sliding cap would be 10% of $200 = $20. Since $20 is below the absolute max cap, your bonus will be $20."
+            ]
+          ],
+          "Once a bonus is completed, {press \"Claim\"} to activate the bonus multiplier to use it in our games. {All bonuses last 24 hours} and {only one bonus can be activated at a time}."
+        ],
+        "noResults": "Unexpectedly no bonuses.",
+        "multiplier": "×{{multiplier}} Bonus",
+        "activated": "Activated",
+        "claimed": "Claimed",
+        "claim": "Claim",
+        "aria": {
+          "label": {
+            "innerList": "Bonus Examples",
+            "progress": "Bonus Progress"
+          }
+        }
+      },
+      "Leaderboard": {
+        "title": "Leaderboard",
+        "section": {
+          "topUsers": {
+            "categories": ["Win Rate", "Total Wins"],
+            "noResults": "Unexpectedly no users.",
+            "rate": "Rate",
+            "total": "Total",
+            "aria": {
+              "label": {
+                "section": "Top Users",
+                "changeCat": "Change Leaderboard",
+                "leaders": "Leaders",
+                "topUser": "{{rank}} {{username}} {{stat}} {{type}}"
+              }
+            }
+          },
+          "selectedUser": {
+            "select": "Select a user from the board.",
+            "aria": {
+              "label": {
+                "section": "Selected User"
+              }
+            }
+          }
+        }
+      },
+      "Quests": {
+        "title": "Quests",
+        "info": [
+          "Check the {quest description} on the quest card to see what objective you need to complete.",
+          "Track your progress; the {meter} will fill as you get closer to completion. For example, if the quest is to win 8 games of blackjack, and you've won 2 games, the progress will {show 2/8}. Some quest's have single steps (e.g., 1/1).",
+          "Complete the objective by {playing our games}.",
+          "Once you've completed the quest, {press \"Claim\"} to receive the reward outlined on the quest card. Rewards could include {money} or {game-specific} rewards like Free Spins."
+        ],
+        "noResults": "Unexpectedly no quests."
+      }
+    },
+    "QuestCard": {
+      "reward": "Reward:",
+      "freeSpins": "Free Spins",
+      "aria": {
+        "label": {
+          "progress": "Quest Progress",
+          "completed": "Completed"
+        }
+      }
     }
   },
 
   "api": {
     "message": {
-
+      "error": {
+        "unexpected": "An unexpected server error occurred. Please try refreshing the page. If the error persists, feel free to reach out to {Support}.",
+        "unexpectedIDK": "{An unexpected error occurred.}{ Please try refreshing the page.} If the error persists, feel free to reach out to {support}."
+      }
     },
 
-    "actions": {
-      "validateUser": {
+    "resetPassword": {
+      "message": {
+        "error": {
+          "tokenExpired": "It appears your confirmation link has expired{ or wasn't sent at all}. Please try again."
+        }
+      }
+    },
 
+    "action": {
+      "validateUser": {
+        "avatar_url": "Avatar",
+        "new_password": "New Password",
+
+        "error": {
+          "avatar_url": [
+            "Application error.",
+            "Failed to upload.",
+            "Invalid file format. The file must be a jpg, jpeg, png, or webp.",
+            "File size exceeds the maximum size of 500 KB."
+          ],
+          "username": [
+            "You can make a better username then that.",
+            "Username can't be no more than 24 characters"
+          ],
+          "email": "Invalid email.",
+          "password": [
+            "{{name}} must be at least 6 characters.",
+            "Max of 128 characters exceeded.",
+            "{{name}} must contain at least one capital letter."
+          ],
+          "con_password": [
+            "Please confirm your password.",
+            "Passwords do not match."
+          ],
+          "old_password": "Your current password is required.",
+          "phone_number": [
+            "Phone number is invalid.",
+            "Enter your calling code."
+          ]
+        }
       }
     }
   },
 
   "general": {
     "noResults": "No Results",
-    "loginRequired": "{Login} to see other players!",
     
+    "games": "Games",
+
+    "indicators": "Slide indicators",
+    "indicator": ["Slide", " Active"],
+
     "refresh": "Refresh",
+    "results": "Results",
+    "submit": "Submit",
     "update": "Update",
 
     "unauthorized": "User authorization is missing or required.",
 
     "form": {
       "user": {
-        "firstName": "First Name",
-        "lastName": "Last Name",
+        "first_name": "First Name",
+        "last_name": "Last Name",
         "email": "Email",
         "username": "Username",
         "password": "Password",
-        "confirmPassword": "Confirm Password",
+        "con_password": "Confirm Password",
         "country": "Country",
         "region": "Region",
-        "callingCode": "Code",
-        "phoneNumber": "Phone Number"
+        "calling_code": "Code",
+        "phone_number": "Phone Number",
+        "error": {
+          "required": "is required."
+        }
       }
     },
 

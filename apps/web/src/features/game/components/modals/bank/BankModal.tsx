@@ -5,8 +5,9 @@ import { Title } from "@radix-ui/react-dialog";
 
 import { TRANSACTION_TYPES } from "@qc/constants";
 
-import { capitalize } from "@qc/utils";
+import injectElementInText from "@utils/injectElementInText";
 
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import { useTransactionMutation } from "@gameFeat/services/gameApi";
 
@@ -26,6 +27,8 @@ function formatAmount(e: React.FormEvent<HTMLInputElement>) {
 
 export default function BankModal() {
   const [transactionType, setTransactionType] = useState<TransactionType>("deposit");
+
+  const { content, numberFormat } = useLocale("BankModal");
 
   const { form, setLoading, setError, setErrors } = useForm<{ amount: string }>();
 
@@ -80,7 +83,7 @@ export default function BankModal() {
 
   return (
     <ModalTemplate
-      aria-description="Deposit a amount below by entering the amount or by choosing any of the other third-party services. Keep in mind, that this casino is just for fun, a developer playing around, so no real cash is involved."
+      aria-description={content.aria.descrip.modal}
       queryKey="bank"
       width="368px"
       className={s.modal}
@@ -101,7 +104,7 @@ export default function BankModal() {
                 disabled={form.processing}
                 onClick={() => setTransactionType(type)}
               >
-                {capitalize(type)}
+                {content[type]}
               </Button>
             ))}
           </div>
@@ -109,7 +112,7 @@ export default function BankModal() {
           <hgroup className="head">
             <Icon aria-hidden="true" id="hand-cash-48" />
             <Title asChild>
-              <h2>Cash {transactionType === "deposit" ? "In" : "Out"}</h2>
+              <h2>{content.title[transactionType === "deposit" ? 0 : 1]}</h2>
             </Title>
           </hgroup>
 
@@ -123,7 +126,7 @@ export default function BankModal() {
           >
             <div className="inputs">
               <Input
-                label="Amount"
+                label={content.amount}
                 intent="primary"
                 size="lrg"
                 id="amount"
@@ -138,12 +141,14 @@ export default function BankModal() {
                   setError("amount", "");
                 }}
               >
-                <span aria-hidden="true" className={s.symbol}>$</span>
+                <span aria-hidden="true" className={s.symbol}>
+                  {numberFormat({ currency: "show" })
+                    .formatToParts(1).find(part => part.type === "currency")!.value}
+                </span>
               </Input>
             </div>
 
             <Button
-              aria-label="Deposit"
               aria-live="polite"
               intent="primary"
               size="xl"
@@ -154,7 +159,7 @@ export default function BankModal() {
               {form.processing ? (
                 <Spinner intent="primary" size="md" />
               ) : (
-                "Deposit"
+                content[transactionType]
               )}
             </Button>
           </Form>
@@ -163,9 +168,9 @@ export default function BankModal() {
             <span />
             <p
               id="orUse"
-              aria-label="Or use other third party services to deposit funds."
+              aria-label={content.aria.label.orUse}
             >
-              Or Use
+              {content.orUse}
             </p>
             <span aria-hidden="true" />
           </div>
@@ -175,7 +180,7 @@ export default function BankModal() {
             size="xl"
             className={s.paypal}
             disabled={form.processing}
-            onClick={() => alert(`This casino is just 'for fun' there is no actual payments processed. Enter a number above to add to your balance.`)}
+            onClick={() => alert(content.disclaimer)}
           >
             <img aria-hidden="true" src="/images/paypal.png" alt="PayPal Logo" loading="lazy" />
             PayPal
@@ -187,7 +192,8 @@ export default function BankModal() {
             size="xl"
             className={s.paypal}
             disabled={form.processing}
-            onClick={() => alert(`This casino is just 'for fun' there is no actual payments processed. Enter a number above to add to your balance.`)}
+            onClick={() => alert(content.disclaimer)}
+
           >
             <img
               aria-hidden="true"
@@ -195,14 +201,20 @@ export default function BankModal() {
               alt="Cash App Logo"
               loading="lazy"
             />
-            PayPal
+            Cash App
           </Button>
 
           <span className={s.support}>
-            Having Problems?{" "}
-            <Link intent="primary" to="/support">
-              Contact Support
-            </Link>
+            {injectElementInText(
+              content.help,
+              null,
+              (text) => (
+                <Link intent="primary" to="/support">
+                  {text}
+                </Link>
+              ),
+              { localeMarker: true }
+            )}
           </span>
         </>
       )}

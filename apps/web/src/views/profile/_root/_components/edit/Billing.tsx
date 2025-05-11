@@ -3,16 +3,14 @@
  * Quest Casino is just for fun and doesn't gamble real money, so this section just has
  * non-functioning payment methods. But in the future I will add a way to donate here somehow
  * for some indiction that people would actually like to see this become a real online gambling
- * site. Although, I would need a lot of money for it and would be imposable to do it myself.
+ * site. Although, I would need a lot of money for it and would be impossible to do it myself.
  */
 
 import type { UserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { LocaleEntry } from "@typings/Locale";
-import type { UseLocale } from "@hooks/useLocale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 
 import { useState } from "react";
-
-import CURRENT_YEAR from "@constants/CURRENT_YEAR";
 
 import getStorageKey from "@utils/getStorageKey";
 
@@ -66,7 +64,7 @@ interface PaymentThirdPartyConnectProps {
 
 interface ProfileBillingProps {
   localeEntry: LocaleEntry;
-  numberFormat: UseLocale["numberFormat"];
+  numberFormat: LocaleContextValues["numberFormat"];
   user: UserProfileCredentials;
 }
 
@@ -126,7 +124,7 @@ export default function Billing({ localeEntry, numberFormat, user }: ProfileBill
               branch: "mastercard",
               name: `${user.legal_name?.first} ${user.legal_name?.last}`,
               number: "0784 0784 0784 0784",
-              expiry: `04/${parseInt(CURRENT_YEAR) + 1}`,
+              expiry: `04/${new Date().getFullYear() + 1}`,
               CVV: "784",
               def: false
             }
@@ -261,13 +259,13 @@ function PaymentCardFull({
         if (!field.value.length) {
           setError(
             key,
-            `${field.previousSibling!.textContent} ${localeEntry.form.errors.required}`
+            `${field.previousSibling!.textContent} ${localeEntry.general.form.user.error.required}`
           );
           continue;
         }
 
         if (key === "number" && value.length !== 19) {
-          setError("number", localeEntry.form.errors.number);
+          setError("number", localeEntry.form.error.number);
           continue;
         }
         if (key === "expiry") {
@@ -277,17 +275,17 @@ function PaymentCardFull({
             currentYear = currentDate.getFullYear();
 
           if (isNaN(month) || isNaN(year) || month < 1 || month > 12) {
-            setError("expiry", localeEntry.form.errors.expiry[0]);
+            setError("expiry", localeEntry.form.error.expiry[0]);
             continue;
           }
 
           if (year < currentYear || (year === currentYear && month < currentMonth)) {
-            setError("expiry", localeEntry.form.errors.expiry[1]);
+            setError("expiry", localeEntry.form.error.expiry[1]);
             continue;
           }
         }
         if (key === "cvv") {
-          if (value.length !== 3) setError("cvv", localeEntry.form.errors.ccv);
+          if (value.length !== 3) setError("cvv", localeEntry.form.error.ccv);
           else newCard.CVV = value;
           continue;
         }
@@ -298,7 +296,7 @@ function PaymentCardFull({
       if (branch === null)
         return setError(
           "global",
-          localeEntry.form.errors.global[0]
+          localeEntry.form.error.global[0]
         );
       
       newCard.branch = branch;
@@ -320,7 +318,7 @@ function PaymentCardFull({
           if (Object.values(newState.cards).length >= 4) {
             setError(
               "global",
-              localeEntry.form.errors.global[1]
+              localeEntry.form.error.global[1]
             );
             return prev;
           }
@@ -477,7 +475,7 @@ function PaymentCardFull({
               </div>
               <div role="group" className={s.inline}>
                 <Input
-                  label={localeEntry.general.form.user.firstName}
+                  label={localeEntry.general.form.user.first_name}
                   intent="primary"
                   size="md"
                   id="first_name"
@@ -488,7 +486,7 @@ function PaymentCardFull({
                   onInput={() => setError("first_name", "")}
                 />
                 <Input
-                  label={localeEntry.general.form.user.lastName}
+                  label={localeEntry.general.form.user.last_name}
                   intent="primary"
                   size="md"
                   id="last_name"

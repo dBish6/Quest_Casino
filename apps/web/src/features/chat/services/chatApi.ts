@@ -6,7 +6,7 @@ import type ManageChatRoomEventDto from "@qc/typescript/dtos/ManageChatRoomEvent
 import type ManageChatRoomCallbackDto from "@chatFeat/dtos/ManageChatRoomCallbackDto";
 import type TypingEventDto from "@qc/typescript/dtos/TypingEventDto";
 import type TypingActivityEventDto from "@chatFeat/dtos/TypingActivityEventDto";
-import type ChatMessageEventDto from "@qc/typescript/dtos/ChatMessageEventDto";
+import type { ChatMessageEventDto } from "@qc/typescript/dtos/ChatMessageEventDto";
 
 import { ChatEvent } from "@qc/constants";
 

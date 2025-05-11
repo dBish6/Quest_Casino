@@ -211,8 +211,6 @@ function BlockedList({ localeContent, user, setBlockListOpened, ...props }: Bloc
             <Option
               key={blkUser.member_id}
               localeEntry={localeContent.Option}
-              title={blkUser.username}
-              text={blkUser.bio || ""}
               user={user}
               blkUser={blkUser}
               selectedOptions={props.selectedOptions}

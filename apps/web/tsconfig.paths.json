@@ -13,6 +13,8 @@
 
       "@hooks/*": ["./src/hooks/*"],
 
+      "@locales/*": ["./src/locales/*"],
+
       "@redux/*": ["./src/redux/*"],
 
       "@services/*": ["./src/services/*"],
