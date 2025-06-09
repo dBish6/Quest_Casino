@@ -4,6 +4,7 @@ import type { Game } from "@qc/typescript/dtos/GetGamesDto";
 import { useLoaderData } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 import useStableSearchParams from "@hooks/useStableSearchParams";
 import useUser from "@authFeat/hooks/useUser";
@@ -28,8 +29,10 @@ export interface GameDataState {
 
 export default function Home() {
   const carouselContent = useLoaderData() as CarouselContentResponseDto,
-    { welCarousel, title, viewport } = useBreakpoint(),
-    [searchParams, setStableSearchParams] = useStableSearchParams()
+    [searchParams, setStableSearchParams] = useStableSearchParams();
+  
+  const { content } = useLocale(),
+    { welCarousel, title, viewport } = useBreakpoint();
 
   const user = useUser();
 
@@ -73,8 +76,12 @@ export default function Home() {
 
   return (
     <Main className={s.home}>
-      <section aria-label="Latest News, Upcoming Events, or Meet Players" className={s.hero}>
+      <section
+        aria-label={content.section.Carousel.aria.label.section}
+        className={s.hero}
+      >
         <Carousel
+          localeEntry={{ ...content.section.Carousel, general: content.general }}
           {...(!(carouselContent as any)?.ERROR && { content: carouselContent })}
           breakpoint={welCarousel}
         />
@@ -83,10 +90,15 @@ export default function Home() {
       <section aria-labelledby="hSoon" className={s.comingSoon} aria-busy={gamesLoading}>
         <hgroup>
           <Icon aria-hidden="true" id="alarm-clock-32" scaleWithText />
-          <h2 id="hSoon">Games Coming Soon</h2>
+          <h2 id="hSoon">{content.section.soon.title}</h2>
         </hgroup>
 
-        <Games status="development" games={gameData.development} gamesLoading={gamesLoading} />
+        <Games
+          localeContent={content}
+          status="development"
+          games={gameData.development}
+          gamesLoading={gamesLoading}
+        />
       </section>
 
       <section
@@ -99,7 +111,7 @@ export default function Home() {
         {title.games && (
           <hgroup>
             <Icon aria-hidden="true" id="joystick-32" scaleWithText />
-            <h2 id="hGames">Games</h2>
+            <h2 id="hGames">{content.general.games}</h2>
           </hgroup>
         )}
         <div className={s.content}>
@@ -107,12 +119,13 @@ export default function Home() {
             {!title.games && (
               <hgroup>
                 <Icon aria-hidden="true" id="joystick-32" scaleWithText />
-                <h2 id="hGames">Games</h2>
+                <h2 id="hGames">{content.general.games}</h2>
               </hgroup>
             )}
 
             {viewport !== "small" && (
               <GamesFilters
+                localeEntry={content.section.games}
                 gameData={gameData.active}
                 setGameData={setGameData}
                 searchParams={searchParams}
@@ -121,6 +134,7 @@ export default function Home() {
               />
             )}
             <GamesSearch
+              localeEntry={content.section.games}
               gameData={gameData.active}
               setGameData={setGameData}
               searchParams={searchParams}
@@ -130,7 +144,13 @@ export default function Home() {
             />
           </header>
 
-          <Games status="active" games={gameData.active.current} gamesLoading={gamesLoading} user={user} />
+          <Games
+            localeContent={content}
+            status="active"
+            games={gameData.active.current}
+            gamesLoading={gamesLoading}
+            user={user}
+          />
         </div>
       </section>
     </Main>

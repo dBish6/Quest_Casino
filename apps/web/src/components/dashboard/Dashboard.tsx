@@ -1,10 +1,7 @@
-import { Outlet, useSearchParams, useLocation } from "react-router-dom";
-import { Fragment, useLayoutEffect } from "react";
+import { Outlet, useSearchParams } from "react-router-dom";
+import { Fragment } from "react";
 
-import { meta, titlePrefix } from "@meta";
-
-import formatCurrency from "@authFeat/utils/formatCurrency";
-
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 import useUser from "@authFeat/hooks/useUser";
 
@@ -36,19 +33,16 @@ export function Dashboard() {
 }
 
 function Header() {
-  const [_, setSearchParams] = useSearchParams(),
-    location = useLocation();
+  const [_, setSearchParams] = useSearchParams();
 
-  const { viewport, title } = useBreakpoint();
+  const { content, title, numberFormat } = useLocale("Header"),
+    { viewport, title: breakTitle } = useBreakpoint();
 
   const user = useUser(),
-    formattedBalance = user?.balance != undefined ? formatCurrency(user.balance, true) : "MISSING";
-
-  if (typeof window !== "undefined") {
-    useLayoutEffect(() => {
-      document.title = meta[location.pathname as keyof typeof meta]?.title || meta["/error-404-page"].title;
-    }, [location.pathname]);
-  }
+    formattedBalance =
+      user?.balance != undefined
+        ? numberFormat({ currency: "show" }).format(user.balance)
+        : "MISSING";
 
   return (
     <header id="dashHeader" className={s.header}>
@@ -88,25 +82,35 @@ function Header() {
         <div className={s.title}>
           <Link to="/home">
             <Image
-              src={title.main ? "/logo.svg" : "/images/logo-title.svg"}
-              alt="Quest Casino Home" load={false}
+              src={breakTitle.main ? "/logo.svg" : "/images/logo-title.svg"}
+              alt={content.general.aria.label.logoTitle}
+              load={false}
             />
           </Link>
           {viewport === "large" && <span />}
-          <h1>
-            {meta[location.pathname as keyof typeof meta]?.title.replace(` ${titlePrefix}`, "") || "Error 404"}
-          </h1>
+          <h1>{title}</h1>
         </div>
         
         <div className={s.cash}>
           {user && (
-            <div aria-label="Current Balance" title={"$" + formattedBalance}>
-              <span>Balance</span>
-              <span><span>$</span>{formattedBalance}</span>
+            <div aria-label={content.aria.label.balance} title={formattedBalance}>
+              <span>{content.balance}</span>
+              {(() => {
+                const match = formattedBalance.match(/^([^\d\s.,]+)?\s?([\d.,]+)?\s?([^\d\s.,]+)?$/),
+                  [, symbolBefore, amount, symbolAfter] = match || [];
+
+                return (
+                  <span>
+                    {symbolBefore && <span>{symbolBefore}</span>} 
+                    {amount}
+                    {symbolAfter && <span>{symbolAfter}</span>}
+                  </span>
+                );
+              })()}
             </div>
           )}
           <ModalTrigger
-            aria-label="Make Payment"
+            aria-label={content.aria.label.bank}
             query={{ param: "bank" }}
             buttonProps={{ 
               intent: "primary", 

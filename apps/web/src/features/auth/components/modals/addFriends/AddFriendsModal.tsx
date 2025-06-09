@@ -1,3 +1,4 @@
+import type { LocaleEntry } from "@typings/Locale";
 import type { MinUserCredentials } from "@qc/typescript/typings/UserCredentials";
 
 import { useRef, useMemo } from "react";
@@ -5,6 +6,7 @@ import { Title } from "@radix-ui/react-dialog";
 
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
+import useLocale from "@hooks/useLocale";
 import useUser from "@authFeat/hooks/useUser";
 import { useLazyGetUsersQuery, useManageFriendRequestMutation } from "@authFeat/services/authApi";
 
@@ -17,6 +19,8 @@ import { Spinner } from "@components/loaders";
 import s from "./addFriendsModal.module.css";
 
 export default function AddFriendsModal() {
+  const { content, numberFormat } = useLocale("AddFriendsModal");
+
   const inputRef = useRef<HTMLInputElement>(null),
     [getUsers, { data: searchData, error: searchError, isFetching: searchLoading }] = useLazyGetUsersQuery();
 
@@ -31,7 +35,7 @@ export default function AddFriendsModal() {
   
   return (
     <ModalTemplate
-      aria-description="Search for users to add as friends by entering their username. View search results and manage pending friend requests."
+      aria-description={content.aria.descrip.modal}
       queryKey="add"
       width="455px" 
       className={s.modal}
@@ -41,7 +45,7 @@ export default function AddFriendsModal() {
           <hgroup className="head">
             <Icon aria-hidden="true" id="user-45" />
             <Title asChild>
-              <h2>Add Friends</h2>
+              <h2>{content.title}</h2>
             </Title>
           </hgroup>
 
@@ -52,7 +56,7 @@ export default function AddFriendsModal() {
           >
             <Input
               ref={inputRef}
-              label="Search by Username"
+              label={content.form.search}
               intent="primary"
               size="xl"
               id="search"
@@ -72,37 +76,53 @@ export default function AddFriendsModal() {
             />
           </Form>
 
-          <section aria-label="Search Results" aria-live="polite" className={s.results}>
+          <section
+            aria-label={content.section.results.aria.label.section}
+            aria-live="polite"
+            className={s.results}
+          >
             {searchLoading ? (
               <Spinner intent="primary" size="xl" />
             ) : searchData?.users.length ? (
               <>
-                <small>{searchData.users.length} Results</small>
-                <ul aria-label="Users" className={s.list}>
-                {searchData.users.map((usr) =>
+                <small>
+                  {numberFormat().format(searchData.users.length)}{" "}
+                  {content.general.results}
+                </small>
+                <ul
+                  aria-label={content.section.results.aria.label.list}
+                  className={s.list}
+                >
+                  {searchData.users.map((usr) =>
                     user!.username === usr.username ? null : (
                       <li key={usr.username}>
-                        <SearchUserCard user={usr} />
+                        <SearchUserCard
+                          localeEntry={content.section.results}
+                          user={usr}
+                        />
                       </li>
                     )
                   )}
                 </ul>
               </>
             ) : (
-              <p>No Results</p>
+              <p>{content.general.noResults}</p>
             )}
           </section>
 
           {pendingFriendsArr!.length > 0 && (
             <section aria-labelledby="hPending" className={s.pending}>
-              <h3 id="hPending">Pending Friend Requests</h3>
+              <h3 id="hPending">{content.section.requests.title}</h3>
 
               <ul aria-live="polite">
                 {pendingFriendsArr!.map((request) => (
-                  <li>
-                     <article
+                  <li key={request.username}>
+                    <article
                       title={`${user!.username} | ${user!.legal_name.first} ${user!.legal_name.last}`}
-                      aria-label={`Pending ${request.username}`}
+                      aria-label={content.section.requests.aria.label.pending.replace(
+                        "{{username}}",
+                        request.username
+                      )}
                       className={s.user}
                     >
                       <Details user={request} />
@@ -118,7 +138,7 @@ export default function AddFriendsModal() {
   );
 }
 
-function SearchUserCard({ user }: { user: MinUserCredentials }) {
+function SearchUserCard({ localeEntry, user }: { localeEntry: LocaleEntry; user: MinUserCredentials }) {
   const [emitManageFriends, 
     { data: manageFriendsData, error: manageFriendsError, isLoading: manageFriendsLoading }] = useManageFriendRequestMutation();
 
@@ -128,7 +148,7 @@ function SearchUserCard({ user }: { user: MinUserCredentials }) {
     <>
       <Button
         title={`${user.username} | ${user.legal_name.first} ${user.legal_name.last}`}
-        aria-label={`Add ${user.username}`}
+        aria-label={localeEntry.add.replace("{{username}}", user.username)}
         {...((resError || manageFriendsData) && { "aria-describedby": "msg" })}
         className={s.user}
         disabled={!!(manageFriendsError || manageFriendsData) || manageFriendsLoading}
@@ -140,10 +160,10 @@ function SearchUserCard({ user }: { user: MinUserCredentials }) {
         </div>
       </Button>
       {(resError || manageFriendsData) && (
-          <small role={resError ? "alert" : "status"} id="msg">
-            {resError || manageFriendsData!.message}
-          </small>
-        )}
+        <small role={resError ? "alert" : "status"} id="msg">
+          {resError || manageFriendsData!.message}
+        </small>
+      )}
     </>
   )
 }

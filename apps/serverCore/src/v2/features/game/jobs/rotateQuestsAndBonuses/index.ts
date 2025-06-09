@@ -50,7 +50,6 @@ export default async function rotateQuestsAndBonuses() {
     ]);
   
     session = await startSession();
-
     session.startTransaction();
 
     const [newQuestIndex, newBonusIndex] = await Promise.all([

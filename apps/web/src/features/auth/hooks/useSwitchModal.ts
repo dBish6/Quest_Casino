@@ -15,7 +15,9 @@ export default function useSwitchModal(queryKey: ModalQueryKeyValues) {
       return prev;
     });
     setTimeout(() => {
-      history.push((e.target as HTMLAnchorElement).getAttribute("href")!);
+      history.push((e.target as HTMLAnchorElement).getAttribute("href")!, {
+        preserveLocale: false
+      });
     }, ANIMATION_DURATION - 500);
   };
 

@@ -36,7 +36,7 @@ class ChatRoomUtils {
   async getGlobalChatRoomId(country: string) {
     let continent = (await getCountriesMap()).get(country)?.continent as keyof typeof this.AVAILABLE_GLOBAL_CHAT_ROOM | undefined;
     if (!continent) {
-      throw new SocketError("Access Denied; Invalid credentials.", "forbidden");
+      throw new SocketError("ACCESS_DENIED_CRED", "general", "forbidden");
     } else {
       continent = this.AVAILABLE_GLOBAL_CHAT_ROOM[continent];
     }

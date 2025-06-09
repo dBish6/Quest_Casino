@@ -10,8 +10,6 @@ import type { TransactionType } from "@qc/constants";
 
 import { Types, startSession } from "mongoose"
 
-import USER_NOT_FOUND_MESSAGE from "@authFeat/constants/USER_NOT_FOUND_MESSAGE";
-
 import { handleHttpError, HttpError } from "@utils/handleError";
 import handleMultipleTransactionPromises from "@utils/handleMultipleTransactionPromises";
 
@@ -69,7 +67,7 @@ export async function getPaymentHistory(userId?: ObjectId | string) {
       },
       { $project: { _id: 0, payment_history: 1 } }
     ]);
-    if (!history?.length) throw new HttpError(USER_NOT_FOUND_MESSAGE, 404);
+    if (!history?.length) throw new HttpError("USER_NOT_FOUND_VAL", "general", 404);
 
     return history[0];
   } catch (error: any) {

@@ -1,4 +1,6 @@
 export declare const AVATAR_FILE_EXTENSIONS: ReadonlySet<string>;
+export declare const CHAT_ROOM_ACTIONS: readonly ["join", "leave"];
+export type ChatRoomAction = (typeof CHAT_ROOM_ACTIONS)[number];
 export declare enum AuthEvent {
     INITIALIZE_FRIENDS = "initialize_friends",
     MANAGE_FRIEND_REQUEST = "manage_friend_request",
@@ -6,6 +8,7 @@ export declare enum AuthEvent {
     FRIENDS_UPDATE = "friends_update",
     FRIEND_ACTIVITY = "friend_activity",
     USER_ACTIVITY = "user_activity",
+    LOCALE_CHANGE = "locale_change",
     NEW_NOTIFICATION = "new_notification"
 }
 export declare enum ChatEvent {
@@ -30,5 +33,16 @@ export type GameQuestFor = (typeof GAME_QUEST_FOR)[number];
 export type GameQuestStatus = (typeof GAME_QUEST_STATUSES)[number];
 export declare const GAME_BONUS_STATUSES: readonly ["active", "inactive"];
 export type GameBonusStatus = (typeof GAME_BONUS_STATUSES)[number];
+export declare const LANGUAGES: {
+    readonly en: {
+        readonly name: "English";
+        readonly locale: "en";
+    };
+    readonly fr: {
+        readonly name: "Français";
+        readonly locale: "fr";
+    };
+};
+export type AvailableLocales = typeof LANGUAGES[keyof typeof LANGUAGES]["locale"];
 export declare const TRANSACTION_TYPES: readonly ["deposit", "withdraw"];
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];

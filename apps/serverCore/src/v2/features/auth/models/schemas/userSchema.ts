@@ -72,7 +72,8 @@ export const userStatisticsSchema = new Schema<
         of: {
           _id: false,
           quest: { type: Schema.Types.ObjectId, ref: "quest" },
-          current: { type: Number, default: 0 }
+          current: { type: Number, default: 0 },
+          claimed: { type: Boolean, default: false }
         },
         default: new Map()
       },
@@ -221,8 +222,8 @@ const userSchema = new Schema<UserDoc, Model<UserDoc>>(
       unique: true,
       required: true,
       validate: {
-        validator: (email: string) => !validateEmail(email),
-        message: (props: any) => `${props.value} is a valid email.`
+        validator: (email: string) => validateEmail(email),
+        message: (props: any) => `${props.value} is an invalid email.`
       }
     },
     email_verified: { type: Boolean, default: false },

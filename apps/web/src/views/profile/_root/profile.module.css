@@ -136,6 +136,7 @@
                     & label {
                       font: var(--para-xx-small);
                       font-style: italic;
+                      text-align: center;
                     }
 
                     &form {
@@ -193,14 +194,10 @@
                       }
                     }
 
-                    & .edit.username {
-                      display: grid;
-                      grid-template-columns: auto auto;
-                      & h2 {
-                        font: var(--h1);
-                        font-size: var(--h1-clamp);
-                        line-height: 100%;
-                      }
+                    & .edit.username h2 {
+                      font: var(--h1);
+                      font-size: var(--h1-clamp);
+                      line-height: 100%;
                     }
 
                     & > div:last-child {
@@ -227,6 +224,7 @@
                           & img.flag {
                             width: 28px;
                             height: 20.46px;
+                            object-fit: contain;
                           }
                         }
 
@@ -491,6 +489,7 @@
                       & button {
                         align-self: flex-start;
                         line-height: normal;
+                        text-align: left;
                       }
                     }
                   }

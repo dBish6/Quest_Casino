@@ -4,6 +4,8 @@ import type { TimeoutObj } from "@services/socket";
 import { createContext, useRef, useState, useLayoutEffect } from "react";
 import { LazyMotion } from "framer-motion";
 
+import useLocale from "@hooks/useLocale";
+
 import { logger, delay } from "@qc/utils";
 import { history } from "@utils/History";
 
@@ -23,10 +25,12 @@ export interface ResourceLoaderContextValues {
 export const ResourceLoaderContext = createContext<ResourceLoaderContextValues | undefined>(undefined);
 
 export default function ResourceLoaderProvider({ children }: React.PropsWithChildren<{}>) {
+  const { content } = useLocale("ResourceLoader");
+
   const framerFeatureBundleRef = useRef<FeatureBundle>(),
     [progress, setProgress] = useState({
       loading: false, // I would love to show the loader initially but the portal in OverlayLoader breaks hydration.
-      message: "Loading animation magic..."
+      message: content.para[0]
     });
 
   const userToken = useAppSelector(selectUserCsrfToken),
@@ -58,10 +62,10 @@ export default function ResourceLoaderProvider({ children }: React.PropsWithChil
               await delay(1500);
             }
 
-            setProgress((prev) => ({ ...prev, message: "Syncing You with Others..." }));
+            setProgress((prev) => ({ ...prev, message: content.para[1] }));
             delay(29000, () => {
               if (!progress.loading)
-                setProgress((prev) => ({ ...prev, message: "Taking longer than expected..." }));
+                setProgress((prev) => ({ ...prev, message: content.para[2] }));
             });
             if (user?.email_verified) {
               // The user must be verified to establish socket connection.
@@ -69,8 +73,8 @@ export default function ResourceLoaderProvider({ children }: React.PropsWithChil
               await initializeFriends();
             }
           } catch (error: any) {
-            logger.error("Loading resources error:\n", error.message);
-            if (error.message.includes("stable connection")) history.push("/error-500");
+            logger.error("Loading resources error:\n", error?.message);
+            if (error?.message.includes("stable connection")) history.push("/error-500");
           } finally {
             setProgress((prev) => ({ ...prev, loading: false }));
           }

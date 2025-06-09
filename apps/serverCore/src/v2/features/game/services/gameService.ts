@@ -40,7 +40,7 @@ export async function getGames(status?: GameStatus, forClient?: boolean) {
 export async function getGame(by: "_id" | "title", value: ObjectId | string) {
   try {
     const game = await Game.findOne({ [by]: value });
-    if (!game) throw new ApiError("Game doesn't exist.", 404, "not found");
+    if (!game) throw new ApiError("GAME_NOT_FOUND", "game", 404, "not found");
     
     return game;
   } catch (error: any) {
@@ -81,7 +81,10 @@ export async function getQuests<
           ]
         }
       });
-      if (!user) throw new ApiError(`Unable to find profile with the username ${username}.`, 404, "not found");
+      if (!user)
+        throw new ApiError("GAME_PROFILE_NOT_FOUND", "game", 404, "not found", {
+          var: { username }
+        });
 
       return user as any;
     } else {
@@ -102,7 +105,7 @@ export async function getQuests<
 export async function getQuest(by: "_id" | "title", value: ObjectId | string) {
   try {
     const quest = await GameQuest.findOne({ [by]: value });
-    if (!quest) throw new ApiError("Quest doesn't exist.", 404, "not found");
+    if (!quest) throw new ApiError("QUEST_NOT_FOUND", "game", 404, "not found");
 
     return quest;
   } catch (error: any) {
@@ -141,7 +144,7 @@ export async function getBonuses(
 export async function getBonus(by: "_id" | "title", value: ObjectId | string) {
   try {
     const bonus = await GameBonus.findOne({ [by]: value });
-    if (!bonus) throw new ApiError("Bonus doesn't exist.", 404, "not found");
+    if (!bonus) throw new ApiError("BONUS_NOT_FOUND", "game", 404, "not found");
 
     return bonus;
   } catch (error: any) {

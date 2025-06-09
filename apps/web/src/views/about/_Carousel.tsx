@@ -1,4 +1,5 @@
 import type { AnimationControls } from "framer-motion";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 import type Direction from "@typings/Direction";
 
 import { useRef, useState, useEffect } from "react";
@@ -9,15 +10,25 @@ import { Icon, Avatar, Image, Blob } from "@components/common";
 
 import s from "./about.module.css";
 
+interface CarouselProps {
+  localeEntry: ReturnType<LocaleContextValues["getContent"]>;
+  numberFormat: LocaleContextValues["numberFormat"];
+}
+
 interface Testimonial {
   avatarUrl: string;
   quote: string;
   from: string;
 }
 
-interface TestimonialProps extends Testimonial {
+interface TestimonialProps extends CarouselProps, Testimonial {
   index: number;
   controls: AnimationControls;
+}
+
+interface IndicatorsProps extends CarouselProps {
+  numTestimonials: number;
+  currentSlide: number;
 }
 
 interface CurrentState {
@@ -25,39 +36,11 @@ interface CurrentState {
   testimonials: Testimonial[];
 }
 
-const TESTIMONIALS: Testimonial[] = [
-    {
-      avatarUrl: "/images/jamie-butler.webp",
-      quote:
-        "The quests are actually really fun. Having a objective while playing adds a whole new level of excitement!",
-      from: "Jamie Butler",
-    },
-    {
-      avatarUrl: "/images/larissa-rebekka.webp",
-      quote:
-        "Online casinos always felt sketchy to me, but Quest Casino changed my mind.",
-      from: "Larissa Rebekka",
-    },
-    {
-      avatarUrl: "/images/chris-simpson.webp",
-      quote:
-        "Quest Casino is unlike any online gambling site. I've even made friends while chatting, and we play together. It's a social hub also.",
-      from: "Chris Simpson",
-    },
-    {
-      avatarUrl: "/images/isaac-berthild.webp",
-      quote:
-        "Quest Casino is something else. It's clear, not like those other sites where you're never sure what's going on.",
-      from: "Isaac Berthild",
-    },
-    {
-      avatarUrl: "/images/muggsy-bogues.webp",
-      quote:
-        "Quest Casino is my go-to from now on. No other casino is as transparent as this one.",
-      from: "Muggsy Bogues",
-    },
-  ],
-  NUM_TESTIMONIALS = TESTIMONIALS.length;
+const getTestimonials = (quotes: string[]): Testimonial[] => quotes.map((quote, i) => ({
+  avatarUrl: ["/images/jamie-butler.webp", "/images/larissa-rebekka.webp", "/images/chris-simpson.webp", "/images/isaac-berthild.webp", "/images/muggsy-bogues.webp"][i],
+  from: ["Jamie Butler", "Larissa Rebekka", "Chris Simpson", "Isaac Berthild", "Muggsy Bogues"][i],
+  quote
+}));
 
 const rotateTestimonials = (array: Testimonial[], direction: Direction) => {
   let testimonials = [...array];
@@ -68,13 +51,14 @@ const rotateTestimonials = (array: Testimonial[], direction: Direction) => {
   return testimonials;
 };
 
-export default function Carousel() {
-  const interactionRef = useRef(false);
+export default function Carousel({ localeEntry, numberFormat }: CarouselProps) {
+  const interactionRef = useRef(false),
+    numTestimonials = localeEntry.quotes.length;
 
   const [transitioning, setTransitioning] = useState(false),
     [current, setCurrent] = useState<CurrentState>({
       slide: 1,
-      testimonials: TESTIMONIALS,
+      testimonials: getTestimonials(localeEntry.quotes)
     });
 
   const controls = useAnimation();
@@ -83,8 +67,8 @@ export default function Carousel() {
     setTransitioning(true);
     const newSlide =
       direction === "left"
-        ? (current.slide - 1 + NUM_TESTIMONIALS) % NUM_TESTIMONIALS
-        : (current.slide + 1) % NUM_TESTIMONIALS;
+        ? (current.slide - 1 + numTestimonials) % numTestimonials
+        : (current.slide + 1) % numTestimonials;
 
     const testimonials = rotateTestimonials(current.testimonials, direction);
 
@@ -112,7 +96,7 @@ export default function Carousel() {
           y: { ease: "easeInOut", duration: 0.5 },
           scale: { ease: "easeInOut", duration: 1 },
         },
-        transitionEnd: { ...(carousel && { x: "-50%" }) },
+        transitionEnd: { ...(carousel && { x: "-50%" }) }
       };
     });
 
@@ -132,11 +116,11 @@ export default function Carousel() {
       className={s.carContainer}
       role="group"
       aria-roledescription="carousel"
-      aria-label="Testimonials"
+      aria-label={localeEntry.aria.label.testimonials}
     >
       <div className={s.carousel}>
         <Button
-          aria-label="Previous slide"
+          aria-label={localeEntry.aria.label.btn[0]}
           aria-controls="carouselInner"
           intent="primary"
           size="lrg"
@@ -160,6 +144,8 @@ export default function Carousel() {
             {current.testimonials.map((user, i) => (
               <Testimonial
                 key={user.from}
+                localeEntry={localeEntry}
+                numberFormat={numberFormat}
                 avatarUrl={user.avatarUrl}
                 quote={user.quote}
                 from={user.from}
@@ -170,7 +156,7 @@ export default function Carousel() {
           </m.div>
         </div>
         <Button
-          aria-label="Next slide"
+          aria-label={localeEntry.aria.label.btn[1]}
           aria-controls="carouselInner"
           intent="primary"
           size="lrg"
@@ -186,9 +172,13 @@ export default function Carousel() {
         </Button>
       </div>
 
-      <Indicators currentSlide={current.slide} />
+      <Indicators
+        localeEntry={localeEntry}
+        numberFormat={numberFormat}
+        numTestimonials={numTestimonials}
+        currentSlide={current.slide}
+      />
 
-      {/* FIXME: Somehow this expands the scroll height?? */}
       <Blob svgWidth={1226} svgHeight={468} preserveAspectRatio="xMidYMax meet">
         <ellipse
           cx="463"
@@ -204,17 +194,19 @@ export default function Carousel() {
 }
 
 function Testimonial({
+  localeEntry,
+  numberFormat,
   avatarUrl,
   quote,
   from,
   index,
-  controls,
+  controls
 }: TestimonialProps) {
   const currentSlide = index === 2;
 
   return (
     <m.article
-      aria-label={`${index + 1}`}
+      aria-label={numberFormat().format(index + 1)}
       aria-roledescription="slide"
       {...(!currentSlide && { "aria-hidden": "true" })}
       className={s.testimonial}
@@ -226,14 +218,19 @@ function Testimonial({
       
       <Avatar size="xl" user={{ avatar_url: avatarUrl }} />
       <div>
-        <p>"{quote}"</p>
+        <p>{quote}</p>
         <div>
           <h5>
             <Icon id="quote-12" /> {from}
           </h5>
           <div className={s.stars}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <Image key={i} src="/images/star.png" alt="star" load={false} />
+              <Image
+                key={i}
+                src="/images/star.png"
+                alt={localeEntry.aria.alt.star}
+                load={false}
+              />
             ))}
           </div>
         </div>
@@ -242,17 +239,23 @@ function Testimonial({
   );
 }
 
-function Indicators({ currentSlide }: { currentSlide: number }) {
+function Indicators({ localeEntry, numberFormat, numTestimonials, currentSlide }: IndicatorsProps) {
   return (
-    <div className={s.indicators} role="list" aria-label="Slide indicators">
-      {TESTIMONIALS.map((_, i) => {
+    <div
+      className={s.indicators}
+      role="list"
+      aria-label={localeEntry.general.indicators}
+    >
+      {Array.from({ length: numTestimonials }).map((_, i) => {
         const selected = currentSlide === 0 ? 5 : currentSlide;
 
         return (
           <span
             key={i}
             role="listitem"
-            aria-label={`Slide ${i + 1}${i + 1 === selected ? " Active" : ""}`}
+            aria-label={`${localeEntry.general.indicator[0]} ${numberFormat().format(i + 1)}${
+              i + 1 === selected ? localeEntry.general.indicator[1] : ""
+            }`}
             aria-current={i + 1 === selected}
           />
         );

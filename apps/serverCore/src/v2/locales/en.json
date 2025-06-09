@@ -1,0 +1,185 @@
+{
+  "auth": {
+    "all": "all",
+    "searched": "searched",
+    "random": "{{count}} random",
+
+    "user_notifs": "the current user's notifications",
+    "user_email": "user {{email}}",
+    "the_current_user": "the current user",
+
+    "success": {
+      "REGISTER": "Successfully registered! You can now {log in} with your newly created profile.",
+      
+      "LOGIN": "Welcome back {{username}}!",
+      "LOGIN_NEW": "Welcome {{username}}!",
+      "LOGIN_VERIFY_NOTICE": " We've noticed that your profile hasn't been verified yet, {send verification email}.",
+      "LOGIN_GOOGLE_NOTICE": "Due to the limitations of Google's registration, we had to assign a random country to your profile. To ensure the best experience and so you can connect to the correct region, please update your country at \"Edit Profile\". Quest Casino takes privacy seriously, there is no location tracking or data collection beyond what is necessary for account functionality.",
+
+      "EMAIL_VERIFY": "Email address successfully verified. Please close your previous tab.",
+      "SEND_EMAIL_VERIFY": "Verification email successfully sent. ",
+      "SEND_EMAIL_VERIFY_INFO": "The verification link will expire in 20 minutes. If you can't find it in your inbox, please check your spam or junk folder.",
+
+      "RESET_PASSWORD": "Your password has been successfully reset. All active sessions have been terminated, you'll need to log in again.",
+
+      "SEND_CONFIRM_PASSWORD_EMAIL": "To complete your password change, you must confirm this password reset by a confirmation link sent to your email. The link will expire in 15 minutes. If you can't find it in your inbox, please check your spam or junk folder.",
+
+      "SEND_FORGOT_PASSWORD_EMAIL": "If a profile with the provided email exists, an email with a password reset link has been sent.",
+
+
+      "INITIALIZE_FRIENDS_PARTIAL": "Only pending friends was initialized, no added friends was found.",
+      "INITIALIZE_FRIENDS": "Pending and added friends, as well as other credentials, successfully initialized.",
+
+      "MANAGE_FRIEND_SENT": "Friend request successfully sent to {{username}}.",
+      "MANAGE_FRIEND_ADDED": "Successfully added {{username}} as a friend.",
+      "MANAGE_FRIEND_DECLINED": "Declined {{username}} friend request.",
+
+      "UNFRIENDED": "Successfully deleted friend from friend list.",
+
+      "USER_ACTIVITY": "Activity updated successfully. Friend events and room management also completed successfully."
+    },
+    "error": {
+      "EMAIL_ALREADY_EXISTS": "A user with this email address already exists. Please try using a different email address.",
+
+      "PROFILE_NOT_FOUND_GOOGLE": "Unexpectedly we couldn't find your profile after you changing your google account's email address.",
+      "TOKEN_GOOGLE": "Received a bad status from google token request.",
+      "INFO_GOOGLE": "Failed to fetch google user info.",
+
+      "UPDATE_PROFILE_ATTEMPTS": "Profile update limit reached. You can only attempt to update your profile up to 6 times within a 24-hour period. Please try again later.",
+      "PASS_CONFIRM_STILL_PENDING": "Confirmation is still pending for your password change. Please confirm the change via your current email before attempting to change your email. You can also {cancel password reset}.",
+      "AVATAR_URL_INVALID": "The avatar_url is not a image or the url isn't valid.",
+      "AVATAR_URL_TOO_LARGE": "File size exceeds the maximum size of 500 KB.",
+      "USER_BLOCKED_NOT_FOUND": "Unexpectedly, this user was not found to block, this profile doesn't exist.",
+      "COUNTRY_UPDATE_LIMIT": "Country update limit reached. You can only update your country 2 times.",
+
+      "RESET_PASSWORD_ATTEMPTS": "Too many reset password attempts, limit has been reached. Try again later after 24 hours.",
+      "RESET_PASSWORD_EXPIRED": "It looks like your password reset has expired right at this moment of submission. Unlucky, please request a new one.",
+
+      "PROVIDE_NEW_PASSWORD": "Please provide a new password.",
+      "OLD_PASSWORD_MISMATCH": "Old password doesn't match your existing password.",
+
+      "USER_NOT_FOUND_LOGOUT": "Unexpectedly couldn't find the user after login.",
+
+      "USER_NOT_FOUND_FRIENDS_VAL": "Unexpectedly couldn't find the user's friends after validation.",
+      "USER_NOT_FOUND_FRIENDS": "Unexpectedly user friends was not found.",
+      "USER_NOT_FOUND_STATISTICS": "Unexpectedly user statistics was not found.",
+      "USER_NOT_FOUND_ACTIVITY": "Unexpectedly user activity was not found.",
+      "USER_NOT_FOUND_NOTIFS": "Unexpectedly user notifications was not found.",
+
+      
+      "MANAGE_FRIEND_NOT_VERIFIED": "This user isn't verified. To add a friend, they must be verified.",
+      "MANAGE_FRIEND_NO_DATA": "There was no data provided or the action_type is invalid.",
+
+
+      "FORMAT_EMAIL_LINK_REQUIRED": "The link parameter must be included with this type of email.",
+      "SEND_EMAIL_SMTP_CONNECT": "There was an issue connecting to our email SMTP server.",
+      "SEND_EMAIL_SMTP_REJECTED": "Your email was rejected by our SMTP server during sending. Please consider using a different email address. If the issue persists, feel free to reach out to support.",
+
+
+      "TOKEN_SESSION_TOKENS_MISSING": "Access/refresh tokens is missing.",
+      "TOKEN_REFRESH_INVALID": "Refresh token is invalid or expired.",
+      "TOKEN_VERIFY_EXPIRED_MISSING": "Verification token is missing or expired.",
+      "TOKEN_EXPIRED": "{{token}} token is expired.",
+      "TOKEN_DISPARITY": "{{token}} token disparity.",
+      "TOKEN_INVALID": "{{token}} token is invalid.",
+
+
+      "TOKEN_REFRESH_THRE": "Within refresh threshold.",
+
+
+      "LOGIN_EMAIL_PASSWORD": "Email or password is incorrect.",
+      "LOGIN_GOOGLE_LINKED": "This profile is linked with Google. Please use the \"Google\" button below to log in.",
+
+
+      "USER_VERIFICATION": "You must be verified to continue. Please visit your {profile} to send a verification email to verify your profile.",
+
+
+      "TOKEN_CSRF_MISSING": "CSRF token is missing.",
+
+
+      "MAX_FRIENDS": "Your max of {{count}} {{type}} has been reached.",
+
+
+      "TOKEN_MULTIPLE_INVALID": "Unexpectedly one or two of the user tokens are invalid after initial validation.",
+
+      "USER_NOT_FOUND_STATISTICS_UPDATING": "Unexpectedly couldn't find user statistics while updating win/loss total.",
+
+
+      "USER_NOT_FOUND_INIT": "Couldn't find the user while session initialization.",
+
+
+      "GET_SOCKET_ID": "Unexpectedly couldn't find a user's socket id after connection.",
+
+
+      "USERNAME_TAKEN": "Username is already taken. Please try a different username."
+    }
+  },
+
+  "chat": {
+    "joined": "joined",
+    "left": "left",
+    "chat_action": "{{username}} has {{action}} the chat.",
+
+    "success": {
+      "MANAGE_CHAT_ROOM": "You {{action}} the chat.",
+      "MANAGE_CHAT_ROOM_NO": "No join or leave was requested."
+    }
+  },
+  
+  "game": {
+    "error": {
+      "GAME_NOT_FOUND": "Game doesn't exist.",
+      "GAME_PROFILE_NOT_FOUND": "Unable to find profile with the username {{username}}.",
+      
+      "QUEST_NOT_FOUND": "Quest doesn't exist.",
+
+      "BONUS_NOT_FOUND": "Bonus doesn't exist.",
+
+
+      "MANAGE_PROGRESS_BONUS_LOCKED_NEW": "You can only have one bonus active at a time. Please wait 24 hours before activating a new one.",
+      "MANAGE_PROGRESS_BONUS_LOCKED_PROGRESS": "You cannot activate this bonus yet because your current progress has not yet been completed.",
+      "MANAGE_PROGRESS_BONUS_LOCKED_ACTIVE": "This bonus is already activated, you must wait till that bonus expires. All bonuses last 24 hours.",
+      "MANAGE_PROGRESS_BONUS_USED": "The bonus was already activated before and has now expired. You cannot reactivate it.",
+      "MANAGE_PROGRESS_QUEST_USED": "Quest reward is already claimed, you cannot claim it again."
+    }
+  },
+
+  "notifs": {
+    "news": {},
+    "system": {},
+    "general": {
+      "FRIEND_REQUEST": {
+        "message": "Sent you a friend request."
+      },
+      "FRIEND_ACCEPT": {
+        "title": "Accepted",
+        "message": "{{username}} accepted your friend request."
+      },
+      "FRIEND_DECLINE": {
+        "title": "Declined",
+        "message": "{{username}} declined your friend request."
+      },
+      "UNFRIENDED": {
+        "title": "Unfriended",
+        "message": "{{username}} just unfriended you."
+      }
+    }
+  },
+
+  "general": {
+    "error": {
+      "USER_NOT_FOUND": "Unexpectedly the user was not found.",
+      "USER_NOT_FOUND_VAL": "Unexpectedly couldn't find the user after validation.",
+      "USER_NOT_FOUND_SYSTEM": "We couldn't find this user in our system.",
+
+      "NO_DATA": "There was no data provided.",
+      "NO_DATA_INVALID": "Data provided is invalid or there was no data provided.",
+
+      "ACCESS_DENIED": "Access Denied",
+      "ACCESS_DENIED_CRED": "Access Denied; Invalid credentials.",
+      "UNEXPECTED": "An unexpected error occurred.",
+
+      "LOCALE_INVALID": "\"{{locale}}\" is an unsupported locale."
+    }
+  }
+}

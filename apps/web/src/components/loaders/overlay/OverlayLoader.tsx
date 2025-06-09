@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef } from "react";
 import { Portal } from "@radix-ui/react-portal";
 
+import useLocale from "@hooks/useLocale";
+
 import Spinner from "../spinner/Spinner";
 
 import s from "./overlayLoader.module.css";
@@ -13,6 +15,8 @@ export default function OverlayLoader({
   message,
   ...props
 }: OverlayLoaderProps) {
+  const { content } = useLocale();
+
   const loaderRef = useRef<HTMLDivElement>(null);
 
   if (typeof window !== "undefined") {
@@ -41,7 +45,7 @@ export default function OverlayLoader({
         {...props}
       >
         <Spinner role="" intent="primary" size="xxl" />
-        <span>{message ? message : "Just a moment..."}</span>
+        <span>{message ? message : content.para}</span>
       </div>
     </Portal>
   );

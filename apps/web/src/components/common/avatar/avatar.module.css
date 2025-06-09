@@ -93,15 +93,23 @@
 }
 
 .profileCard {
+  z-index: var(--z-overlay);
   & div :global(.viewport) {
     width: 100%;
     & hgroup {
+      margin-bottom: 0.5rem;
       word-break: break-all;
       & div {
         position: relative;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        & img.flag {
+          object-fit: contain;
+        }
       }
     }
-    & p {
+    & > p {
       margin-top: 5px;
     }
   }
@@ -111,19 +119,22 @@
   &.lrg > div :global(.viewport) {
     padding: 5px 0.75rem;
     & hgroup {
-      word-break: break-all;
       & h4 {
         font: var(--h4);
       }
       & div {
-        bottom: 6px;
-        margin-bottom: -6px;
-        & span {
+        & p {
           font: var(--para-small);
+          line-height: 110%;
+          margin-right: 5px;
+        }
+        & img.flag {
+          width: 20px;
+          height: 13.45px;
         }
       }
     }
-    & p {
+    & p.bio {
       font: var(--para-x-small);
     }
   }
@@ -131,16 +142,22 @@
   &.xxl > div :global(.viewport) {
     padding: 0.5rem 1rem;
     & hgroup {
-      word-break: break-all;
       & h4 {
         font: var(--h3);
       }
       & div {
-        bottom: 4px;
-        margin-bottom: -4px;
+        & p {
+          font: var(--para-medium);
+          line-height: 110%;
+          margin-right: 4px;
+        }
+        & img.flag {
+          width: 24px;
+          height: 17.45px;
+        }
       }
     }
-    & p {
+    & p.bio {
       font: var(--para-small);
     }
   }

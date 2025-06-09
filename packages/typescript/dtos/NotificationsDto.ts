@@ -7,7 +7,7 @@ export interface Notification {
   type: NotificationTypes;
   title: string;
   message: string;
-  link?: { sequence: string; to: string };
+  link?: { sequence?: string; localeMarker?: boolean; to: string };
   created_at: string;
 }
 

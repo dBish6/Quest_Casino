@@ -57,6 +57,7 @@
         bottom: 0;
         border-top: 2px solid var(--c-purple-border);
         border-bottom: 2px solid var(--c-purple-border);
+        z-index: -1;
       }
       &::after {
         content: "";

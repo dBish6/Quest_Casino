@@ -48,17 +48,17 @@ const modalPopInOut: Variants = {
     opacity: 1,
     transition: {
       y: { type: "spring", stiffness: 50 },
-      opacity: { ease: "easeInOut", duration: 1 },
-    },
+      opacity: { ease: "easeInOut", duration: 1 }
+    }
   },
   hidden: {
     y: "-200%",
     opacity: 0,
     transition: {
       y: { type: "tween", duration: ANIMATION_DURATION / 1000 },
-      opacity: { ease: "easeOut", duration: 0.5 },
-    },
-  },
+      opacity: { ease: "easeOut", duration: 0.5 }
+    }
+  }
 };
 
 export const ModalTemplate = forwardRef<HTMLDivElement, ModalTemplateProps>(

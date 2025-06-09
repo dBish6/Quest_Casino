@@ -12,9 +12,9 @@ const skeletonTitle = cva(`${s.skeleton} ${s.title}`, {
         h4: s.h4,
         h3: s.h3,
         h2: s.h2,
-        h1: s.h1,
-      },
-    },
+        h1: s.h1
+      }
+    }
   }),
   skeletonText = cva(`${s.skeleton} ${s.text}`, {
     variants: {
@@ -24,9 +24,9 @@ const skeletonTitle = cva(`${s.skeleton} ${s.title}`, {
         paraSmall: s.paraSmall,
         paraRegular: s.paraRegular,
         paraMedium: s.paraMedium,
-        paraLarge: s.paraLarge,
-      },
-    },
+        paraLarge: s.paraLarge
+      }
+    }
   }),
   skeletonAvatar = cva(`${s.skeleton} ${s.avatar}`, {
     variants: {
@@ -35,9 +35,9 @@ const skeletonTitle = cva(`${s.skeleton} ${s.title}`, {
         md: s.md,
         lrg: s.lrg,
         xl: s.xl,
-        xxl: s.xxl,
-      },
-    },
+        xxl: s.xxl
+      }
+    }
   });
 
 export interface SkeletonProps extends React.ComponentProps<"div"> {}
@@ -80,7 +80,7 @@ export const SkeletonBase = forwardRef<HTMLDivElement, SkeletonProps>(
             ease: "linear",
             repeat: Infinity,
             duration: 1.65,
-            repeatDelay: 1.1,
+            repeatDelay: 1.1
           }}
         />
       </div>

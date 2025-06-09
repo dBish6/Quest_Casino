@@ -10,12 +10,12 @@ import s from "./hoverCard.module.css";
 const hoverCard = cva(s.hoverCard, {
   variants: {
     intent: {
-      primary: s.primary,
+      primary: s.primary
     }
   },
   defaultVariants: {
     intent: "primary"
-  },
+  }
 });
 
 export interface HoverCardProps

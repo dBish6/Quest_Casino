@@ -6,7 +6,7 @@
  */
 
 import type { ObjectId, QueryOptions } from "mongoose";
-import type { Socket, Namespace } from "socket.io";
+import type { Socket, Namespace, Server } from "socket.io";
 import type SocketCallback from "@typings/SocketCallback";
 import type { FriendCredentials, UserCredentials, ActivityStatuses } from "@qc/typescript/typings/UserCredentials";
 import type { UserDocFriends, UserDoc, UserClaims } from "@authFeat/typings/User";
@@ -16,20 +16,19 @@ import type { NotificationTypes, Notification } from "@qc/typescript/dtos/Notifi
 
 import { startSession } from "mongoose"
 
-import { AuthEvent } from "@qc/constants";
-import { USER_NOT_FOUND_IN_SYSTEM_MESSAGE } from "@authFeat/constants/USER_NOT_FOUND_MESSAGE";
+import { type AvailableLocales, AuthEvent } from "@qc/constants";
 
 import { logger } from "@qc/utils";
 import { handleSocketError, SocketError } from "@utils/handleError";
 import { KEY } from "@authFeat/utils/activityRedisKey";
 import handleMultipleTransactionPromises from "@utils/handleMultipleTransactionPromises";
 import getFriendRoom from "@authFeatSocket/utils/getFriendRoom";
-import getSocketId from "@authFeatSocket/utils/getSocketId";
+import getSocketId from "@utils/getSocketId";
 import getUserSessionActivity from "@authFeat/utils/getUserSessionActivity";
+import getLocale from "@utils/getLocale";
 
 import { redisClient } from "@cache";
 import { getUserFriends, getUser, updateUserFriends, updateUserNotifications } from "@authFeat/services/authService";
-
 
 export default class SocketAuthService {
   private socket: Socket;
@@ -48,10 +47,10 @@ export default class SocketAuthService {
    */
   public async initializeFriends({ member_id }: { member_id: string }, callback: SocketCallback) {
     logger.debug("socket initializeFriends:", { member_id });
-  
+
     try {
       const user = this.socket.userDecodedClaims!;
-      if (member_id !== user.member_id) throw new SocketError("Access Denied", "forbidden"); // Why not.
+      if (member_id !== user.member_id) throw new SocketError("ACCESS_DENIED", "general", "forbidden"); // Why not.
 
       const userFriends = await getUserFriends(user.sub, { forClient: "pending", lean: true });
       let initFriends: UserCredentials["friends"] = {
@@ -64,7 +63,7 @@ export default class SocketAuthService {
 
         return callback({
           status: "ok",
-          message: "Only pending friends was initialized, no added friends was found.",
+          message: this.socket.locale.data.auth.success.INITIALIZE_FRIENDS_PARTIAL,
           friends: initFriends
         });
       } else {
@@ -86,12 +85,12 @@ export default class SocketAuthService {
 
         return callback({
           status: "ok",
-          message: "Pending and added friends, as well as other credentials, successfully initialized.",
+          message: this.socket.locale.data.auth.success.INITIALIZE_FRIENDS,
           friends: initFriends
         });
       }
     } catch (error: any) {
-      return handleSocketError(callback, error, "initializeFriends service error.");
+      return handleSocketError(callback, this.socket, error, "auth", "initializeFriends service error.");
     }
   }
 
@@ -105,44 +104,49 @@ export default class SocketAuthService {
       const user = this.socket.userDecodedClaims!,
         recipient = await getUser({ by: "username", value: friend.username }, { lean: true });
       if (!recipient)
-        throw new SocketError(USER_NOT_FOUND_IN_SYSTEM_MESSAGE, "not found");
+        throw new SocketError("USER_NOT_FOUND_SYSTEM", "general", "not found");
+
+      const { auth, notifs } = this.socket.locale.data;
 
       // User sending a friend request.
       if (action_type === "request") {
         if (!recipient.email_verified)
-          throw new SocketError(
-            "This user isn't verified. To add a friend, they must be verified.",
-            "conflict"
-          );
+          throw new SocketError("MANAGE_FRIEND_NOT_VERIFIED", "auth", "conflict");
 
         const session = await startSession();
+        session.startTransaction();
 
-        const updatedFriends = await session.withTransaction(async () => {
+        let updatedFriends: UserDocFriends;
+        try {
           // Adds the pending friend to the sender.
-          const updatedFriends = await updateUserFriends(
+          updatedFriends = await updateUserFriends(
             { by: "_id", value: user.sub },
             { $set: { [`pending.${recipient.member_id}`]: recipient._id } },
             { session, new: true, projection: "pending" }
           );
-
           // Sends the friend request to the recipient and adds it to their notifications.
           await this.emitNotification(
             recipient,
             {
               type: "friend_request",
               title: user.username,
-              message: "Sent you a friend request."
+              message: notifs.general.FRIEND_REQUEST.message
             },
             { session }
           );
 
-          return updatedFriends;
-        }).finally(() => session.endSession());
+          await session.commitTransaction();
+        } catch (error) {
+          await session.abortTransaction();
+          throw error;
+        } finally {
+          session.endSession()
+        }
 
         return callback({
           status: "ok",
-          message: `Friend request successfully sent to ${recipient.username}.`,
-          pending_friends: updatedFriends!.pending
+          message: auth.success.MANAGE_FRIEND_SENT.replace("{{username}}", recipient.username),
+          pending_friends: updatedFriends.pending
         });
       }
 
@@ -151,71 +155,77 @@ export default class SocketAuthService {
         const initialSender = recipient;
 
         const session = await startSession();
+        session.startTransaction();
 
-        const [_, updatedFriends, initialSenderUpdateFriends ] = await session.withTransaction(async () =>
-          handleMultipleTransactionPromises([
+        let updatedFriends, initialSenderUpdateFriends;
+        try {
+          const promises = await handleMultipleTransactionPromises([
             // Removes previously sent friend request from the recipient(user in this case).
             updateUserNotifications(
               { by: "_id", value: user.sub },
               { $pull: { friend_requests: initialSender._id } },
               { session }
             ),
-            ...[user, initialSender].map(async (issuer, i) => {
-              const id = issuer._id || (issuer as UserClaims).sub,
-                newFriend = i === 0 ? initialSender : user;
+            updateUserFriends(
+              { by: "_id", value: user.sub },
+              {
+                $set: { [`list.${initialSender.member_id}`]: initialSender._id }
+              },
+              { session, projection: "list", new: true, lean: true }
+            ),
+            updateUserFriends(
+              { by: "_id", value: initialSender._id },
+              {
+                $unset: { [`pending.${user.member_id}`]: "" },
+                $set: { [`list.${user.member_id}`]: user.sub }
+              },
+              { session, projection: "list", new: true, lean: true }
+            )
+          ]);
 
-              const updatedFriends = await updateUserFriends(
-                { by: "_id", value: id },
-                {
-                  // Removes the pending friend from the initial sender of the request.
-                  ...(i === 1 && {
-                    $unset: { [`pending.${user.member_id}`]: "" }
-                  }),
-                  // Adds both users to their corresponding friend list.
-                  $set: {
-                    ...(i === 0
-                      ? {
-                          [`list.${initialSender.member_id}`]: newFriend._id
-                        }
-                      : {
-                          [`list.${user.member_id}`]: (newFriend as UserClaims).sub
-                        })
-                  }
-                },
-                { session, projection: "list", new: true, lean: true }
-              );
+          for (let i = 0; i < 2; i++) {
+            const doc = promises[i + 1],
+              newFriend = i === 0 ? initialSender : user;
 
-              // Adds the activity needed for the client when there is a new friend since the friend won't be initialized.
-              const activity = await getUserSessionActivity(id),
-                serializedList = Object.fromEntries(updatedFriends.list);
-              (serializedList[newFriend.member_id] as any) = { ...serializedList[newFriend.member_id], activity };
-              (updatedFriends.list as any) = serializedList;
+            const activity = await getUserSessionActivity(i === 0 ? user.sub : initialSender._id),
+              serializedList = Object.fromEntries(doc.list);
+            // Adds the activity needed for the client when there is a new friend since the friend won't be initialized.
+            (serializedList[newFriend.member_id] as any) = { ...serializedList[newFriend.member_id], activity };
+            doc.list = serializedList;
+          }
 
-              return updatedFriends;
-            })
-          ])
-        ).finally(() => session.endSession());
+          updatedFriends = promises[1];
+          initialSenderUpdateFriends = promises[2];
 
-        const friendSocketId = await getSocketId(initialSender.member_id);
-        if (friendSocketId)
+          await session.commitTransaction();
+        } catch (error) {
+          await session.abortTransaction();
+          throw error;
+        } finally {
+          session.endSession()
+        }
+
+        const friendSocketIds = await getSocketId(initialSender.member_id, "auth");
+        for (const socketId of friendSocketIds)
           this.emitFriendUpdate(
             {
               update: { list: initialSenderUpdateFriends.list },
               remove: { pending: user.member_id }
             },
-            friendSocketId
+            socketId
           );
+
         this.emitFriendUpdate({ update: { list: updatedFriends.list } });
 
-        // Sends the info notification to the initial sender.
-        await this.emitNotification(
-          initialSender,
-          { type: "general", title: "Accepted", message: `${user.username} accepted your friend request.` }
-        );
+        await this.emitNotification(initialSender, {
+          type: "general",
+          title: notifs.general.FRIEND_ACCEPT.title,
+          message: notifs.general.FRIEND_ACCEPT.message.replace("{{username}}", user.username)
+        });
 
         return callback({
-          status: "ok", 
-          message: `Successfully added ${initialSender.username} as a friend.`
+          status: "ok",
+          message: auth.success.MANAGE_FRIEND_ADDED.replace("{{username}}", initialSender.username)
         });
       }
 
@@ -223,9 +233,10 @@ export default class SocketAuthService {
       if (action_type === "decline") {
         const initialSender = recipient,
           session = await startSession();
+        session.startTransaction();
 
-        await session.withTransaction(async () => 
-          handleMultipleTransactionPromises([
+        try {
+          await handleMultipleTransactionPromises([
             // Removes the previously sent friend request from the recipient(user in this case).
             updateUserNotifications(
               { by: "_id", value: user.sub },
@@ -238,31 +249,46 @@ export default class SocketAuthService {
               { $unset: { [`pending.${user.member_id}`]: "" } },
               { session }
             )
-          ])
-        ).finally(() => session.endSession());
+          ]);
 
-        const socketId = await getSocketId(initialSender.member_id);
-        if (socketId) this.emitFriendUpdate({ remove: { pending: user.member_id } }, socketId);
+          await session.commitTransaction();
+        } catch (error) {
+          await session.abortTransaction();
+          throw error;
+        } finally {
+          session.endSession();
+        }
 
-        // Issues the general notification to the initial sender without the NEW_NOTIFICATION event call.
+        const socketIds = await getSocketId(initialSender.member_id, "auth");
+        for (const socketId of socketIds)
+          this.emitFriendUpdate({ remove: { pending: user.member_id } }, socketId);
+
+        // Issues the general notification to the initial sender without the NEW_NOTIFICATION event call (silent).
         await this.emitNotification(
           initialSender,
-          { type: "general", title: "Declined", message: `${user.username} declined your friend request.` },
+          {
+            type: "general",
+            title: notifs.general.FRIEND_DECLINE.title,
+            message: notifs.general.FRIEND_DECLINE.message.replace("{{username}}", user.username)
+          },
           { silent: true }
         );
 
         return callback({
-          status: "ok", 
-          message: `Declined ${recipient.username}'s friend request.`
+          status: "ok",
+          message: auth.success.MANAGE_FRIEND_DECLINED.replace(
+            "{{username}}",
+            recipient.username + (this.socket.locale.type === "en" ? "'s" : "")
+          )
         });
       }
 
       return callback({
-        status: "bad request", 
-        message: "There was no data provided or the action_type is invalid."
+        status: "bad request",
+        message: auth.error.MANAGE_FRIEND_NO_DATA
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "manageFriendRequest service error.");
+      return handleSocketError(callback, this.socket, error, "manageFriendRequest service error.");
     }
   }
 
@@ -273,7 +299,8 @@ export default class SocketAuthService {
     logger.debug("socket unfriend:", { member_id });
 
     try {
-      const user = this.socket.userDecodedClaims!;
+      const user = this.socket.userDecodedClaims!,
+        { auth, notifs } = this.socket.locale.data;
 
       const { _id: friendId } = await getUser(
         { by: "member_id", value: member_id },
@@ -285,38 +312,55 @@ export default class SocketAuthService {
       );
 
       const session = await startSession();
+      session.startTransaction();
 
-      await session.withTransaction(async () =>
-        handleMultipleTransactionPromises([
+      try {
+        await handleMultipleTransactionPromises([
           updateUserFriends(
             { by: "_id", value: user.sub },
             { $unset: { [`list.${member_id}`]: "" } },
-            { session  }
+            { session }
           ),
           updateUserFriends(
             { by: "_id", value: friendId },
             { $unset: { [`list.${user.member_id}`]: "" } },
             { session }
           )
-        ])
-      ).finally(() => session.endSession());
+        ]);
 
-      const friendSocketId = await getSocketId(member_id);
-      if (friendSocketId) this.emitFriendUpdate({ remove: { list: user.member_id } }, friendSocketId);
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession()
+      }
+
+      const friendSocketIds = await getSocketId(member_id, "auth");
+      for (const socketId of friendSocketIds)
+        this.emitFriendUpdate(
+          { remove: { list: user.member_id } },
+          socketId
+        );
+
       this.emitFriendUpdate({ remove: { list: member_id } });
 
       await this.emitNotification(
         { _id: friendId, member_id },
-        { type: "general", title: "Unfriended", message: `${user.username} just unfriended you.` },
+        {
+          type: "general",
+          title: notifs.general.UNFRIENDED.title,
+          message: notifs.general.UNFRIENDED.message.replace("{{username}}", user.username)
+        },
         { silent: true }
-      )
+      );
   
       return callback({
         status: "ok",
-        message: "Successfully deleted friend from friend list."
+        message: auth.success.UNFRIENDED
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "unfriend service error.");
+      return handleSocketError(callback, this.socket, error, "unfriend service error.");
     }
   }
 
@@ -338,16 +382,16 @@ export default class SocketAuthService {
 
       return callback({
         status: "ok",
-        message:
-          "Activity updated successfully. Friend events and room management also completed successfully."
+        message: this.socket.locale.data.auth.success.USER_ACTIVITY
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "newActivity service error.");
+      return handleSocketError(callback, this.socket, error, "newActivity service error.");
     }
   }
 
   /**
-   * Handles socket instance disconnection; Sends that they're offline to all friends of the user.
+   * Handles socket instance disconnection; Sends that they're offline to all friends of the user and removes 
+   * the user's redis socket ids.
    */
   public async disconnect() {
     logger.debug(`Auth socket instance disconnected; ${this.socket.id}.`);
@@ -355,17 +399,14 @@ export default class SocketAuthService {
     try {
       const user = this.socket.userDecodedClaims!;
 
-      if (user) {
-        const userFriends = await getUserFriends(user.sub, { lean: true });
-
-        await redisClient.del(`user:${user.member_id}:socket_id`)
-
-        const promises: Promise<void>[] = [];
-        for (const friend of userFriends.list.values()) {
-          promises.push(this.emitFriendActivity(user, "offline", friend));
-        }
-        await Promise.all(promises);
+      await redisClient.sRem(`user:${user.member_id}:auth:socket_ids`, this.socket.id);
+      
+      const userFriends = await getUserFriends(user.sub, { lean: true }),
+        promises: Promise<void>[] = [];
+      for (const friend of userFriends.list.values()) {
+        promises.push(this.emitFriendActivity(user, "offline", friend));
       }
+      await Promise.all(promises);
     } catch (error: any) {
       logger.error("auth/disconnect service error:\n", error.message);
     }
@@ -400,13 +441,15 @@ export default class SocketAuthService {
         const friendId = friend.member_id,
           userId = user.member_id;
 
-        const friendSocketId = await getSocketId(friendId);
+        const friendSocketIds = await getSocketId(friendId, "auth");
         // If there is a socketId, it means they're connected, so they're online or away.
-        if (friendSocketId)
-          this.io
-            .to(friendSocketId)
-            .emit(AuthEvent.FRIEND_ACTIVITY, { member_id: userId, status });
-      }
+        if (friendSocketIds.length) {
+          for (const socketId of friendSocketIds)
+            this.io
+              .to(socketId)
+              .emit(AuthEvent.FRIEND_ACTIVITY, { member_id: userId, status });
+        }
+      };
 
       await this.cacheUserActivityStatus(status, user);
 
@@ -448,8 +491,9 @@ export default class SocketAuthService {
       );
 
       if (!silent) {
-        const socketId = await getSocketId(to.member_id!);
-        if (socketId) this.io.to(socketId).emit(AuthEvent.NEW_NOTIFICATION, { notification });
+        const socketIds = await getSocketId(to.member_id!, "auth");
+        for (const socketId of socketIds)
+          this.io.to(socketId).emit(AuthEvent.NEW_NOTIFICATION, { notification });
       }
     } catch (error: any) {
       logger.error("emitNotification service error:\n", error.message);
@@ -471,4 +515,36 @@ export default class SocketAuthService {
       throw error;
     }
   }
+}
+
+/**
+ * Changes the locale (language) of the user for all their connections. 
+ */
+export function localeChangeListener(socket: Socket, io: Server, namespaces: any) {
+  socket.on(AuthEvent.LOCALE_CHANGE, async ({ locale }: { locale: AvailableLocales }, callback) => {
+    logger.debug("socket locale_change:", { locale });
+
+    try {
+      const memberId = socket.userDecodedClaims!.member_id;
+
+      // Loop through all known features/namespaces
+      for (const { nsp } of namespaces) {
+        const socketIds = await redisClient.sMembers(
+          `user:${memberId}:${nsp.split("/")[4]}:socket_ids`
+        );
+
+        for (const sid of socketIds) {
+          const targetSocket = io.of(nsp).sockets.get(sid);
+          if (targetSocket) await getLocale(locale, targetSocket);
+        }
+      }
+
+      callback({
+        status: "ok",
+        message: "Successfully changed locale for all namespaces"
+      });
+    } catch (error: any) {
+      return handleSocketError(callback, socket, error, "localeChange service error.");
+    }
+  });
 }

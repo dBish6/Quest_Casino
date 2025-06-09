@@ -70,6 +70,7 @@ export async function getLeaderboard(type: LeaderboardType) {
           username: 1,
           legal_name: 1,
           avatar_url: 1,
+          country: 1,
           bio: 1,
           activity: { game_history: "$activityData.game_history" },
           statistics: "$statisticsData"

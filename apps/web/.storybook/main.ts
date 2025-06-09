@@ -19,19 +19,20 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-essentials"),
     getAbsolutePath("@chromatic-com/storybook"),
     getAbsolutePath("@storybook/addon-interactions"),
-    getAbsolutePath("@storybook/addon-a11y"),
+    getAbsolutePath("@storybook/addon-a11y")
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
-    options: {},
+    options: {}
   },
   docs: {
-    autodocs: "tag",
+    autodocs: "tag"
   },
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [tsconfigPaths()],
+      plugins: [tsconfigPaths()]
     });
-  },
+  }
 };
+
 export default config;

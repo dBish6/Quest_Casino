@@ -9,7 +9,6 @@ import type { ObjectId, PopulateOptions, Query, FilterQuery, UpdateQuery, QueryO
 import type { GetUserBy, UserDoc, UserDocFriends, UserDocStatistics, UserDocActivity, UserDocNotifications } from "@authFeat/typings/User";
 
 import CLIENT_COMMON_EXCLUDE from "@constants/CLIENT_COMMON_EXCLUDE";
-import USER_NOT_FOUND_MESSAGE from "@authFeat/constants/USER_NOT_FOUND_MESSAGE";
 
 import { handleApiError, ApiError } from "@utils/handleError";
 
@@ -35,9 +34,9 @@ export const CLIENT_USER_FIELDS = `${CLIENT_COMMON_EXCLUDE} -google_id -email -p
 export const MINIMUM_USER_FIELDS = "-_id member_id avatar_url legal_name username";
 
 /**
- * Type `FriendCredentials`.
+ * Type `MinUserWithExtraCredentials`.
  */
-export const FRIEND_FIELDS = `${MINIMUM_USER_FIELDS} country bio`
+export const MINIMUM_USER_FIELDS_EXTRA = `${MINIMUM_USER_FIELDS} country bio`
 
 export const EXCLUDE_SUB_FIELDS = "-friends -statistics -activity -notifications"
 
@@ -46,7 +45,7 @@ export const USER_FRIENDS_POPULATE = (
   forClient?: FriendsForClientOpt
 ) =>
   ["pending", "list"].reduce((acc, type) => {
-    const fields = type === "pending" ? MINIMUM_USER_FIELDS : FRIEND_FIELDS;
+    const fields = type === "pending" ? MINIMUM_USER_FIELDS : MINIMUM_USER_FIELDS_EXTRA;
 
     if (projection === type || !projection)
       acc.push({
@@ -70,7 +69,14 @@ const USER_STATISTICS_PROGRESS_POPULATE = [
   }
 ];
 
-const USER_SUB_DOCS_POPULATE_MAP = {
+const USER_CORE_POPULATE_MAP = {
+  settings: {
+    path: "settings",
+    populate: {
+      path: "blocked_list.$*",
+      select: MINIMUM_USER_FIELDS
+    }
+  },
   friends: {
     path: "friends",
     populate: USER_FRIENDS_POPULATE()
@@ -93,7 +99,7 @@ export function populateUserDoc<TUserDoc = UserDoc>(query: Query<any, UserDoc>) 
     full: (projection: string = ""): Query<TUserDoc | null, UserDoc> => {
       return query.populate(
         projection.split(" ").reduce((acc, fieldName) => {
-          const subDoc = USER_SUB_DOCS_POPULATE_MAP[fieldName as keyof typeof USER_SUB_DOCS_POPULATE_MAP];
+          const subDoc = USER_CORE_POPULATE_MAP[fieldName as keyof typeof USER_CORE_POPULATE_MAP];
           if (subDoc) acc.push(subDoc);
           return acc;
         }, [] as any[])
@@ -101,20 +107,15 @@ export function populateUserDoc<TUserDoc = UserDoc>(query: Query<any, UserDoc>) 
     },
     client: (email?: boolean): Query<TUserDoc | null, UserDoc> =>
       query.select(email === true ? CLIENT_USER_FIELDS.replace(" -email", "") : CLIENT_USER_FIELDS).populate([
-        {
-          path: "settings",
-          populate: {
-            path: "blocked_list.$*",
-            select: `${MINIMUM_USER_FIELDS} bio`
-          }
-        },
+        { ...USER_CORE_POPULATE_MAP.settings },
         {
           path: "statistics",
           select: CLIENT_COMMON_EXCLUDE,
           populate: USER_STATISTICS_PROGRESS_POPULATE
         }
       ]),
-    min: (): Query<TUserDoc | null, UserDoc> => query.select(MINIMUM_USER_FIELDS) as any
+      min: (extra?: boolean): Query<TUserDoc | null, UserDoc> =>
+        query.select(extra ? MINIMUM_USER_FIELDS_EXTRA : MINIMUM_USER_FIELDS)
   };
 }
 
@@ -146,7 +147,7 @@ export async function getUsers(forClient?: boolean, randomize?: number) {
     
     return await populateUserDoc<UserDoc[]>(query)[
       forClient ? (randomize ? "min" : "client") : "full"
-    ]();
+    ](!!randomize as any);
   } catch (error: any) {
     throw handleApiError(error, "getUsers service error.");
   }
@@ -182,7 +183,7 @@ export async function getUser<
     else populateUserDoc(userQuery)[forClient ? "client" : "full"](projection as any);
 
     const user = await userQuery.exec();
-    if (throwDefault404 && !user) throw new ApiError(USER_NOT_FOUND_MESSAGE, 404, "not found");
+    if (throwDefault404 && !user) throw new ApiError("USER_NOT_FOUND_VAL", "general", 404, "not found");
 
     return user as UserDoc;
   } catch (error: any) {
@@ -210,8 +211,8 @@ export async function getUserFriends(
       forClient,
       options.projection
     );
-    if (!userFriends) 
-      throw new ApiError("Unexpectedly couldn't find the user's friends after validation.", 404, "not found");
+    if (!userFriends)
+      throw new ApiError("USER_NOT_FOUND_FRIENDS_VAL", "auth", 404, "not found");
 
     return userFriends;
   } catch (error: any) {
@@ -229,24 +230,35 @@ export async function getUserFriends(
 export async function updateUserCredentials<
   TOptions extends { new?: boolean; forClient?: boolean }
 >(
-  identifier: Identifier<GetUserBy>,
+  identifier: Identifier<GetUserBy> & FilterQuery<UserDoc>,
   update: UpdateQuery<UserDoc>,
   options: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDoc> : MongooseUpdateQueryOptions) = {} as any
 ): Promise<TOptions["new"] extends true ? UserDoc : UpdateWriteOpResult> {
-  const { by, value } = identifier,
-    { forClient, populate, ...restOpts } = options;
+  const { by, value, ...filters } = identifier,
+    { forClient, projection, populate, ...restOpts } = options;
   
   try {
     if (options.new) {
-      if (!restOpts.projection) 
+      if (!projection) 
         (restOpts as QueryOptions<UserDoc>).projection = EXCLUDE_SUB_FIELDS;
 
-      const userQuery = User.findOneAndUpdate({ [by]: value }, update, restOpts);
+      const userQuery = User.findOneAndUpdate({ [by]: value, ...filters }, update, restOpts);
+      if (projection) userQuery.select(projection);
       if (populate) userQuery.populate(populate as string);
-      else populateUserDoc(userQuery)[forClient ? "client" : "full"](restOpts.projection);
+      else populateUserDoc(userQuery)[forClient ? "client" : "full"](projection);
 
       const user = await userQuery.exec();
-      if (!user) throw new ApiError("Unexpectedly the user was not found.", 404, "not found");
+      if (!user) {
+        if (filters) {
+          // Checks if the reason was because of the identifier value.
+          const exists = await User.exists({ [by]: value });
+          if (!exists) throw new ApiError("USER_NOT_FOUND", "general", 404, "not found");
+
+          return user as any;
+        } else {
+          throw new ApiError("USER_NOT_FOUND", "general", 404, "not found");
+        }
+      }
 
       return user as any;
     } else {
@@ -287,7 +299,7 @@ export async function updateUserFriends<
         forClient,
         restOpts.projection
       );
-      if (!userFriends) throw new ApiError("Unexpectedly user friends was not found.", 404, "not found");
+      if (!userFriends) throw new ApiError("USER_NOT_FOUND_FRIENDS", "auth", 404, "not found");
 
       return userFriends as any;
     } else {
@@ -312,17 +324,18 @@ export async function updateUserStatistics<
   options: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDocStatistics> : MongooseUpdateQueryOptions) = {} as any
 ): Promise<TOptions["new"] extends true ? UserDocStatistics : UpdateWriteOpResult> {
   const { by, value } = identifier,
-    { forClient, populate, ...restOpts } = options;
+    { forClient, projection, populate, ...restOpts } = options;
 
   try {
     if (options?.new) {
-      const userStatisticsQuery = UserStatistics.findOneAndUpdate({ [by]: value }, update, options);
+      const userStatisticsQuery = UserStatistics.findOneAndUpdate({ [by]: value }, update, restOpts);
+      if (projection) userStatisticsQuery.select(projection);
       if (populate) userStatisticsQuery.populate(populate as string);
-      else if (forClient && (restOpts.projection.includes("progress") || !restOpts.projection))
+      else if (forClient && (projection.includes("progress") || !projection))
         userStatisticsQuery.populate(USER_STATISTICS_PROGRESS_POPULATE);
 
       const userStatistics = await userStatisticsQuery.exec();
-      if (!userStatistics) throw new ApiError("Unexpectedly user statistics was not found.", 404, "not found");
+      if (!userStatistics) throw new ApiError("USER_NOT_FOUND_STATISTICS", "auth", 404, "not found");
 
       return userStatistics as any;
     } else {
@@ -343,14 +356,18 @@ export async function updateUserActivity<
 >(
   identifier: Identifier<"_id">,
   update: UpdateQuery<UserDocActivity>,
-  options?: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDocActivity> : MongooseUpdateQueryOptions)
+  options: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDocActivity> : MongooseUpdateQueryOptions) = {} as any
 ): Promise<TOptions["new"] extends true ? UserDocActivity : UpdateWriteOpResult> {
-  const { by, value } = identifier;
+  const { by, value } = identifier,
+    { projection, ...restOpts } = options;
   
   try {
     if (options?.new) {
-      const userActivity = await UserActivity.findOneAndUpdate({ [by]: value }, update, options);
-      if (!userActivity) throw new ApiError("Unexpectedly user activity was not found.", 404, "not found");
+      const userActivityQuery = UserActivity.findOneAndUpdate({ [by]: value }, update, restOpts);
+      if (projection) userActivityQuery.select(projection);
+
+      const userActivity = await userActivityQuery.exec();
+      if (!userActivity) throw new ApiError("USER_NOT_FOUND_ACTIVITY", "auth", 404, "not found");
 
       return userActivity as any;
     } else {
@@ -371,16 +388,19 @@ export async function updateUserNotifications<
 >(
   identifier: Identifier<"_id">,
   update: UpdateQuery<UserDocNotifications>,
-  options?: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDocNotifications> : MongooseUpdateQueryOptions)
+  options: TOptions & (TOptions["new"] extends true ? QueryOptions<UserDocNotifications> : MongooseUpdateQueryOptions) = {} as any
 ): Promise<TOptions["new"] extends true ? UserDocNotifications : UpdateWriteOpResult> {
-  const { by, value } = identifier;
+  const { by, value } = identifier,
+    { projection, ...restOpts } = options;
 
   try {
     if (options?.new) {
-      const userNotifications =
-        await UserNotifications.findOneAndUpdate({ [by]: value }, update, options);
-      if (!userNotifications) 
-        throw new ApiError("Unexpectedly user notifications was not found.", 404, "not found");
+      const userNotificationsQuery = UserNotifications.findOneAndUpdate({ [by]: value }, update, restOpts);
+      if (projection) userNotificationsQuery.select(projection);
+
+      const userNotifications = await userNotificationsQuery.exec();
+      if (!userNotifications)
+        throw new ApiError("USER_NOT_FOUND_NOTIFS", "auth", 404, "not found");
 
       return userNotifications as any;
     } else {

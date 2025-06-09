@@ -18,12 +18,14 @@ export default async function handleRequestByLink(
     elem.setAttribute("aria-live", "polite");
     elem.setAttribute("disabled", "");
     elem.innerText = "Loading...";
+    elem.style.cursor = "not-allowed";
   }
 
   await callback().finally(() => {
     for (let i = 0; i < buttons.length; i++) {
       buttons[i].removeAttribute("disabled");
       buttons[i].innerText = initialText[i];
+      buttons[i].style.removeProperty("cursor");
     }
   });
 }

@@ -38,10 +38,14 @@ export default async function verifyUserToken(
           { by: "_id", value: result.claims.sub },
           req.headers["x-xsrf-token"] as string
         );
-        if (typeof refreshResult === "string") return res.status(404).json({ ERROR: refreshResult });
+        if (typeof refreshResult === "string") 
+          return res.status(404).json({
+            name: refreshResult,
+            ERROR: reqOrSocket.locale.data.auth.error[refreshResult]
+          });
         logger.debug("Session refresh was attached to the response.");
       } else {
-        throw new SocketError("Within refresh threshold.", "forbidden");
+        throw new SocketError("TOKEN_REFRESH_THRE", "auth", "forbidden");
       }
     }
 
@@ -50,7 +54,7 @@ export default async function verifyUserToken(
     next();
   } catch (error: any) {
     isSocketIo
-      ? next(handleSocketMiddlewareError(error))
+      ? next(handleSocketMiddlewareError(reqOrSocket as Socket, error, "verifyAccessToken middleware error."))
       : next(handleHttpError(error, "verifyAccessToken middleware error.") as any);
   }
 }

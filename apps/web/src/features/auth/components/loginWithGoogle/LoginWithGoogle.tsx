@@ -1,6 +1,11 @@
+import type { LoginGoogleTriggerType } from "@authFeat/services/authApi";
+
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 
+import parsePathWithLocale from "@utils/parsePathWithLocale";
+
+import useLocale from "@hooks/useLocale";
 import { useAppSelector } from "@redux/hooks";
 import { selectUserOStateToken } from "@authFeat/redux/authSelectors";
 
@@ -9,8 +14,6 @@ import { Link, Icon } from "@components/common";
 import { Spinner } from "@components/loaders";
 
 import s from "./loginWithGoogle.module.css";
-
-import { LoginGoogleTriggerType } from "@authFeat/services/authApi";
 
 export interface LoginWithGoogleProps {
   queryKey: "register" | "login";
@@ -32,10 +35,12 @@ export default function LoginWithGoogle({
   queryKey,
   postLoginGoogle,
   setGoogleLoading,
-  processing,
+  processing
 }: LoginWithGoogleProps) {
   const [searchParams] = useSearchParams(),
     code = searchParams.get("code");
+
+  const { content } = useLocale("LoginWithGoogle");
 
   const storedOState = useAppSelector(selectUserOStateToken),
     redirectUri = `${import.meta.env.VITE_APP_URL}/?${queryKey}=true`;
@@ -44,7 +49,7 @@ export default function LoginWithGoogle({
     const scope = "email profile",
       state = storedOState?.original;
 
-    if (!code) localStorage.setItem("qc:prev_path", window.location.pathname);
+    if (!code) localStorage.setItem("qc:prev_path", parsePathWithLocale(window.location.pathname)![2]);
     return `https://accounts.google.com/o/oauth2/auth?client_id=${import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
   };
 
@@ -79,17 +84,13 @@ export default function LoginWithGoogle({
     <>
       <div className={s.or}>
         <span />
-        <p
-          id="logWit"
-          aria-label="Or register/login with other third-party services."
-        >
-          Or Login With
+        <p id="logWit" aria-label={content.aria.label.orLogin}>
+          {content.orLogin}
         </p>
         <span />
       </div>
       <Button
         asChild
-        aria-label="Google"
         aria-describedby="logWit"
         aria-live="polite"
         intent="secondary"

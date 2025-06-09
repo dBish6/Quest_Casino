@@ -1,5 +1,6 @@
 import type { Variants } from "framer-motion";
 import type { UserCredentials, FriendCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { LocaleContent } from "@typings/Locale";
 import type { DragPointsKey } from "../Aside";
 import type { AppDispatch } from "@redux/store";
 import type ChatRoomAccessType from "@qc/typescript/typings/ChatRoomAccessType";
@@ -10,6 +11,7 @@ import { m } from "framer-motion";
 
 import RestrictionManager from "@chatFeat/utils/RestrictionManager";
 
+import useLocale from "@hooks/useLocale";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
 
 import { useAppSelector, useAppDispatch } from "@redux/hooks";
@@ -25,6 +27,7 @@ import { ANIMATION_DURATION } from "../Aside";
 import s from "./chat.module.css";
 
 interface RoomSwitcherProps {
+  localeContent: LocaleContent;
   user: UserCredentials | null;
   friendsListArr: FriendCredentials[];
   chatState: ChatPointsKey;
@@ -46,7 +49,7 @@ const shrinkInOut: Variants = {
   },
   enlarged: {
     height: "89%",
-    transition: { type: "spring", duration: 0.85 },
+    transition: { type: "spring", duration: 0.85 }
   },
   shrunk: {
     height: "81.2px",
@@ -57,6 +60,8 @@ const shrinkInOut: Variants = {
 export default function Chat({ user, friendsListArr, asideState }: ChatProps) {
   const [searchParams, setSearchParams] = useSearchParams(),
     chatState = searchParams.get("chat") || "enlarged";
+
+  const { content } = useLocale("Chat");
 
   const [chat, setChat] = useState<ChatPointsKey>(chatState as ChatPointsKey);
 
@@ -109,7 +114,7 @@ export default function Chat({ user, friendsListArr, asideState }: ChatProps) {
         <div className={s.inner} data-chat-state={chat}>
           {chat !== "full" && (
             <Button
-              aria-label={chatState === "shrunk" ? "Enlarge Chat" : "Shrink Chat"}
+              aria-label={chatState === "shrunk" ? content.aria.label.enlarge : content.aria.label.shrink}
               aria-controls="chat"
               aria-expanded={chatState === "enlarged"}
               size="lrg"
@@ -128,10 +133,16 @@ export default function Chat({ user, friendsListArr, asideState }: ChatProps) {
           )}
           <hgroup>
             <Icon aria-hidden="true" id={`speech-bubble-${chat === "full" ? "32" : "24"}`} />
-            <h3 id="hChat">Chat</h3>
+            <h3 id="hChat">{content.title}</h3>
           </hgroup>
 
-          <RoomSwitcher user={user} friendsListArr={friendsListArr} chatState={chat} dispatch={dispatch} />
+          <RoomSwitcher
+            localeContent={content}
+            user={user}
+            friendsListArr={friendsListArr}
+            chatState={chat}
+            dispatch={dispatch}
+          />
         </div>
         
         {chat !== "shrunk" && (
@@ -151,15 +162,15 @@ export default function Chat({ user, friendsListArr, asideState }: ChatProps) {
       {((asideState === "enlarged" && chatState === "shrunk") ||
         (chatState !== "shrunk" && asideState !== "shrunk")) && (
         <>
-          <ChatMessages user={user} asideState={asideState} />
-          <MessageInput user={user} asideState={asideState} />
+          <ChatMessages localeEntry={content.ChatMessages} user={user} asideState={asideState} />
+          <MessageInput localeEntry={content.MessageInput} user={user} asideState={asideState} />
         </>
       )}
     </m.section>
   );
 }
 
-function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitcherProps) {
+function RoomSwitcher({ localeContent, user, chatState, friendsListArr, dispatch }: RoomSwitcherProps) {
   const selectRef = useRef<HTMLSelectElement>(null),
     chatRoom = useAppSelector(selectChatRoom);
 
@@ -178,18 +189,18 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
    */
   const handleSwitch = {
     button: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const btnText = e.currentTarget.innerText!.toLowerCase() as ChatRoomAccessType;
+      const type = e.currentTarget.value as ChatRoomAccessType;
 
       dispatch(
         UPDATE_CHAT_ROOM({
-          ...(btnText === "global"
+          ...(type === "global"
             ? { proposedId: user!.country }
             : {
                 ...(chatRoom.targetFriend?.memberIdSnapshot
                   ? { proposedId: chatRoom.targetFriend.memberIdSnapshot }
                   : { proposedId: null, currentId: null })
               }),
-          accessType: btnText
+          accessType: type
         })
       );
     },
@@ -200,7 +211,8 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
       dispatch(
         UPDATE_CHAT_ROOM({
           proposedId: selectedOpt.value,
-          accessType: selectedOpt.innerText === "Global" ? "global" : "private"
+          accessType:
+            selectedOpt.innerText === localeContent.global ? "global" : "private"
         })
       );
     }
@@ -208,16 +220,17 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
 
   return chatState === "full" ? (
     <div className={s.roomBtns}>
-      {["Private", "Global"].map((txt) => {
-        const current = chatRoom.accessType === txt.toLowerCase();
+      {["private", "global"].map((type) => {
+        const current = chatRoom.accessType === type;
 
         return (
           <Button
-            key={txt}
-            aria-label={`Switch to ${txt} chat room.`}
+            key={type}
+            aria-label={localeContent.aria.label.switchBtn.replace("{{type}}", type)}
             aria-controls="chatMsgs"
             intent="chip"
             size="md"
+            value={type}
             {...(user?.email_verified
               ? {
                   "aria-pressed": current,
@@ -226,7 +239,7 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
                 }
               : { disabled: true })}
           >
-            {txt}
+            {localeContent[type]}
           </Button>
         );
       })}
@@ -236,7 +249,7 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
       <Select
         ref={selectRef}
         aria-controls="chatMsgs"
-        label="Select a Chat Room"
+        label={localeContent.select}
         hideLabel
         intent="primary"
         size="lrg"
@@ -245,15 +258,14 @@ function RoomSwitcher({ user, chatState, friendsListArr, dispatch }: RoomSwitche
         value={chatRoom.proposedId || ""}
         onInput={(e) => handleSwitch.select(e)}
       >
-        {user?.email_verified && <option value={user.country}>Global</option>}
+        {user?.email_verified && (
+          <option value={user.country}>{localeContent.global}</option>
+        )}
         {friendsListArr.map((friend) => {
-          // TODO:
-          // const status = friend.activity.status,
           const memberId = friend.member_id;
 
           return (
             <option key={memberId} value={memberId}>
-              {/* <span aria-label={status} className={s.activityIndie} data-status={status} /> */}
               {friend.username}
             </option>
           );

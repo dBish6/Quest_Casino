@@ -1,6 +1,5 @@
 import type { Preview } from "@storybook/react";
 
-import React from "react";
 import { RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import { LazyMotion, domMax } from "framer-motion";
@@ -15,13 +14,13 @@ const preview: Preview = {
     controls: {
       matchers: {
         color: /(background|color)$/i,
-        date: /Date$/i,
-      },
+        date: /Date$/i
+      }
     },
     backgrounds: {
       default: "Dashboard",
-      values: [{ name: "Dashboard", value: "#19142E" }],
-    },
+      values: [{ name: "Dashboard", value: "#19142E" }]
+    }
   },
   decorators: [
     (Story) => {
@@ -34,8 +33,8 @@ const preview: Preview = {
           </LazyMotion>
         </Provider>
       );
-    },
-  ],
+    }
+  ]
 };
 
 export default preview;

@@ -18,12 +18,14 @@ import rateLimit from "express-rate-limit";
 
 import morgan from "morgan";
 
+import httpGetLocale from "@middleware/httpGetLocale";
+import httpErrorHandler from "@middleware/httpErrorHandler";
+
 import authRouter from "@authFeatHttp/routes/authRoute";
 // import chatRouter from "@chatFeatHttp/routes/chatRoute";
 import gameRouter from "@gameFeatHttp/routes/gameRoute"
 import paymentRouter from "@paymentFeatHttp/routes/paymentRoute"
 
-import httpErrorHandler from "@middleware/httpErrorHandler";
 
 export default function initializeHttp(corsOptions: CorsOptions) {
   const app = express(),
@@ -33,8 +35,8 @@ export default function initializeHttp(corsOptions: CorsOptions) {
   app.set("trust proxy", 1);
 
   // *Parser Middleware*
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true, limit: "750kb" }));
+  app.use(bodyParser.json({ limit: "750kb" }));
   app.use(cookieParser());
 
   // *Security Middleware*
@@ -56,6 +58,8 @@ export default function initializeHttp(corsOptions: CorsOptions) {
 
   // *Logger Middleware*
   app.use(morgan(process.env.NODE_ENV === "development" ? "dev" : "combined"));
+  // *Locale Middleware*
+  app.use(httpGetLocale);
 
   // *Routers*
   app.use(`${baseUrl}/auth`, authRouter);

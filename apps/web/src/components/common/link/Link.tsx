@@ -16,7 +16,7 @@ const link = cva(s.link, {
     intent: {
       primary: s.primary
     }
-  },
+  }
 });
 
 export interface LinkProps extends RouterLinkProps, VariantProps<typeof link> {
@@ -37,7 +37,7 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       const ignore =
         (Element === RouterLink || Element === RouterNavLink) &&
         ({
-          to: { pathname, search, ...(hash && { hash: hash }) },
+          to: { pathname, search, ...(hash && { hash: hash }) }
         } as unknown);
 
       return ignore as { to: string };
@@ -50,12 +50,12 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(
           (Element !== "a"
             ? {
                 onClick: () =>
-                  window.open(to as string, "_blank", "noopener,noreferrer"),
+                  window.open(to as string, "_blank", "noopener,noreferrer")
               }
             : {
                 href: to as string,
                 target: "_blank",
-                rel: "noopener noreferrer",
+                rel: "noopener noreferrer"
               }))}
         ref={ref}
         className={link({ className, intent })}

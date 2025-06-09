@@ -1,20 +1,18 @@
 import type { Middleware, SerializedError } from "@reduxjs/toolkit";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import type { RootState } from "@redux/store";
 
 import { isRejected } from "@reduxjs/toolkit";
-import { throttle } from "tiny-throttle";
 
 import { logger } from "@qc/utils";
+import apiEntry from "./getLocaleEntry";
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 import { history } from "@utils/History";
 
-import { ADD_TOAST, unexpectedErrorToast, authTokenExpiredToast } from "@redux/toast/toastSlice";
+import { ADD_TOAST, unexpectedErrorToast } from "@redux/toast/toastSlice";
 import { UPDATE_USER_CREDENTIALS } from "@authFeat/redux/authSlice";
-import { attemptLogout } from "@authFeat/services/handleLogout";
 
 export const apiErrorHandler: Middleware =
-  ({ dispatch, getState }) => (next) => (action) => {
+  ({ dispatch }) => (next) => (action) => {
     if (isRejected(action)) {
       const [reducerName, actionType] = action.type.split("/"),
         payload = action.payload as | FetchBaseQueryError | SerializedError | undefined;
@@ -35,36 +33,24 @@ export const apiErrorHandler: Middleware =
         switch (payload.status) {
           case 401:
           case 403:
-            const authError = payload.data?.ERROR;
-
-            if (/\b(?:Access|Refresh)\b.*\btokens?\b/i.test(authError || "")) {
-              if (
-                authError!.includes("expired") || authError!.includes("missing")
-              ) {
-                throttle(() => {
-                  attemptLogout(
-                    dispatch,
-                    (getState() as RootState).auth.user.credentials?.username || "" // If a token error happens they're logged in, they should have a username, I guess this is just in case.
-                  ).finally(() => dispatch(authTokenExpiredToast()));
-                }, 1000)();
-              }
-            } else if (authError?.includes("must be verified")) {
+            if (payload.data?.name === "USER_VERIFICATION") {
               return dispatch(
                 ADD_TOAST({
-                  title: "Verification Required",
-                  message: "You must be verified to continue. Please visit your profile to send a verification email to verify your profile.",
+                  title: apiEntry("errorHandler").verification,
+                  message: payload.data.ERROR,
                   intent: "error",
                   options: {
-                    link: {
-                      sequence: "profile",
-                      to: "/profile"
+                    inject: {
+                      linkTo: "/profile",
+                      localeMarker: true
                     }
                   }
                 })
               );
             } else {
-              history.push(`/error-${payload.status}`)
+              if (!(payload.data?.name || "").includes("VERIFY")) history.push(`/error-${payload.status}`)
             }
+          break;
 
           // Access/refresh token errors for sockets happen on the initial connect, it can be found in socket.ts.
           case "unauthorized":
@@ -76,21 +62,12 @@ export const apiErrorHandler: Middleware =
 
           case 404:
           case "not found":
-            if (/(?=.*\bunexpectedly\b)(?=.*\buser(?:'s)?\b)/i.test(payload.data?.ERROR || ""))
-              history.push("/error-404-user");
+            if (payload.data?.name?.includes("USER_NOT_FOUND")) history.push("/error-404-user");
             break;
 
           case 429:
-            if (payload.data?.ERROR?.includes("attempts")) {
+            if (payload.data?.name?.includes("ATTEMPTS")) {
               return dispatch(UPDATE_USER_CREDENTIALS({ locked: "attempts" }));
-              // This is handled at form level for all 429 attempt errors can happen (update profile, reset password).
-              // return dispatch(
-              //   ADD_TOAST({
-              //     title: "Update Limit Reached",
-              //     message: tooManyError,
-              //     intent: "error"
-              //   })
-              // );
             } else {
               history.push("/error-429");
             }
@@ -98,7 +75,8 @@ export const apiErrorHandler: Middleware =
 
           case 400:
           case "bad request":
-            if (payload.data?.ERROR?.includes("no data", -1)) history.push("/error-500");
+            if (payload.data?.name === "NO_DATA" || payload.data?.name === "NO_DATA_INVALID")
+              history.push("/error-500");
             break;
 
           default:
@@ -108,7 +86,9 @@ export const apiErrorHandler: Middleware =
               !payload.data?.allow &&
               (parseInt(payload.status as any, 10) >= 500 || payload.status === "internal error")
             )
-              dispatch(unexpectedErrorToast("An unexpected server error occurred."));
+              dispatch(
+                unexpectedErrorToast(apiEntry().error.unexpectedServer)
+              );
 
             break;
         }

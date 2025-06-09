@@ -18,6 +18,4 @@ router.get("/games/quest", gameController.getQuest);
 router.get("/games/bonuses", verifyUserToken, gameController.getBonuses);
 router.get("/games/bonus", gameController.getBonus);
 
-// router.get("games/leaderboard", gameController.getLeaderboard);
-
 export default router;
