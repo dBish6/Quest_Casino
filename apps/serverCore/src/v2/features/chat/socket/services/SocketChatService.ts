@@ -12,10 +12,9 @@ import type { LastChatMessageDto } from "@qc/typescript/dtos/ChatMessageEventDto
 
 import type ManageChatRoomEventDto  from "@qc/typescript/dtos/ManageChatRoomEventDto";
 import type TypingEventDto from "@qc/typescript/dtos/TypingEventDto";
-import type ChatMessageEventDto from "@qc/typescript/dtos/ChatMessageEventDto";
+import type { ChatMessageEventDto } from "@qc/typescript/dtos/ChatMessageEventDto";
 
-import { ChatEvent } from "@qc/constants";
-import GENERAL_BAD_REQUEST_MESSAGE from "@constants/GENERAL_BAD_REQUEST_MESSAGE";
+import { ChatEvent, CHAT_ROOM_ACTIONS } from "@qc/constants";
 
 import { logger } from "@qc/utils";
 import { handleSocketError, SocketError } from "@utils/handleError";
@@ -25,8 +24,6 @@ import getFriendRoom from "@authFeatSocket/utils/getFriendRoom";
 import { getChatMessages, archiveChatMessageQueue } from "@chatFeat/services/chatService";
 import { getUserFriends } from "@authFeat/services/authService";
 import { redisClient } from "@cache";
-
-const MANAGE_CHAT_ROOM_ACTIONS = ["join", "leave"] as const;
 
 export default class SocketChatService {
   private socket: Socket;
@@ -49,7 +46,8 @@ export default class SocketChatService {
     logger.debug("socket manageChatRoom:", { access_type, room_id, last_message });
 
     try {
-      const user = this.socket.userDecodedClaims!;
+      const user = this.socket.userDecodedClaims!,
+        { success, ...other } = this.socket.locale.data.chat;
 
       if (typeof room_id === "object" && ["global", "private"].includes(access_type)) {
         if (Object.values(room_id).length) {
@@ -63,7 +61,7 @@ export default class SocketChatService {
           }
         }
       } else {
-        throw new SocketError(GENERAL_BAD_REQUEST_MESSAGE, "bad request");
+        throw new SocketError("NO_DATA_INVALID", "general", "bad request");
       }
 
       // On a leave, the last_message comes from private chat rooms to be attached to friends if defined.
@@ -79,18 +77,22 @@ export default class SocketChatService {
       for (let i = 0; i < entries.length; i++) {
         const [action, id] = entries[i];
 
-        if (entries.length > 2 || !MANAGE_CHAT_ROOM_ACTIONS.includes(action as any)) 
-          throw new SocketError("Access Denied", "forbidden");
-        else if (!chatRoomsUtils.isRoomId(id || "")) throw new SocketError("Access Denied", "forbidden");
+        if (entries.length > 2 || !CHAT_ROOM_ACTIONS.includes(action as any)) 
+          throw new SocketError("ACCESS_DENIED", "general", "forbidden");
+        else if (!chatRoomsUtils.isRoomId(id || "")) 
+          throw new SocketError("ACCESS_DENIED", "general", "forbidden");
 
         // Join or leaves the room.
-        this.socket[action as typeof MANAGE_CHAT_ROOM_ACTIONS[number]](id);
+        this.socket[action as typeof CHAT_ROOM_ACTIONS[number]](id);
         status = action === "join" || (isReplace && i === 1) ? "joined" : "left";
 
         // Sends join and leave info messages only for private rooms.
         if (!chatRoomsUtils.isRoomId(id, "global"))
           this.socket.in(id).emit(ChatEvent.CHAT_MESSAGE_SENT, {
-            message: `${user.username} has ${status} the chat.`,
+            message: other.chat_action
+              .replace("{{username}}", user.username)
+              .replace("{{action}}", other[status]),
+            action: action
           });
 
         if (status === "joined")
@@ -99,14 +101,16 @@ export default class SocketChatService {
 
       return callback({
         status: "ok",
-        message: entries.length ? `You ${status} the chat.` : "No join or leave was requested.",
+        message: entries.length
+          ? success.MANAGE_CHAT_ROOM.replace("{{action}}", other[status])
+          : success.MANAGE_CHAT_ROOM_NO,
         ...((status === "joined") && {
           chat_id: room_id.join,
           chat_messages
         })
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "manageChatRoom service error.");
+      return handleSocketError(callback, this.socket, error, "manageChatRoom service error.");
     }
   }
 
@@ -126,7 +130,7 @@ export default class SocketChatService {
         message: "Successfully sent the typing status to the chat room.",
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "typing service error.");
+      return handleSocketError(callback, this.socket, error, "typing service error.");
     }
   }
 
@@ -138,7 +142,7 @@ export default class SocketChatService {
     const { room_id, message } = data;
 
     try {
-      if (!chatRoomsUtils.isRoomId(room_id)) throw new SocketError("Access Denied", "forbidden");
+      if (!chatRoomsUtils.isRoomId(room_id)) throw new SocketError("ACCESS_DENIED", "general", "forbidden");
 
       data.created_at = new Date();
 
@@ -165,21 +169,24 @@ export default class SocketChatService {
 
       callback({ status: "ok", message: "Successfully broadcasted chat message to specified room." });
     } catch (error: any) {
-      return handleSocketError(callback, error, "chatMessage service error.");
+      return handleSocketError(callback, this.socket, error, "chatMessage service error.");
     }
   }
 
   /**
-   * Handles socket instance disconnection; Stores the user's private messages to the database if needed.
+   * Handles socket instance disconnection; Stores the user's private messages to the database if needed and
+   * removes the user's redis socket ids.
    */
   public async disconnect() {
     logger.debug(`Chat socket instance disconnected; ${this.socket.id}.`);
 
     try {
-      const user = this.socket.userDecodedClaims!,
-        userFriends = await getUserFriends(user.sub, { lean: true });
+      const user = this.socket.userDecodedClaims!;
+      
+      await redisClient.sRem(`user:${user.member_id}:chat:socket_ids`, this.socket.id);
 
-      const promises: Promise<void>[] = [];
+      const userFriends = await getUserFriends(user.sub, { lean: true }),
+        promises: Promise<void>[] = [];
       for (const friend of userFriends.list.values()) {
         promises.push(
           archiveChatMessageQueue(getFriendRoom(user.member_id, friend.member_id))

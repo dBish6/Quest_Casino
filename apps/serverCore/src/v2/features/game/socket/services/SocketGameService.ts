@@ -7,21 +7,20 @@
 
 import type { Socket, Namespace } from "socket.io";
 import type SocketCallback from "@typings/SocketCallback";
+import type { ClientSession } from "mongoose"
 import type { UserBonus, UserQuest } from "@authFeat/typings/User";
 
 import type { ManageProgressEventDto } from "@qc/typescript/dtos/ManageProgressEventDto";
 
-import { Types } from "mongoose"
-
-import GENERAL_BAD_REQUEST_MESSAGE from "@constants/GENERAL_BAD_REQUEST_MESSAGE";
-import USER_NOT_FOUND_MESSAGE from "@authFeat/constants/USER_NOT_FOUND_MESSAGE";
+import { Types, startSession } from "mongoose"
 
 import { logger } from "@qc/utils";
 import { handleSocketError, SocketError } from "@utils/handleError";
 
 import { GameQuest, GameBonus } from "@gameFeat/models";
 import { User } from "@authFeat/models";
-import { updateUserStatistics } from "@authFeat/services/authService";
+import { redisClient } from "@cache";
+import { updateUserCredentials, updateUserStatistics } from "@authFeat/services/authService";
 
 export default class SocketAuthService {
   private socket: Socket;
@@ -46,24 +45,27 @@ export default class SocketAuthService {
         message: "Under construction."
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "manageRecord service error.");
+      return handleSocketError(callback, this.socket, error, "manageRecord service error.");
     }
   }
 
   /**
-   * Increases the current progress of a quest or bonus and can also activate a bonus.
+   * TODO: Quest rewards not tested since the game server isn't a thing.
+   * Increases the current progress of a quest or bonus and can also activate a bonus and give a quest reward.
    * @payload `ok` with quest or bonus progress, `bad request`, `forbidden`, `conflict` or `SocketError`.
    */
   public async manageProgress({ type, action, title }: ManageProgressEventDto, callback: SocketCallback) {
     logger.debug("socket manageProgress:", { type, action, title });
+
+    let session: ClientSession | null = null;
   
     try {
       const userClaims = this.socket.userDecodedClaims!;
 
-      if (type !== "bonus" && action === "activate") throw new SocketError(GENERAL_BAD_REQUEST_MESSAGE, "bad request");
+      if (type !== "bonus" && action === "activate") throw new SocketError("NO_DATA_INVALID", "general", "bad request");
 
       const exists = await (type === "quest" ? GameQuest : GameBonus).exists({ title: title });
-      if (!exists) throw new SocketError("Access Denied", "forbidden");
+      if (!exists) throw new SocketError("ACCESS_DENIED", "general", "forbidden");
 
       const isActivate = type === "bonus" && action === "activate",
         now = Date.now();
@@ -123,28 +125,35 @@ export default class SocketAuthService {
         if (isActivate) {
           // Checks if the reason wasn't because of the id.
           const exists = await User.exists({ _id: userClaims.sub });
-          if (!exists) throw new SocketError(USER_NOT_FOUND_MESSAGE, "not found");
+          if (!exists) throw new SocketError("USER_NOT_FOUND_VAL", "general", "not found");
           
-          throw new SocketError(
-            "You can only have one bonus active at a time. Please wait 24 hours before activating a new one.",
-            "conflict"
-          );
+          throw new SocketError("MANAGE_PROGRESS_BONUS_LOCKED_NEW", "game", "conflict");
         } else {
-          throw new SocketError(USER_NOT_FOUND_MESSAGE, "not found");
+          throw new SocketError("USER_NOT_FOUND_VAL", "general", "not found");
         }
       }
+      // console.log("user", user);
       const target = user[0].statistics.progress[type][title];
+      // console.log("target", target);
 
-      if (isActivate) this.isBonusActivatable(target as UserBonus);
+      if (isActivate) {
+        this.isBonusActivatable(target as UserBonus);
+       
+        if (!this.isQuestOrBonusCompleted("bonus", target))
+          throw new SocketError(
+            "MANAGE_PROGRESS_BONUS_LOCKED_PROGRESS",
+            "game",
+            "bad request"
+          );
+      }
 
-      if (!this.isQuestOrBonusCompleted(type, target))
-        throw new SocketError(
-          `You cannot ${isActivate ? "activate" : "be reward for"} this ${type} yet because your current progress has not yet completed.`,
-          "bad request"
-        );
+      if (type === "quest") {
+        session = await startSession();
+        session.startTransaction();
+      }
 
       const path = `progress.${type}.${title}`,
-        updatedUser = await updateUserStatistics(
+        updatedUserStatistics = await updateUserStatistics(
           {
             by: "_id",
             value: userClaims.sub
@@ -160,16 +169,84 @@ export default class SocketAuthService {
               $inc: { [`${path}.current`]: 1 }
             })
           },
-          { new: true, projection: "-_id progress", forClient: true }
+          {
+            session,
+            projection: "-_id progress",
+            populate: {
+              path: `progress.${type}.$*.${type}`
+            },
+            new: true,
+            lean: true
+            // forClient: true
+          }
         );
+      // console.log("manageProgress updatedUserStatistics", updatedUserStatistics);
+
+      if (!isActivate) {
+        if (this.isQuestOrBonusCompleted("quest", target)) {
+          const userQuest = 
+            (updatedUserStatistics.progress.quest as unknown as Record<string, UserQuest>)[title];
+
+          // console.log("userQuest", userQuest);
+
+          if (!userQuest.claimed) {
+            if (userQuest.quest.reward.type === "money") {
+              await updateUserCredentials(          
+                {
+                  by: "_id",
+                  value: userClaims.sub
+                },
+                { $inc: { balance: userQuest.quest.reward.value } },
+                { session }
+              )
+            } else if (userQuest.quest.reward.type === "spins") {
+              // TODO: This is nothing right now (probably just add a field in the user for rewards (bonus money if that ever happens, spins, and bonus multiplier too maybe?)).
+            } else {
+              throw new SocketError("ACCESS_DENIED", "general", "forbidden");
+            }
+            
+            await updateUserStatistics(
+              {
+                by: "_id",
+                value: userClaims.sub,
+              },
+              { $set: { [`progress.quest.${title}.claimed`]: true } },
+              { session }
+            );
+          } else {
+            throw new SocketError("MANAGE_PROGRESS_QUEST_USED", "game", "conflict");
+          }
+        }
+      }
+
+      await session?.commitTransaction();
 
       return callback({
         status: "ok",
         message: `Successfully ${action === "activate" ? action + "d" : "gained progress for"} ${type} "${title}".`,
-        progress: { [type]: updatedUser.progress[type as keyof typeof updatedUser.progress] }
+        progress: { [type]: updatedUserStatistics.progress[type as keyof typeof updatedUserStatistics.progress] }
       });
     } catch (error: any) {
-      return handleSocketError(callback, error, "manageProgress service error.");
+      await session?.abortTransaction();
+      return handleSocketError(callback, this.socket, error, "manageProgress service error.");
+    } finally {
+      session?.endSession();
+    }
+  }
+
+  /**
+   * Handles socket instance disconnection; removes the user's redis socket ids.
+   */
+  public async disconnect() {
+    logger.debug(`Game socket instance disconnected; ${this.socket.id}.`);
+
+    try {
+      await redisClient.sRem(
+        `user:${this.socket.userDecodedClaims!.member_id}:chat:socket_ids`,
+        this.socket.id
+      );
+    } catch (error: any) {
+      logger.error("game/disconnect service error:\n", error.message);
     }
   }
 
@@ -180,17 +257,11 @@ export default class SocketAuthService {
     if (userBonus?.activated) {
       // Checks if the bonus is currently active.
       if (userBonus.activated > Date.now())
-        throw new SocketError(
-          "This bonus is already activated, you must wait till that bonus expires. All bonuses last 24 hours.",
-          "conflict"
-        );
+        throw new SocketError("MANAGE_PROGRESS_BONUS_LOCKED_ACTIVE", "game", "conflict");
 
       // Checks if the bonus was already activated before and expired.
       if (userBonus.activated <= Date.now())
-        throw new SocketError(
-          "The bonus was already activated before and has now expired. You cannot reactivate it.",
-          "conflict"
-      );
+        throw new SocketError("MANAGE_PROGRESS_BONUS_USED", "game", "conflict");
     }
 
     return true;

@@ -24,6 +24,8 @@ import { Statistics, Activity } from "./_components/stats&activity";
 
 import s from "./profile.module.css";
 
+// TODO: Have a danger zone section with "Clear all Sessions" and "Delete Profile".
+
 export default function Profile() {
   const { content, numberFormat } = useLocale(),
     { viewport } = useBreakpoint()
@@ -64,29 +66,35 @@ export default function Profile() {
 
   // NOTE: A private profile page doesn't need to be seo friendly.
   useEffect(() => {
-    getUserProfile().then((res) => {
+    const query = getUserProfile();
+    query.then((res) => {
       if (res.isSuccess && res.data?.user) {
         // Adds the extra user data needed for the profile.
-        setUser({ ...storedUser, ...res.data.user as UserProfileCredentials });
+        setUser({ ...storedUser, ...(res.data.user as UserProfileCredentials) });
 
         if (!storedUser.email_verified)
           dispatch(
-            // TODO: Should this be in api? (no?)
             ADD_TOAST({
-              title: "Verify your Profile",
-              message: "We've noticed that your profile hasn't been verified yet, send verification email.",
+              title: content.verify,
+              message: content.verifyNotice,
               intent: "info",
               options: {
-                button: {
-                  sequence: "send verification email.",
-                  onClick: () => handleSendVerifyEmail(dispatch)
+                inject: {
+                  btnOnClick: () => handleSendVerifyEmail(dispatch),
+                  localeMarker: true
                 }
               }
             })
           );
       }
-    })
+    });
+
+    return () => query?.abort();
   }, []);
+
+  useEffect(() => {
+    if (user) setUser((prev) => ({ ...prev!, ...storedUser }));
+  }, [storedUser]);
   
   return (
     <Main

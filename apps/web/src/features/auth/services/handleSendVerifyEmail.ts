@@ -27,7 +27,7 @@ export default async function handleSendVerifyEmail(
             })
           );
         }
-      } else if (data && data.message?.includes("successfully")) {
+      } else if (data?.success) {
         dispatch(
           ADD_TOAST({
             title: "Verification Pending",

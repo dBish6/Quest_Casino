@@ -264,6 +264,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
                   resError={resError}
                   clearErrors={() => setErrors({})}
                   noBots
+                  provideLang
                 >
                   <Input
                     label={localeEntry.general.form.user.username}
@@ -326,6 +327,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
                     resError={resError}
                     clearErrors={() => setErrors({})}
                     noBots
+                    provideLang
                   >
                     <Input
                       label={localeEntry.general.form.user.first_name}
@@ -397,6 +399,7 @@ export default function Facing({ localeEntry, numberFormat, user }: ProfileFacin
               resSuccessMsg={updateData?.user?.bio && resSuccessMsg}
               clearErrors={() => setErrors({})}
               noBots
+              provideLang
             >
               <header>
                 <h3 id="hEditBio" className="hUnderline">{localeEntry.editBio}</h3>

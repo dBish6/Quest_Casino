@@ -1,3 +1,5 @@
+import { STRIP_BRACKETS } from "@constants/LOCALE_STRIP_MARKERS";
+
 import useLocale from "@hooks/useLocale";
 
 import injectElementInText from "@utils/injectElementInText";
@@ -87,7 +89,7 @@ export default function Terms() {
       <section aria-labelledby="hLiability">
         <h2 id="hLiability">{content.section.liability.title}</h2>
         {content.section.liability.para.map((para: string, i: number) => (
-          <p key={i}>{i === 0 ? para.replace(/[{}]/g, "") : para}</p>
+          <p key={i}>{i === 0 ? para.replace(STRIP_BRACKETS, "") : para}</p>
         ))}
       </section>
 

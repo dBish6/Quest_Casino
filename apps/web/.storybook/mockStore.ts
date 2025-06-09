@@ -1,10 +1,10 @@
 import type { TypedUseSelectorHook } from "react-redux";
 import type { AuthState } from "@authFeat/redux/authSlice";
-import type { ToastState } from "../src/redux/toast/toastSlice";
+import type { ToastState } from "@redux/toast/toastSlice";
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authName, authReducer } from "@authFeat/redux/authSlice";
-import { toastName, toastReducer } from "../src/redux/toast/toastSlice";
+import { toastName, toastReducer } from "@redux/toast/toastSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 

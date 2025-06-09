@@ -23,7 +23,7 @@ export default function VerificationHandler() {
       if (emailVerifyToken) {
         const mutation = postEmailVerify({ verification_token: emailVerifyToken });
         mutation.then((res) => {
-          if (res.data?.message?.includes("successfully"))
+          if (res.data?.success)
             setSearchParams((params) => {
               params.delete("prof-ver");
               return params;
@@ -37,7 +37,7 @@ export default function VerificationHandler() {
     if (confirmResetPasswordToken) {
       const mutation = postResetPassword({ verification_token: confirmResetPasswordToken });
       mutation.then((res) => {
-        if (res.data?.message?.includes("successfully"))
+        if (res.data?.success)
           setSearchParams((params) => {
             params.delete("conf-ver");
             return params;

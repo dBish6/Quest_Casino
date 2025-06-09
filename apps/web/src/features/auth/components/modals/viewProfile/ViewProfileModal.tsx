@@ -29,7 +29,7 @@ export default function ViewProfileModal() {
   const [searchParams] = useSearchParams(),
     username = searchParams.get(ModalQueryKey.VIEW_PROFILE_MODAL) || "";
 
-  const { content } = useLocale("ViewProfileModal");
+  const { content, getContent } = useLocale("ViewProfileModal");
 
   const { selectedUser } = useLeaderboard(),
     storedUser = useAppSelector(selectUserCredentials)! || {};
@@ -76,13 +76,15 @@ export default function ViewProfileModal() {
         ) : !user ? (
           <p role="alert">
             {isFetchBaseQueryError(profileError) ? (
-              // TODO: SERVER MESSAGE.
-              profileError.data?.ERROR.endsWith("in our system.") ? (
+              profileError.data?.name?.includes("USER_NOT_FOUND") ? (
                 profileError.data.ERROR
               ) : (
-                <>
-                  {injectElementInText(
-                    content.error.unexpected,
+                (() => {
+                  const localeApi = getContent("api");
+                  return injectElementInText(
+                    localeApi.error.unexpectedFull
+                      .replace("{{message}}", localeApi.error.unexpected)
+                      .replace("{{refresh}}", localeApi.error.tryRefresh),
                     null,
                     (text) => (
                       <Link intent="primary" to="/support">
@@ -90,8 +92,8 @@ export default function ViewProfileModal() {
                       </Link>
                     ),
                     { localeMarker: true }
-                  )}
-                </>
+                  )
+                })()
               )
             ) : (
               <>

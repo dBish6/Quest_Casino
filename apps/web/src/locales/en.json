@@ -147,6 +147,8 @@
       },
 
       "content": {
+        "verify": "Verify your Profile",
+        "verifyNotice": "We've noticed that your profile hasn't been verified yet, {send verification email}.",
         "loading": "Loading profile...",
         "error": {
           "title": "Profile Data Not Found",
@@ -179,7 +181,8 @@
         "Personal": {
           "title": "Personal Information",
           "oldPassword": "Old Password",
-          "newPassword": "New Password"
+          "newPassword": "New Password",
+          "success": "Profile successfully updated."
         },
         "Billing": {
           "title": "Billing",
@@ -985,7 +988,7 @@
       "back": "Back to Login",
       "form": {
         "error": {
-          "tokenExpired": "It appears your reset link has expired{ or wasn't sent at all}. Please request a new one."
+          "tokenExpired": "It appears your reset link has expired or is missing. Please request a new one."
         }
       },
       "aria": {
@@ -1049,7 +1052,6 @@
     },
     "ViewProfileModal": {
       "error": {
-        "unexpected": "An unexpected server error occurred. Please try refreshing the page. If the error persists, feel free to reach out to {Support}.",
         "unknown": "An unknown error occurred. The server might down or there was a issue processing your request. Please try refreshing the page. If the error persists, feel free to reach out to {Support}."
       },
       "section": {
@@ -1328,22 +1330,149 @@
           "completed": "Completed"
         }
       }
+    },
+
+    "RestrictView": {
+      "title": "Login Session Required",
+      "invalid": "You must be logged in to access that page."
+    },
+    "verTokenRequiredView": {
+      "reset": "reset",
+      "invalid": "It seems the {{param}} link is invalid. Please ensure you accessed this page through the link provided in your email."
     }
   },
 
   "api": {
-    "message": {
+    "welcome": "Welcome",
+    "welcomeIssue": "Welcome Issue",
+    "countryRequired": "Country Required",
+
+    "unexpectedTitle": "Unexpected Error",
+
+    "sessionExpiredTitle": "Session Expired",
+
+    "error": {
+      "unexpectedLogin": "An unexpected error occurred while initializing your login session.",
+
+      "unexpected": "An unexpected error occurred.",
+      "tryRefresh": " Please try refreshing the page.",
+      "unexpectedFull": "{{message}}{{refresh}} If the error persists, feel free to reach out to {support}.",
+
+      "unexpectedServer": "An unexpected server error occurred.",
+
+      "sessionExpired": "Your login session has expired, {log in}."
+    },
+    
+    "errorHandler": {
+      "verification": "Verification Required"
+    },
+
+    "getUsers": {
       "error": {
-        "unexpected": "An unexpected server error occurred. Please try refreshing the page. If the error persists, feel free to reach out to {Support}.",
-        "unexpectedIDK": "{An unexpected error occurred.}{ Please try refreshing the page.} If the error persists, feel free to reach out to {support}."
+        "verifiedRequired": "You must be verified to search users."
+      }
+    },
+
+    "getUser": {
+      "error": {
+        "notFound": "We couldn't find your profile on our server."
+      }
+    },
+
+    "updateProfile": {
+      "blocked": "Blocked",
+      "unblocked": "Unblocked",
+      "cantBlock": "Can't Block",
+      "tooManyAttempts": "Too Many Update Attempts",
+      "email": "Verification Pending",
+
+      "success": {
+        "blocked": "Successfully blocked.",
+        "blockedFriend": "This friend was also removed from your friend list due to blocking.",
+        "unblocked": "Successfully unblocked.",
+        "email": "Due to updating your email, you must verify again. We've sent you a new verification email. "
+      },
+      "error": {
+        "settingsUnexpected": "While adding your previously selected settings, there was a unexpected server error. You may have to edit those settings again, sorry for the inconvenience.",
+        "notFound": "We couldn't find your profile on our server."
+      }
+    },
+
+    "updateUserFavourites": {
+      "error": {
+        "unexpected": "There was an unexpected error adding your previously selected game favorites."
       }
     },
 
     "resetPassword": {
-      "message": {
-        "error": {
-          "tokenExpired": "It appears your confirmation link has expired{ or wasn't sent at all}. Please try again."
-        }
+      "tooManyAttempts": "Too Many Attempts",
+      "expired": "Expired",
+
+      "error": {
+        "tokenExpired": "It appears your confirmation link has expired or is missing. Please try again."
+      }
+    },
+
+    "sendConfirmPasswordEmail": {
+      "pending": "Confirmation Pending"
+    },
+
+    "logout": {
+      "success": {
+        "message": "User login session timed out."
+      }
+    },
+
+    "manageFriendRequest": {
+      "unauthorized": "Unauthorized",
+      "already": "Already Sent/Friended",
+      "blocked": "Blocked User",
+      "notFound": "Not Found",
+      "cannotSend": "Cannot Send",
+      "maxReached": "Max Reached",
+
+      "error": {
+        "unauthorized": "You must be verified to add friends. {Send verification email}.",
+        "already": "You already requested or added this friend.",
+        "blocked": "You cannot add a user you have blocked as a friend.",
+        "maxReached": " Try deleting some unneeded friends."
+      }
+    },
+
+    "unfriend": {
+      "success": {
+        "message": "Successfully removed {{username}} from your friends list."
+      }
+    },
+
+    "manageChatRoom": {
+      "error": {
+        "unexpected": "Unable to connect to the chat room due to an unexpected server error."
+      }
+    },
+
+    "chatMessage": {
+      "duplicate": "Too Many Duplicate Messages",
+      
+      "success": {
+        "message": "You have been temporarily restricted due to sending too many duplicate messages. Wait for the spam cooldown to expire."
+      }
+    },
+
+    "getGames": {
+      "error": {
+        "unexpected": "Unexpectedly, there was an issue retrieving our games from the server."
+      }
+    },
+
+    "getQuests": {
+      "notFound": "Quests Not Found"
+    },
+
+    "manageProgress": {
+      "activated": "Bonus Activated",
+      "success": {
+        "message": " All bonuses last 24 hours."
       }
     },
 
@@ -1383,6 +1512,25 @@
     }
   },
 
+  "utils": {},
+
+  "hooks": {
+    "useHandleUpdate": {
+      "verify": "Your profile hasn't been verified yet, please verify to update your profile.",
+      "nothingChanged": "Nothing was changed. Change at least one field below to update.",
+      "conflictTitle": "Conflict",
+      "conflict": "Your email has been changed and other fields if provided. However, you must verify your new email before attempting to change your password. When verified, come back and change your password.",
+      "passwordTitle": "Processing Password",
+      "password": "We are now processing the password reset. Please stay on this page and hang tight...",
+      "passwordAlso": "Because you updated your password also, we are now processing the password reset. Please stay on this page and hang tight..."
+    },
+    "useWorldData": {
+      "countryUnexpected": "Unexpected error occurred, couldn't find any countries.",
+      "regionUnexpected": "Unexpected error occurred, couldn't find any regions.",
+      "regionNotFound": "No regions was found from your selected country, you can skip this step."
+    }
+  },
+
   "general": {
     "noResults": "No Results",
     
@@ -1397,6 +1545,7 @@
     "update": "Update",
 
     "unauthorized": "User authorization is missing or required.",
+    "forbidden": "User authorization failed.",
 
     "form": {
       "user": {

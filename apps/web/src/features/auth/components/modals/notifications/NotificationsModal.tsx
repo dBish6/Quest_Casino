@@ -122,7 +122,7 @@ export default function NotificationsModal() {
   const handleDeleteNotifications = () => {
     postDeleteNotifications({ categorize: categorize.current, notifications: Array.from(selectNotifs!.values()) })
       .then((res) => {
-        if (res.data?.message?.startsWith("Successfully")) {
+        if (res.data?.success) {
           const newNotifications = res.data.user.notifications;
           if (Array.isArray(newNotifications)) {
             unCategorizedNotifications.current = newNotifications;
@@ -373,11 +373,16 @@ function NotificationCard({ dateTimeFormat, notif, selectNotifs, setSelectNotifs
 
       <div>
         <p>
-          {injectElementInText(message, link?.sequence, (text) => (
-            <Link intent="primary" to={link!.to}>
-              {text}
-            </Link>
-          ))}
+          {injectElementInText(
+            message,
+            link?.sequence,
+            (text) => (
+              <Link intent="primary" to={link!.to}>
+                {text}
+              </Link>
+            ),
+            { localeMarker: link?.localeMarker }
+          )}
         </p>
       
         {selectNotifs && (

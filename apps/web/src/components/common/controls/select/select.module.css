@@ -1,5 +1,9 @@
 .control {
   & :global(.selectInner) {
+    & select {
+      cursor: pointer;
+    }
+
     &:global(.primary),
     &:global(.callingCode),
     &:global(.ghost) {

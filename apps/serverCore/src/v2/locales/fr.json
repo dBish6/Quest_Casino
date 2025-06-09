@@ -1,0 +1,130 @@
+{
+  "auth": {
+    "all": "tous",
+    "searched": "recherché",
+    "random": "{{count}} aléatoire",
+    "user_notifs": "les notifications de l'utilisateur actuel",
+    "user_email": "utilisateur {{email}}",
+    "the_current_user": "l'utilisateur actuel",
+    "success": {
+      "REGISTER": "Inscription réussie ! Vous pouvez maintenant {se connecter} avec votre profil nouvellement créé.",
+      "LOGIN": "Ravi de te revoir, {{username}} !",
+      "LOGIN_NEW": "Bienvenue {{username}} !",
+      "LOGIN_VERIFY_NOTICE": " Nous avons remarqué que votre profil n'a pas encore été vérifié, {envoyer courriel de vérification}.",
+      "LOGIN_GOOGLE_NOTICE": "En raison des limitations de l'enregistrement de Google, nous avons dû assigner un pays aléatoire à votre profil. Pour assurer la meilleure expérience et vous permettre de vous connecter à la région correcte, veuillez mettre à jour votre pays à « Modifier le profil ». Quest Casino prend la vie privée au sérieux, il n'y a pas de suivi de localisation ou de collecte de données au-delà de ce qui est nécessaire à la fonctionnalité de compte.",
+      "EMAIL_VERIFY": "Adresse e-mail vérifiée avec succès. Veuillez fermer votre onglet précédent.",
+      "SEND_EMAIL_VERIFY": "Courriel de vérification envoyé avec succès. ",
+      "SEND_EMAIL_VERIFY_INFO": "Le lien de vérification expirera dans 20 minutes. Si vous ne le trouvez pas dans votre boîte de réception, veuillez vérifier votre dossier spam ou indésirable.",
+      "RESET_PASSWORD": "Votre mot de passe a été réinitialisé avec succès. Toutes les sessions actives ont été fermées, vous devrez vous reconnecter.",
+      "SEND_CONFIRM_PASSWORD_EMAIL": "Pour compléter votre changement de mot de passe, vous devez confirmer cette réinitialisation de mot de passe par un lien de confirmation envoyé à votre adresse e-mail. Le lien expirera dans 15 minutes. Si vous ne le trouvez pas dans votre boîte de réception, veuillez vérifier votre dossier spam ou indésirable.",
+      "SEND_FORGOT_PASSWORD_EMAIL": "Si un profil avec le courriel fourni existe, un courriel avec un lien de réinitialisation de mot de passe a été envoyé.",
+      "INITIALIZE_FRIENDS_PARTIAL": "Seuls les amis en attente ont été initialisés, aucun ami ajouté n'a été trouvé.",
+      "INITIALIZE_FRIENDS": "En attente et ajouté des amis, ainsi que d'autres identifiants, initialisés avec succès.",
+      "MANAGE_FRIEND_SENT": "Demande d'ami envoyée à {{username}} avec succès.",
+      "MANAGE_FRIEND_ADDED": "{{username}} ajouté avec succès en tant qu'ami.",
+      "MANAGE_FRIEND_DECLINED": "Refus de la demande d'amitié {{username}}.",
+      "UNFRIENDED": "L'ami a été supprimé de la liste d'amis.",
+      "USER_ACTIVITY": "Activité mise à jour avec succès. Les événements d'amis et la gestion de la salle se sont également terminés avec succès."
+    },
+    "error": {
+      "EMAIL_ALREADY_EXISTS": "Un utilisateur avec cette adresse e-mail existe déjà. Veuillez essayer d'utiliser une autre adresse e-mail.",
+      "PROFILE_NOT_FOUND_GOOGLE": "Nous n'avons pas pu trouver votre profil après avoir changé l'adresse e-mail de votre compte Google.",
+      "TOKEN_GOOGLE": "Reçu un mauvais statut de la requête de jeton Google.",
+      "INFO_GOOGLE": "Impossible de récupérer les informations utilisateur de Google.",
+      "UPDATE_PROFILE_ATTEMPTS": "Limite de mise à jour du profil atteinte. Vous ne pouvez essayer de mettre à jour votre profil que 6 fois pendant une période de 24 heures. Veuillez réessayer plus tard.",
+      "PASS_CONFIRM_STILL_PENDING": "La confirmation est toujours en attente pour le changement de mot de passe. Veuillez confirmer la modification via votre courriel actuelle avant de tenter de modifier votre courriel. Vous pouvez également {annuler la réinitialisation du mot de passe}.",
+      "AVATAR_URL_INVALID": "L'avatar_url n'est pas une image ou l'url n'est pas valide.",
+      "AVATAR_URL_TOO_LARGE": "La taille du fichier dépasse la taille maximale de 500 Ko.",
+      "USER_BLOCKED_NOT_FOUND": "Inattendu, cet utilisateur n'a pas été trouvé pour bloquer, ce profil n'existe pas.",
+      "COUNTRY_UPDATE_LIMIT": "Limite de mise à jour du pays atteinte. Vous ne pouvez mettre à jour votre pays que 2 fois.",
+      "RESET_PASSWORD_ATTEMPTS": "Trop de tentatives de réinitialisation du mot de passe, la limite a été atteinte. Réessayez plus tard après 24 heures.",
+      "RESET_PASSWORD_EXPIRED": "Il semble que votre réinitialisation de mot de passe ait expiré à ce moment même de soumission. Malchanceux, veuillez en demander un nouveau.",
+      "PROVIDE_NEW_PASSWORD": "Veuillez fournir un nouveau mot de passe.",
+      "OLD_PASSWORD_MISMATCH": "L'ancien mot de passe ne correspond pas à votre mot de passe existant.",
+      "USER_NOT_FOUND_LOGOUT": "Impossible de trouver l’utilisateur après la connexion, de manière inattendue.",
+      "USER_NOT_FOUND_FRIENDS_VAL": "Impossible de trouver les amis de l’utilisateur après validation, de manière inattendue.",
+      "USER_NOT_FOUND_FRIENDS": "Les amis de l'utilisateur n'ont pas été trouvés, de manière inattendue.",
+      "USER_NOT_FOUND_STATISTICS": "Les statistiques de l’utilisateur n’ont pas été trouvées, de manière inattendue.",
+      "USER_NOT_FOUND_ACTIVITY": "L’activité de l’utilisateur n’a pas été trouvée, de manière inattendue.",
+      "USER_NOT_FOUND_NOTIFS": "Les notifications de l’utilisateur n’ont pas été trouvées, de manière inattendue.",
+      "MANAGE_FRIEND_NOT_VERIFIED": "Cet utilisateur n’est pas vérifié. L’utilisateur doit être vérifié pour ajouter un ami.",
+      "MANAGE_FRIEND_NO_DATA": "Il n'y a pas de données fournies ou le action_type est invalide.",
+      "FORMAT_EMAIL_LINK_REQUIRED": "Le paramètre de lien doit être inclus avec ce type d'email.",
+      "SEND_EMAIL_SMTP_CONNECT": "Il y a eu un problème de connexion à notre serveur SMTP.",
+      "SEND_EMAIL_SMTP_REJECTED": "Votre adresse e-mail a été rejetée par notre serveur SMTP pendant l'envoi. Veuillez envisager d'utiliser une autre adresse e-mail. Si le problème persiste, n’hésitez pas à contacter le support.",
+      "TOKEN_SESSION_TOKENS_MISSING": "Les jetons d'accès/rafraîchir sont manquants.",
+      "TOKEN_REFRESH_INVALID": "Le jeton rafraîchir n'est pas valide ou a expiré.",
+      "TOKEN_VERIFY_EXPIRED_MISSING": "Le jeton de vérification est manquant ou expiré.",
+      "TOKEN_EXPIRED": "Le jeton {{token}} a expiré.",
+      "TOKEN_DISPARITY": "Disparité de jeton {{token}}.",
+      "TOKEN_INVALID": "Le jeton {{token}} est invalide.",
+      "TOKEN_REFRESH_THRE": "À l'intérieur du seuil rafraîchir.",
+      "LOGIN_EMAIL_PASSWORD": "Le courriel ou le mot de passe est incorrect.",
+      "LOGIN_GOOGLE_LINKED": "Ce profil est lié à Google. Veuillez utiliser le bouton \"Google\" ci-dessous pour vous connecter.",
+      "USER_VERIFICATION": "Vous devez être vérifié pour continuer. Veuillez visiter votre {profil} pour envoyer un courriel de vérification pour vérifier votre profil.",
+      "TOKEN_CSRF_MISSING": "Le jeton CSRF est manquant.",
+      "MAX_FRIENDS": "Votre maximum de {{count}} {{type}} a été atteint.",
+      "TOKEN_MULTIPLE_INVALID": "Un ou deux jetons de l'utilisateur se sont révélés invalides de façon inattendue après la validation initiale.",
+      "USER_NOT_FOUND_STATISTICS_UPDATING": "Impossible de trouver les statistiques de l'utilisateur de façon inattendue lors de la mise à jour du total des victoires/défaites.",
+      "USER_NOT_FOUND_INIT": "Impossible de trouver l'utilisateur lors de l'initialisation de la session.",
+      "GET_SOCKET_ID": "Impossible de trouver l’identifiant de socket de l’utilisateur de façon inattendue après la connexion.",
+      "USERNAME_TAKEN": "Ce nom d'utilisateur est déjà pris. Veuillez essayer un autre nom d'utilisateur."
+    }
+  },
+  "chat": {
+    "joined": "rejoint",
+    "left": "quitté",
+    "chat_action": "{{username}} a {{action}} le chat.",
+    "success": {
+      "MANAGE_CHAT_ROOM": "Vous {{action}} le chat.",
+      "MANAGE_CHAT_ROOM_NO": "Aucune rejoint ou quitté n'a été demandée."
+    }
+  },
+  "game": {
+    "error": {
+      "GAME_NOT_FOUND": "La partie n'existe pas.",
+      "GAME_PROFILE_NOT_FOUND": "Impossible de trouver le profil avec le nom d'utilisateur {{username}}.",
+      "QUEST_NOT_FOUND": "La quête n'existe pas.",
+      "BONUS_NOT_FOUND": "Le bonus n'existe pas.",
+      "MANAGE_PROGRESS_BONUS_LOCKED_NEW": "Vous ne pouvez avoir qu'un seul bonus actif à la fois. Veuillez patienter 24 heures avant d'en activer un nouveau.",
+      "MANAGE_PROGRESS_BONUS_LOCKED_PROGRESS": "Vous ne pouvez pas encore activer ce bonus parce que votre progression actuelle n'est pas encore terminée.",
+      "MANAGE_PROGRESS_BONUS_LOCKED_ACTIVE": "Ce bonus est déjà activé, vous devez attendre que ce bonus expire. Tous les bonus durent 24 heures.",
+      "MANAGE_PROGRESS_BONUS_USED": "Le bonus a déjà été activé et a expiré. Vous ne pouvez pas le réactiver.",
+      "MANAGE_PROGRESS_QUEST_USED": "La récompense de quête est déjà réclamée, vous ne pouvez plus la revendiquer."
+    }
+  },
+  "notifs": {
+    "news": {},
+    "system": {},
+    "general": {
+      "FRIEND_REQUEST": {
+        "message": "Vous a envoyé une demande d'ami."
+      },
+      "FRIEND_ACCEPT": {
+        "title": "Accepté",
+        "message": "{{username}} a accepté votre demande d'ami."
+      },
+      "FRIEND_DECLINE": {
+        "title": "Refusé",
+        "message": "{{username}} a refusé votre demande d'ami."
+      },
+      "UNFRIENDED": {
+        "title": "Supprimé de sa liste d'amis",
+        "message": "{{username}} vient de vous supprimer de sa liste d'amis."
+      }
+    }
+  },
+  "general": {
+    "error": {
+      "USER_NOT_FOUND": "L'utilisateur n’a pas été trouvé de façon inattendue.",
+      "USER_NOT_FOUND_VAL": "Impossible de trouver l’utilisateur de façon inattendue après validation.",
+      "USER_NOT_FOUND_SYSTEM": "Nous n'avons pas pu trouver cet utilisateur dans notre système.",
+      "NO_DATA": "Aucune donnée n'a été fournie.",
+      "NO_DATA_INVALID": "Les données fournies ne sont pas valides ou aucune donnée n'a été fournie.",
+      "ACCESS_DENIED": "Accès refusé",
+      "ACCESS_DENIED_CRED": "Accès refusé; Identifiants invalides.",
+      "UNEXPECTED": "Une erreur inattendue s'est produite.",
+      "LOCALE_INVALID": "«{{locale}}» est une locale non prise en charge."
+    }
+  }
+}

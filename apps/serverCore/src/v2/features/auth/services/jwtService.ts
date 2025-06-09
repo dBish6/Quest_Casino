@@ -116,7 +116,7 @@ export class JWTVerification {
         return this.verifyRefreshToken(refreshToken);
       }
 
-      throw new ApiError("Access/refresh tokens is missing.", 401, "unauthorized");
+      throw new ApiError("TOKEN_SESSION_TOKENS_MISSING", "auth", 401, "unauthorized");
     }
 
     return this.verifyAccessToken(accessToken, refreshToken);
@@ -142,17 +142,24 @@ export class JWTVerification {
           decodedClaims.sub,
           refreshToken
         );
-        if (!match) throw new ApiError("Refresh token disparity.", 401, "unauthorized");
+        if (!match)
+          throw new ApiError("TOKEN_DISPARITY", "auth", 401, "unauthorized", {
+            var: { token: "Refresh" }
+          });
 
         return { claims: decodedClaims, threshold: true };
       } else if (tokenExpiry <= currentTime) {
-        throw new ApiError("Access token is expired.", 403, "forbidden");
+        throw new ApiError("TOKEN_EXPIRED", "auth", 403, "forbidden", {
+          var: { token: "Access" }
+        });
       }
 
       return { claims: decodedClaims, threshold: false };
     } catch (error: any) {
       if (this.isJwtError(error))
-        throw new ApiError("Access token is invalid.", 403, "forbidden");
+        throw new ApiError("TOKEN_INVALID", "auth", 403, "forbidden", {
+          var: { token: "Access" }
+        });
 
       throw handleApiError(error, "JWTVerification service error; verifyAccessToken.");
     }
@@ -173,12 +180,15 @@ export class JWTVerification {
         decodedClaims.sub,
         refreshToken
       );
-      if (!match) throw new ApiError("Refresh token disparity.", 401, "unauthorized");
+      if (!match)
+        throw new ApiError("TOKEN_DISPARITY", "auth", 401, "unauthorized", {
+          var: { token: "Refresh" }
+        });
 
       return { claims: decodedClaims, threshold: true };
     } catch (error: any) {
       if (this.isJwtError(error))
-        throw new ApiError("Refresh token is invalid or expired.", 403, "forbidden");
+        throw new ApiError("TOKEN_REFRESH_INVALID", "auth", 403, "forbidden");
       
       throw handleApiError(error, "JWTVerification service error; verifyRefreshToken.");
     }
@@ -190,7 +200,7 @@ export class JWTVerification {
   public async verifyVerificationToken(verificationToken: string | undefined) {
     try {
       if (!verificationToken)
-        throw new ApiError("Verification token is missing or expired.", 401, "unauthorized");
+        throw new ApiError("TOKEN_VERIFY_EXPIRED_MISSING", "auth", 401, "unauthorized");
 
       const decodedClaims = this.verifyJwt<VerificationClaims>(
         verificationToken,
@@ -199,16 +209,22 @@ export class JWTVerification {
       );
       logger.debug("Verification token decodedClaims:", decodedClaims);
       if (decodedClaims.exp! * 1000 <= Date.now())
-        throw new ApiError("Verification token is expired.", 403, "forbidden");
+        throw new ApiError("TOKEN_EXPIRED", "auth", 403, "forbidden", {
+          var: { token: "Verification" }
+        });
 
       const cachedToken = await redisClient.get(KEY(decodedClaims.sub).verification);
-      if (cachedToken !== verificationToken) 
-        throw new ApiError("Verification token disparity.", 401, "unauthorized");
+      if (cachedToken !== verificationToken)
+        throw new ApiError("TOKEN_DISPARITY", "auth", 401, "unauthorized", {
+          var: { token: "Verification" }
+        });
 
       return decodedClaims;
     } catch (error: any) {
-      if (this.isJwtError(error)) 
-        throw new ApiError("Verification token is invalid.", 403, "forbidden");
+      if (this.isJwtError(error))
+        throw new ApiError("TOKEN_INVALID", "auth", 403, "forbidden", {
+          var: { token: "Verification" }
+        });
       
       throw handleApiError(error, "JWTVerification service error; verificationToken.");
     }

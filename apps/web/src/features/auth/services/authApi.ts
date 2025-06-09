@@ -4,6 +4,7 @@ import type { UserCredentials, MinUserCredentials, UserProfileCredentials, ViewU
 
 import type { HttpResponse, SocketResponse } from "@typings/ApiResponse";
 import type RegisterBodyDto from "@qc/typescript/dtos/RegisterBodyDto";
+import type { LoginGoogleResponseDto, LoginResponseDto } from "@authFeat/dtos/LoginResponseDto";
 import type { LoginBodyDto, LoginGoogleBodyDto } from "@qc/typescript/dtos/LoginBodyDto";
 import type { GetNotificationsResponseDto, DeleteNotificationsBodyDto, Notification } from "@qc/typescript/dtos/NotificationsDto"
 import type { UpdateProfileBodyDto, UpdateProfileResponseDto, UpdateUserFavouritesBodyDto, SendConfirmPasswordEmailBodyDto } from "@qc/typescript/dtos/UpdateUserDto";
@@ -13,18 +14,17 @@ import type { ManageFriendRequestEventDto } from "@qc/typescript/dtos/ManageFrie
 import type FriendActivityEventDto from "@authFeat/dtos/FriendActivityEventDto";
 import type FriendsUpdateEventDto from "@authFeat/dtos/FriendsUpdateEventDto";
 
-import { AuthEvent } from "@qc/constants";
-import TOKEN_EXPIRED_MESSAGE from "@authFeat/constants/TOKEN_EXPIRED_MESSAGE";
-import GENERAL_UNAUTHORIZED_MESSAGE from "@authFeat/constants/GENERAL_UNAUTHORIZED_MESSAGE";
-import GENERAL_FORBIDDEN_MESSAGE from "@authFeat/constants/GENERAL_FORBIDDEN_MESSAGE";
+import { type AvailableLocales, AuthEvent } from "@qc/constants";
+import { STRIP_BRACKETS_AND_TEXT } from "@constants/LOCALE_STRIP_MARKERS";
 import { ANIMATION_DURATION, ModalQueryKey } from "@components/modals";
 
 import { logger } from "@qc/utils";
 import { history } from "@utils/History";
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
-import { injectEndpoints, prepareHeadersAndOptions } from "@services/api";
+import { injectEndpoints, API_BASE_URL, prepareHeadersAndOptions } from "@services/api";
 import { getSocketInstance, emitAsPromise } from "@services/socket";
+import apiEntry from "@services/getLocaleEntry";
 import allow500ErrorsTransform from "@services/allow500ErrorsTransform";
 import handleLogout from "./handleLogout";
 import handleSendVerifyEmail from "./handleSendVerifyEmail";
@@ -60,7 +60,7 @@ const authApi = injectEndpoints({
      * @request
      */
     login: builder.mutation<
-      HttpResponse<{ user: UserCredentials }>,
+      HttpResponse<LoginResponseDto>,
       LoginBodyDto
     >({
       query: (credentials) => ({
@@ -75,7 +75,7 @@ const authApi = injectEndpoints({
           setTimeout(() => {
             handleLoginSuccess(
               dispatch,
-              data.user,
+              data,
               meta.response!.headers.get("x-xsrf-token")!
             );
           }, ANIMATION_DURATION / 2);
@@ -88,7 +88,7 @@ const authApi = injectEndpoints({
      * @request
      */
     loginGoogle: builder.mutation<
-      HttpResponse<{ user: UserCredentials, new: boolean }>,
+      HttpResponse<LoginGoogleResponseDto>,
       LoginGoogleBodyDto
     >({
       query: (credentials) => ({
@@ -112,9 +112,8 @@ const authApi = injectEndpoints({
 
             handleLoginSuccess(
               dispatch,
-              data.user,
-              meta.response!.headers.get("x-xsrf-token")!,
-              data.new
+              data,
+              meta.response!.headers.get("x-xsrf-token")!
             );
           }
         } finally {
@@ -188,7 +187,7 @@ const authApi = injectEndpoints({
             error: {
               data: {
                 allow: true,
-                ERROR: "You must be verified to search users."
+                ERROR: apiEntry("getUsers").error.verifiedRequired
               },
               status: 401
             }
@@ -231,7 +230,7 @@ const authApi = injectEndpoints({
           if (isFetchBaseQueryError(error.error) && error.error.status === 404)
             dispatch(
               unexpectedErrorToast(
-                "We couldn't find your profile on our server.",
+                apiEntry("getUser").error.notFound,
                 false
               )
             );
@@ -277,7 +276,7 @@ const authApi = injectEndpoints({
         baseQuery
       ) => {
         if (keepalive) {
-          const res = await fetch("api/v2/auth/user", {
+          const res = await fetch(`${API_BASE_URL}/auth/user`, {
               method: "PATCH",
               body: JSON.stringify(body),
               ...prepareHeadersAndOptions({ state: getState() as RootState }),
@@ -289,7 +288,7 @@ const authApi = injectEndpoints({
           if (!res.ok) {
             dispatch(
               unexpectedErrorToast(
-                "While adding your previously selected settings, there was a unexpected server error. You may have to edit those settings again, sorry for the inconvenience.",
+                apiEntry("updateProfile").error.settingsUnexpected,
                 false
               )
             );
@@ -311,6 +310,8 @@ const authApi = injectEndpoints({
         }
       },
       onQueryStarted: async ({ allow500 = true, settings }, { dispatch, queryFulfilled }) => {
+        const { success, ...title } = apiEntry("updateProfile");
+
         try {
           const { data, meta } = await queryFulfilled;
 
@@ -325,8 +326,8 @@ const authApi = injectEndpoints({
                 if (settings.blocked_list[0].op === "add") {
                   dispatch(
                     ADD_TOAST({
-                      title: "Blocked",
-                      message: "Successfully blocked.",
+                      title: title.blocked,
+                      message: success.blocked,
                       intent: "success",
                       duration: 6500
                     })
@@ -334,8 +335,8 @@ const authApi = injectEndpoints({
                   if (data.unfriended) {
                     dispatch(
                       ADD_TOAST({
-                        title: "Blocked",
-                        message: "This friend was also removed from your friend list due to blocking.",
+                        title: title.blocked,
+                        message: success.blockedFriend,
                         intent: "info"
                       })
                     );
@@ -343,8 +344,8 @@ const authApi = injectEndpoints({
                 } else {
                   dispatch(
                     ADD_TOAST({
-                      title: "Unblocked",
-                      message: "Successfully unblocked.",
+                      title: title.unblocked,
+                      message: success.unblocked,
                       intent: "success",
                       duration: 6500
                     })
@@ -359,19 +360,19 @@ const authApi = injectEndpoints({
             if (data.refreshed)
               dispatch(
                 ADD_TOAST({
-                  title: "Verification Pending",
-                  message: `Due to updating your email, you must verify again. We've sent you a new verification email.${data.refreshed.split("sent.")[1]}`,
+                  title: title.email,
+                  message: success.email + data.refreshed,
                   intent: "info"
                 })
               );
           }
-        } catch (error: any) {
-          const resError = error.error;
+        } catch (err: any) {
+          const resError = err.error;
           if (isFetchBaseQueryError(resError) && resError.data?.ERROR) {
-            if (resError.status === 404 && resError.data.ERROR?.includes("to block")) {
+            if (resError.status === 404 && resError.data.name === "USER_BLOCKED_NOT_FOUND") {
               dispatch(
                 ADD_TOAST({
-                  title: "Can't Block",
+                  title: title.cantBlock,
                   message: resError.data.ERROR,
                   intent: "error"
                 })
@@ -379,14 +380,14 @@ const authApi = injectEndpoints({
             } else if (resError.status === 449) {
               dispatch(
                 ADD_TOAST({
-                  title: "Too Many Update Attempts",
+                  title: title.tooManyAttempts,
                   message: resError.data.ERROR,
                   intent: "error"
                 })
               );
             }
           } else {
-            logger.error("authApi resetPassword error:\n", error.message);
+            logger.error("authApi updateProfile error:\n", err.message);
           }
         }
       }
@@ -401,7 +402,7 @@ const authApi = injectEndpoints({
       UpdateUserFavouritesBodyDto
     >({
       queryFn: async (query, { getState, dispatch, signal }) => {
-        const res = await fetch("api/v2/auth/user/favourites", {
+        const res = await fetch(`${API_BASE_URL}/auth/user/favourites`, {
             method: "PATCH",
             body: JSON.stringify({ favourites: query.favourites }),
             ...prepareHeadersAndOptions({ state: getState() as RootState }),
@@ -414,7 +415,7 @@ const authApi = injectEndpoints({
         if (!res.ok) {
           dispatch(
             unexpectedErrorToast(
-              "There was an unexpected error adding your previously selected game favorites."
+              apiEntry("updateUserFavourites").error.unexpected
             )
           );
 
@@ -447,26 +448,17 @@ const authApi = injectEndpoints({
             dispatch(ADD_TOAST({ message: data.message, intent: "success" }));
             handleLogout(dispatch, socket, data.oState);
           }
-        } catch (error: any) {
-          const resError = error.error;
+        } catch (err: any) {
+          const resError = err.error;
           if (isFetchBaseQueryError(resError) && resError.data?.ERROR) {
-            if (
-              resError.status === 429 ||
-              (resError.status === 404 && resError.data.ERROR?.includes("pending password"))
-            ) {
-              dispatch(
-                ADD_TOAST({
-                  title: "Too Many Attempts",
-                  message: resError.data.ERROR,
-                  intent: "error"
-                })
-              );
-            } else if ([401, 403].includes(resError.status as number)) {
-              if (resError.data.ERROR.includes("expired")) {
+            const { error, ...title } = apiEntry("resetPassword");
+
+            if ([401, 403].includes(resError.status as number)) {
+              if (resError.data.name.includes("EXPIRED")) {
                 dispatch(
                   ADD_TOAST({
-                    title: "Expired",
-                    message: TOKEN_EXPIRED_MESSAGE("reset password"),
+                    title: title.expired,
+                    message: error.tokenExpired,
                     intent: "error"
                   })
                 );
@@ -474,14 +466,31 @@ const authApi = injectEndpoints({
                 dispatch(
                   ADD_TOAST({
                     message:
-                      resError.status === 401 ? GENERAL_UNAUTHORIZED_MESSAGE : GENERAL_FORBIDDEN_MESSAGE,
+                      // @ts-ignore
+                      window.__LOCALE_DATA__.general[(resError.status === 401 ? "unauthorized" : "forbidden")],
                     intent: "error"
                   })
                 );
               }
+            } else if (resError.data.name === "RESET_PASSWORD_EXPIRED") {
+              dispatch(
+                ADD_TOAST({
+                  title: title.expired,
+                  message: resError.data.ERROR,
+                  intent: "error"
+                })
+              );
+            } else if (resError.status === 429) {
+              dispatch(
+                ADD_TOAST({
+                  title: title.tooManyAttempts,
+                  message: resError.data.ERROR,
+                  intent: "error"
+                })
+              );
             }
           } else {
-            logger.error("authApi resetPassword error:\n", error.message);
+            logger.error("authApi resetPassword error:\n", err.message);
           }
         }
       }
@@ -506,7 +515,7 @@ const authApi = injectEndpoints({
         if (meta?.response?.ok && !param)
           dispatch(
             ADD_TOAST({
-              title: "Confirmation Pending",
+              title: apiEntry("sendConfirmPasswordEmail").pending,
               message: data.message,
               intent: "info"
             })
@@ -539,7 +548,17 @@ const authApi = injectEndpoints({
       })
     }),
 
-    // TODO: Clear user.
+    /**
+     * Clears all user sessions and other tokens.
+     * @request
+     * // TODO: Not used.
+     */
+    wipeUser: builder.mutation<HttpResponse, void>({
+      query: () => ({
+        url: "/auth/user/wipe",
+        method: "POST"
+      })
+    }),
 
     /**
      * Deletes the current user from existence.
@@ -623,19 +642,22 @@ const authApi = injectEndpoints({
       queryFn: async ({ toasts, ...data }, { getState, dispatch }) => {
         const user = (getState() as RootState).auth.user.credentials;
 
+        const localeApi = apiEntry(),
+          { error, ...title } = localeApi.manageFriendRequest;
+
         if (!user?.email_verified) {
-          const errorMsg = "You must be verified to add friends.";
+          const errorMsg = error.unauthorized;
 
           if (toasts)
             dispatch(
               ADD_TOAST({
-                title: "Unauthorized",
-                message: `${errorMsg} Send verification email.`,
+                title: title.unauthorized,
+                message: errorMsg,
                 intent: "error",
                 options: {
-                  button: {
-                    sequence: "Send verification email.",
-                    onClick: () => handleSendVerifyEmail(dispatch)
+                  inject: {
+                    btnOnClick: () => handleSendVerifyEmail(dispatch),
+                    localeMarker: true
                   }
                 }
               })
@@ -643,7 +665,11 @@ const authApi = injectEndpoints({
           return {
             error: {
               allow: true,
-              data: { ERROR: errorMsg },
+              data: {
+                ERROR: errorMsg.endsWith(".")
+                  ? error.unauthorized.replace(STRIP_BRACKETS_AND_TEXT, "").slice(0, -1)
+                  : error.unauthorized.replace(STRIP_BRACKETS_AND_TEXT, "")
+              },
               status: "unauthorized"
             }
           };
@@ -652,36 +678,32 @@ const authApi = injectEndpoints({
             (friend) => friend[data.friend.member_id as any]?.username === data.friend.username
           )
         ) {
-          const errorMsg = "You already requested or added this friend.";
-
           if (toasts)
             dispatch(
               ADD_TOAST({
-                title: "Already Sent/Friended",
-                message: errorMsg,
+                title: title.already,
+                message: error.already,
                 intent: "error",
                 duration: 6500
               })
             );
           return {
-            error: { data: { ERROR: errorMsg }, status: "bad request" }
+            error: { data: { ERROR: error.already }, status: "bad request" }
           };
         } else if (
           user.settings.blocked_list[data.friend.member_id]?.username === data.friend.username 
         ) {
-          const errorMsg = "You cannot add a user you have blocked as a friend.";
-
           if (toasts)
             dispatch(
               ADD_TOAST({
-                title: "Blocked User",
-                message: errorMsg,
+                title: title.blocked,
+                message: error.blocked,
                 intent: "error",
                 duration: 6500
               })
             );
           return {
-            error: { data: { ERROR: errorMsg }, status: "bad request" }
+            error: { data: { ERROR: error.blocked }, status: "bad request" }
           };
         }
 
@@ -692,18 +714,20 @@ const authApi = injectEndpoints({
               error: {
                 ...res.error,
                 data: {
-                  ...(!toasts && allow500ErrorsTransform(res.error!, res.meta).data),
+                  ...(!toasts
+                    ? allow500ErrorsTransform(res.error!, res.meta).data
+                    : res.error.data),
                   ERROR:
-                    res.error.data?.ERROR.endsWith("in our system.") ||
+                    res.error.data?.name === "USER_NOT_FOUND_SYSTEM" ||
                     res.error.status === "conflict"
                       ? res.error.data.ERROR
-                      : "An unexpected error occurred."
+                      : localeApi.error.unexpected
                 }
               }
             }
           : res;
       },
-      onQueryStarted: async ({ toasts, action_type, friend }, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async ({ toasts, action_type }, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
 
@@ -718,36 +742,46 @@ const authApi = injectEndpoints({
             if (toasts)
               dispatch(
                 ADD_TOAST({
-                  message: `Friend request successfully sent to ${friend.username}.`,
+                  message: data.message,
                   intent: "success",
                   duration: 6500
                 })
               );
           }
-        } catch (error: any) {
-          const resError = error.error;
+        } catch (err: any) {
+          const resError = err.error;
           if (isFetchBaseQueryError(resError) && resError.data?.ERROR && toasts) {
+            const { error, ...title } = apiEntry("manageFriendRequest");
+
             if (resError.status !== "internal error") {
               if (resError.status === "not found") {
                 dispatch(
                   ADD_TOAST({
-                    title: "Not Found",
+                    title: title.notFound,
                     message: resError.data.ERROR,
                     intent: "error"
                   })
                 );
-              } else if (resError.data.ERROR.startsWith("This user isn't verified")) {
+              } else if (resError.data.name === "MANAGE_FRIEND_NOT_VERIFIED") {
                 dispatch(
                   ADD_TOAST({
-                    title: "Cannot Send",
+                    title: title.cannotSend,
                     message: resError.data.ERROR,
+                    intent: "error"
+                  })
+                );
+              } else if (resError.data.name === "MAX_FRIENDS") {
+                dispatch(
+                  ADD_TOAST({
+                    title: title.maxReached,
+                    message: resError.data.ERROR + error.maxReached,
                     intent: "error"
                   })
                 );
               }
             }
           } else {
-            logger.error("authApi manageFriendRequest error:\n", error.message);
+            logger.error("authApi manageFriendRequest error:\n", err.message);
           }
         }
       }
@@ -767,7 +801,7 @@ const authApi = injectEndpoints({
           if (data.status === "ok")
             dispatch(
               ADD_TOAST({
-                message: `Successfully removed ${username} from your friends list.`,
+                message: apiEntry("unfriend").success.message.replace("{{username}}", username),
                 intent: "success",
                 duration: 6500
               })
@@ -785,6 +819,17 @@ const authApi = injectEndpoints({
       { status: ActivityStatuses }
     >({
       queryFn: async (data) => emitAsPromise(socket)(AuthEvent.USER_ACTIVITY, data)
+    }),
+
+    /**
+     * Changes the locale for all socket instances.
+     * @emitter
+     */
+    localeChange: builder.mutation<
+      SocketResponse,
+      { locale: AvailableLocales }
+    >({
+      queryFn: async (data) => emitAsPromise(socket)(AuthEvent.LOCALE_CHANGE, data)
     }),
 
     /**
@@ -882,7 +927,19 @@ const authApi = injectEndpoints({
                 const { type: _, title, message, link } = data.notification;
 
                 dispatch(
-                  ADD_TOAST({ title, message, intent: "info", options: { link } })
+                  ADD_TOAST({
+                    title,
+                    message,
+                    intent: "info",
+                    options: {
+                      ...(link && {
+                        inject: {
+                          linkTo: link.to,
+                          localeMarker: link.localeMarker
+                        }
+                      })
+                    }
+                  })
                 );
                 dispatch(authApi.util.invalidateTags(["Notification"]));
               } catch (error: any) {
@@ -899,52 +956,42 @@ const authApi = injectEndpoints({
 
 function handleLoginSuccess(
   dispatch: ThunkDispatch<any, any, UnknownAction>,
-  user: UserCredentials,
-  token: string,
-  googleNew?: boolean
+  data: HttpResponse<LoginResponseDto | LoginGoogleResponseDto>,
+  token: string
 ) {
+  const localeApi = apiEntry();
+
   try {
-    dispatch(INITIALIZE_SESSION({ credentials: user, csrf: token }));
+    dispatch(INITIALIZE_SESSION({ credentials: data.user, csrf: token }));
 
-    if (!user.email_verified) {
-      dispatch(
-        ADD_TOAST({
-          title: "Welcome Issue",
-          message: `Welcome${!googleNew ? " back" : ""} ${user.username}! We've noticed that your profile hasn't been verified yet, send verification email.`,
-          intent: "success",
-          options: {
-            button: {
-              sequence: "send verification email.",
-              onClick: () => handleSendVerifyEmail(dispatch)
-            }
+    dispatch(
+      ADD_TOAST({
+        ...(data.user.email_verified
+          ? { title: localeApi.welcome, duration: 6500 }
+          : { title: localeApi.welcomeIssue }),
+        message: data.message,
+        intent: "success",
+        options: {
+          inject: {
+            btnOnClick: () => handleSendVerifyEmail(dispatch),
+            localeMarker: true
           }
-        })
-      );
-    } else {
-      dispatch(
-        ADD_TOAST({
-          title: "Welcome",
-          message: `Welcome${!googleNew ? " back" : ""} ${user.username}!`,
-          intent: "success",
-          duration: 6500
-        })
-      );
-    }
+        }
+      })
+    );
 
-    if (googleNew)
+    if ((data as LoginGoogleResponseDto).google_new)
       dispatch(
         ADD_TOAST({
-          title: "Country Required",
-          message: `Due to the limitations of Google's registration, we had to assign a random country to your profile. To ensure the best experience and so you can connect to the correct region, please update your country at "Edit Profile". Quest Casino takes privacy seriously, there is no location tracking or data collection beyond what is necessary for account functionality.`,
+          title: localeApi.countryRequired,
+          message: (data as LoginGoogleResponseDto).google_new!,
           intent: "info"
         })
       );
   } catch (error: any) {
     logger.error("authApi handleLoginSuccess error:\n", error.message);
     dispatch(
-      unexpectedErrorToast(
-        "An unexpected error occurred while initializing your login session."
-      )
+      unexpectedErrorToast(localeApi.error.unexpectedLogin)
     );
   }
 }
@@ -964,13 +1011,15 @@ export const {
   useResetPasswordMutation,
   useSendConfirmPasswordEmailMutation,
   useSendForgotPasswordEmailMutation,
-  useDeleteUserNotificationsMutation,
+  // useWipeUserMutation,
   // useDeleteUserMutation,
+  useDeleteUserNotificationsMutation,
   useLogoutMutation,
   useInitializeFriendsMutation,
   useManageFriendRequestMutation,
   useUnfriendMutation,
-  useUserActivityMutation
+  useUserActivityMutation,
+  useLocaleChangeMutation
 } = authApi;
 
 export default authApi;

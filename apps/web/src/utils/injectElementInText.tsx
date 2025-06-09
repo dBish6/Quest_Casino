@@ -1,3 +1,5 @@
+import { STRIP_BRACKETS } from "@constants/LOCALE_STRIP_MARKERS";
+
 /**
  * @param options.localeMarker If true, will extract locale markers `{...}` or `{{...}}` automatically from the `message`.
  * @param options.injectAll If true, all markers/sequences will be replaced, and the `element`'s `text` callback returns an 
@@ -28,7 +30,7 @@ export default function injectElementInText(
     }
     if (!matches.length) return message;
 
-    const inserts = matches.map((m) => m.match.replace(/[{}]/g, "")),
+    const inserts = matches.map((m) => m.match.replace(STRIP_BRACKETS, "")),
       parts: React.ReactNode[] = [];
 
     let lastIndex = 0;
@@ -53,7 +55,7 @@ export default function injectElementInText(
     const match = message.match(/{{(.*?)}}|{(.*?)}/);
     if (!match) return message;
 
-    text = match[0].replace(/[{}]/g, "");
+    text = match[0].replace(STRIP_BRACKETS, "");
     msg = message.replace(match[0], text);
   }
 

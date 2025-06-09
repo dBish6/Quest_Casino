@@ -39,7 +39,8 @@ async function handleWinOrLossUpdate(next: CallbackWithoutResultAndOptionalError
       });
       if (!user)
         throw new ApiError(
-          "Unexpectedly couldn't find user statistics while updating win/loss total.",
+          "USER_NOT_FOUND_STATISTICS_UPDATING",
+          "auth",
           404,
           "not found"
         );

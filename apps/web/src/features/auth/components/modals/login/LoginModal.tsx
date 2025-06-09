@@ -4,6 +4,8 @@ import type NullablePartial from "@qc/typescript/typings/NullablePartial";
 import { useEffect, useState } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
+import injectElementInText from "@utils/injectElementInText";
+
 import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useSwitchModal from "@authFeat/hooks/useSwitchModal";
@@ -17,7 +19,6 @@ import { LoginWithGoogle } from "@authFeat/components/loginWithGoogle";
 import { Spinner } from "@components/loaders";
 
 import s from "./loginModal.module.css";
-import injectElementInText from "@utils/injectElementInText";
 
 export default function LoginModal() {
   const { content } = useLocale("LoginModal");
@@ -81,7 +82,7 @@ export default function LoginModal() {
 
       if (Object.keys(reqBody).length === 2) {
         const res = await postLogin(reqBody as LoginBodyDto);
-        if (res.data?.message?.endsWith("successfully.")) form.reset();
+        if (res.data?.success) form.reset();
       }
     } finally {
       setLoading(false);
@@ -180,9 +181,9 @@ export default function LoginModal() {
               null,
               (text) => (
                 <ModalTrigger
-                query={{ param: "register" }}
-                intent="primary"
-                onClick={handleSwitch}
+                  query={{ param: "register" }}
+                  intent="primary"
+                  onClick={handleSwitch}
                 >
                   {text}
                 </ModalTrigger>

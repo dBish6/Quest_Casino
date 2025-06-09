@@ -106,15 +106,20 @@ export default function RegisterModal() {
             formLoading={processing}
             resSuccessMsg={
               registerSuccess &&
-              injectElementInText(registerData.message, "log in", (text) => (
-                <ModalTrigger
-                  query={{ param: "login" }}
-                  intent="primary"
-                  onClick={handleSwitch}
-                >
-                  {text}
-                </ModalTrigger>
-              ))
+              injectElementInText(
+                registerData.message,
+                null,
+                (text) => (
+                  <ModalTrigger
+                    query={{ param: "login" }}
+                    intent="primary"
+                    onClick={handleSwitch}
+                  >
+                    {text}
+                  </ModalTrigger>
+                ),
+                { localeMarker: true }
+              )
             }
             resError={fetcher.data?.ERROR || registerError || loginGoogleError}
             clearErrors={() => setErrors({})}

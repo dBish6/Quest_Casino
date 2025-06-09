@@ -42,7 +42,7 @@ export default async function updateUserSession(
     req.userDecodedClaims = { ...req.userDecodedClaims!, ...newClaims };
   } catch (error: any) {
     if (isJwtError(error)) // Should never happen since the verifyUserToken middleware is used before this and we have to extract the exps here because in verifyUserToken it can either be the access or refresh token.
-      throw new HttpError("Unexpectedly one or two of the user tokens are invalid after initial validation.", 403);
+      throw new HttpError("TOKEN_MULTIPLE_INVALID", "auth", 403);
 
     throw handleHttpError(error, "updateUserSession error.");
   }

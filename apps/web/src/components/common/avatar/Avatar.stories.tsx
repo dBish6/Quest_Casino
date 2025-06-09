@@ -28,7 +28,6 @@ const meta: Meta<typeof Avatar> = {
   decorators: [
     (Story, { args }) => {
       const mockUser = useMockSelector((state) => state.auth.user.credentials)!;
-      console.log("mockUser", mockUser);
       return <Story args={{ ...args, user: mockUser }} />;
     }
   ]
@@ -85,10 +84,12 @@ export const Small: Story = {
   },
   ExtraExtraExtraLarge: Story = {
     argTypes: {
-      linkProfile: { table: { disable: true } },
+      showShortView: { table: { disable: true } },
+      linkProfile: { table: { disable: true } }
     },
     args: {
       size: "xxxl",
+      showShortView: false,
       linkProfile: false
     }
   };

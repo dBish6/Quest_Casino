@@ -43,10 +43,14 @@ export default function useHandleUserValidationResponse(
           form.setErrors(data.errors);
         } else if (data.reqBody && !data.reqBody.avatar_url) {
           const body = { ...data.reqBody, ...options.extraBody };
+          if (body.profileOnlyPassword) {
+            if (on.success) on.success({} as any, { request: { body } });
+            return;
+          }
 
           const mutation = mutationTrigger(body);
           await mutation.then((res: MutationResponse) => {
-            if (res.data?.message?.includes("successfully")) {
+            if (res.data?.success) {
               if (form.formRef) form.formRef.current!.reset();
               if (on.success) on.success(res.data, { request: { body } });
             } else if (isFetchBaseQueryError(res.error)) {

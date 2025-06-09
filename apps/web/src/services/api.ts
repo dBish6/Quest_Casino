@@ -7,6 +7,11 @@ import type { HttpResponse } from "@typings/ApiResponse";
 import { buildCreateApi, coreModule, reactHooksModule, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import allow500ErrorsTransform from "./allow500ErrorsTransform";
 
+export const API_BASE_URL =
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_URL
+    : "/api/v2";
+
 export const createApi = buildCreateApi(
   coreModule(),
   reactHooksModule({ unstable__sideEffectsInRender: true })
@@ -20,8 +25,8 @@ export function prepareHeadersAndOptions(custom?: { state: RootState }): Record<
             const csrfToken = getState().auth.user.token.csrf;
             if (csrfToken) headers.set("x-xsrf-token", csrfToken);
 
-            headers.set("Accept-Language", document.documentElement.lang);
             headers.set("Content-Type", "application/json");
+            headers.set("Accept-Language", document.documentElement.lang);
             return headers;
           }
         }
@@ -30,6 +35,7 @@ export function prepareHeadersAndOptions(custom?: { state: RootState }): Record<
           return {
             headers: {
               "Content-Type": "application/json",
+              "Accept-Language": document.documentElement.lang,
               ...(csrfToken && { "x-xsrf-token": csrfToken })
             }
           };

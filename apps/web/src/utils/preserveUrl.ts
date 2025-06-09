@@ -18,6 +18,12 @@ export default function preserveUrl(
   location: reactLocation<any> | Location,
   { preserveLocale = true }: PreserveUrlOptions = {}
 ) {
+  if ( // This is for storybook.
+    typeof window !== "undefined" &&
+    (window.location.pathname === "/iframe.html" || window.parent !== window)
+  )
+    preserveLocale = false;
+
   const orgSearch = location.search,
     override = typeof to === "string" && to.includes("?") ? to.split("?") : [],
     hashOverride = override[0]?.split("#") || [];

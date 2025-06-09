@@ -101,6 +101,10 @@ export interface UserDocFriends extends Document, DefaultDocFields {
 export interface UserQuest {
   quest: GameQuestDoc;
   current: number;
+  /**
+   * When they claim the award.
+   */
+  claimed: boolean;
 }
 export interface UserBonus {
   bonus: GameBonusDoc;
@@ -129,7 +133,7 @@ export interface UserDocStatistics extends Document, DefaultDocFields {
     rate: number;
   };
   progress: {
-    quest: Map<string, UserBonus>;
+    quest: Map<string, UserQuest>;
     bonus: Map<string, UserBonus>;
   };
 }

@@ -5,8 +5,8 @@ export interface LocaleInitialization {
 
 /**
  * Makers like "{}" are used for server data or something else that needs to be inserted in that place.
- * This is similar to i18next, but they do not do not do single, {}. i18next is never needed, it's a
- * useless package and that's why I don't use it.
+ * This is similar to i18next, but they do not do single, {}. i18next is never needed, it's a useless
+ * package and that's why I don't use it.
  * - {{}} - Will NOT be translated.
  * - {} - Will BE translated.
  */
@@ -19,9 +19,7 @@ export interface LocaleMeta {
 /**
  * Developer-Friendly Version
  * 
- * Most types were stripped due to how annoying they are in practice.
- * 
- * The 'realistic' version is shown below:
+ * Most types were stripped due to how annoying they are in practice, the 'realistic' version is shown below:
  * ```ts
  * interface LocaleEntry {
  *   title?: string | string[];
@@ -31,6 +29,10 @@ export interface LocaleMeta {
  *     title?: Record<string, string | string[]>;
  *     label?: Record<string, string | string[]>;
  *     descrip?: Record<string, string | string[]>;
+ *   };
+ *   form?: {
+ *     error?: Record<string, string | string[]>;
+ *     [field: string]: string;
  *   };
  *   [key: string]: string | string[];
  * }
@@ -51,10 +53,7 @@ export interface LocaleEntry {
 
   form: {
     [key: string]: any;
-    error: {
-      // [key: string]: string | string[];
-      [key: string]: any;
-    }
+    error: { [key: string]: any }
   }
 
   [key: string]: any;
@@ -95,39 +94,67 @@ export interface LocaleData {
     [component: string]: LocaleContent;
   };
   api: {
-    // TODO: Not sure yet.
-    message: {
-      [route: string]: { [key: string]: any };
+    error: {
+      [key: string]: any;
     };
+    success: {
+      [key: string]: any;
+    };
+
     action: {
-      [action: string]: { [key: string]: any };
+      [action: string]: {
+        error: {
+          [route: string]: { [key: string]: any };
+        };
+        success: {
+          [action: string]: { [key: string]: any };
+        };
+        [key: string]: any;
+      };
     };
+
+    [route: string]:
+      | {
+          error: {
+            [route: string]: { [key: string]: any };
+          };
+          success: {
+            [action: string]: { [key: string]: any };
+          };
+          [key: string]: any;
+        }
+      | any;
   };
+  utils: { [util: string]: any };
+  hooks: { [hook: string]: any };
   general: {
     noResults: string;
-    loginRequired: string;
+    games: string;
     refresh: string;
+    indicators: string;
+    indicator: string[];
     results: string;
     submit: string;
     update: string;
     unauthorized: string;
+    forbidden: string;
     form: {
       user: {
-        firstName: string;
-        lastName: string;
+        first_name: string;
+        last_name: string;
         email: string;
         username: string;
         password: string;
-        confirmPassword: string;
+        con_password: string;
         country: string;
         region: string;
-        callingCode: string;
-        phoneNumber: string;
+        calling_code: string;
+        phone_number: string;
         error: {
           required: string;
         }
       }
-    },
+    }
   };
   aria: {
     label: {

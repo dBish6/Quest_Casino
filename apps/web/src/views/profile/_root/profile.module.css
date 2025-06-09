@@ -194,14 +194,10 @@
                       }
                     }
 
-                    & .edit.username {
-                      display: grid;
-                      grid-template-columns: auto auto;
-                      & h2 {
-                        font: var(--h1);
-                        font-size: var(--h1-clamp);
-                        line-height: 100%;
-                      }
+                    & .edit.username h2 {
+                      font: var(--h1);
+                      font-size: var(--h1-clamp);
+                      line-height: 100%;
                     }
 
                     & > div:last-child {

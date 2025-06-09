@@ -35,7 +35,7 @@ export default async function initializeSession(
     if (!isOnlyCookiesUpdate) {
       const userQuery = User.findOne({ [identifier.by!]: identifier.value });
       user = await userQuery.exec() as UserDoc;
-      if (!user) return "Couldn't find the user while session initialization.";
+      if (!user) return "USER_NOT_FOUND_INIT";
 
       clientUser = await populateUserDoc(userQuery.clone())
         .client(identifier.by === "google_id")

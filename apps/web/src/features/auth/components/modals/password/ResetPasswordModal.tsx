@@ -49,14 +49,9 @@ function ResetPasswordModal() {
       error: (error) => {
         if (
           [401, 403].includes(error.status as number) &&
-          (error.data?.ERROR || "").includes("expired", -1)
+          (error.data?.name || "").includes("EXPIRED", -1)
         ) {
-          setError(
-            "global",
-            (error.data?.ERROR || "").includes("missing", -1)
-              ? content.form.error.tokenExpired
-              : content.form.error.tokenExpired.replace(/{[^{}]*}/g, "")
-          );
+          setError("global", content.form.error.tokenExpired);
         } else if (error.status === 429) {
           setError("global", error.data!.ERROR);
         }
@@ -160,4 +155,4 @@ function ResetPasswordModal() {
 
 ResetPasswordModal.restricted = "loggedIn";
 
-export default verTokenRequiredView(ResetPasswordModal, "reset");
+export default verTokenRequiredView(ResetPasswordModal);

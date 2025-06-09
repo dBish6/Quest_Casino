@@ -88,7 +88,7 @@
             "events": "Évènements",
             "players": "Joueurs",
             "meet": "Rencontrez quelqu'un !",
-            "friendsVerify": "Vous devez vérifier votre profil pour rencontrer et ajouter des amis, {send verification email}.",
+            "friendsVerify": "Vous devez vérifier votre profil pour rencontrer et ajouter des amis, {envoyer courriel de vérification}.",
             "noUsersFound": "Nous n'avons trouvé aucun utilisateur pour le moment. Veuillez réessayer plus tard!",
             "loginRequired": "{Se connecter} pour voir les autres joueurs.",
             "aria": {
@@ -115,7 +115,7 @@
               "Dés",
               "Favoris"
             ],
-            "redirectError": "D'une manière ou d'une autre, ce jeu n'a pas de lien de jeu, nous travaillons à résoudre ce problème dès que possible.",
+            "redirectError": "D'une manière ou d'une autre, ce jeu n'a pas de lien de jeu, nous travaillons à résoudre ce problème dès que possible",
             "TEMPmessage": "La fondation des jeux est actuellement en construction alors que nous migrons de Quest Casino v1 à v2. Les jeux auront leur propre serveur dédié, ce n'est pas une petite tâche ! Pour l'instant, les jeux présentés ne sont que des démos car il n'y a aucun moyen de synchroniser les données utilisateur de cette application aux jeux. Alors, restez attentif et passionnant !",
             "search": "Chercher",
             "searchType": "Type de texte",
@@ -149,6 +149,8 @@
         ]
       },
       "content": {
+        "verify": "Vérifiez votre profil",
+        "verifyNotice": "Nous avons remarqué que votre profil n'a pas encore été vérifié, {envoyer courriel de vérification}.",
         "loading": "Chargement du profil...",
         "error": {
           "title": "Données de profil introuvables",
@@ -180,7 +182,8 @@
         "Personal": {
           "title": "Informations personnelles",
           "oldPassword": "Ancien mot de passe",
-          "newPassword": "Nouveau mot de passe"
+          "newPassword": "Nouveau mot de passe",
+          "success": "Profil mis à jour avec succès."
         },
         "Billing": {
           "title": "Facturation",
@@ -348,19 +351,19 @@
               },
               "definitions": {
                 "title": "Définitions",
-                "para": "Aux fins de la présente politique de confidentialité:",
+                "para": "Aux fins de la présente politique de confidentialité :",
                 "list": [
-                  "{Profile} refers to a unique profile created for You to access and interact with Our Service or parts of Our Service.",
-                  "{Affiliate} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où \"contrôle\" désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
+                  "{Profil} fait référence à un profil unique créé pour que vous puissiez accéder à notre service ou à certaines parties de notre service.",
+                  "{Affilié} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où « contrôle » désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
                   "{Application} fait référence au Quest Casino, le logiciel fourni par la Société.",
-                  "{Company} (referred to as either \"the Company\", \"We\", \"Us\"; or \"Our\" in this Agreement) refers to Quest Casino.",
-                  "{Country} refers to: Newfoundland and Labrador, Canada",
-                  "{Device} means any device that can access the Service such as a computer, a cellphone or a digital tablet.",
-                  "{Personal Data} is any information that relates to an identified or identifiable individual.",
+                  "{Société} (désignée par « la Société », « Nous », “Notre” ou « Nos » dans cet Accord) fait référence à Quest Casino.",
+                  "{Pays} fait référence à : Terre-Neuve-et-Labrador, Canada",
+                  "{Appareil} désigne tout appareil pouvant accéder au Service tel qu'un ordinateur, un téléphone cellulaire ou une tablette numérique.",
+                  "{Données à caractère personnel} à caractère personnel sont toutes les informations qui se rapportent à une personne identifiée ou identifiable.",
                   "{Service} fait référence à l'application.",
-                  "{Service Provider} désigne toute personne physique ou morale qui traite les données au nom de la Société. Il se réfère à des entreprises ou individus tiers employés par la Société pour faciliter le Service, pour fournir le Service au nom de la Société, d’effectuer des services liés au Service ou d’aider la Société à analyser la façon dont le Service est utilisé.",
-                  "{Usage Data} fait référence aux données collectées automatiquement, soit générée par l'utilisation du Service soit par l'infrastructure du Service lui-même (par exemple, la durée d'une visite de la page).",
-                  "{You} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
+                  "{Prestataire de services} désigne toute personne physique ou morale qui traite les données au nom de la Société. Il se réfère à des entreprises ou individus tiers employés par la Société pour faciliter le Service, pour fournir le Service au nom de la Société, d’effectuer des services liés au Service ou d’aider la Société à analyser la façon dont le Service est utilisé.",
+                  "{Données d'utilisation} fait référence aux données collectées automatiquement, soit générée par l'utilisation du Service soit par l'infrastructure du Service lui-même (par exemple, la durée d'une visite de la page).",
+                  "{Vous} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
                 ]
               }
             }
@@ -368,19 +371,19 @@
           "eligibility": {
             "title": "Admissibilité",
             "para": [
-              "Vous devez être au moins {18 years old} pour utiliser notre service. Nous n'autorisons personne de moins de 18 ans à accéder au Service ou à l'utiliser.",
-              "Si nous découvrons qu'une personne de moins de 18 ans nous a fourni des données personnelles, Nous prendrons immédiatement des mesures pour supprimer ces informations de nos serveurs."
+              "Vous devez être au moins {18 ans} pour utiliser notre service. Nous n'autorisons personne de moins de 18 ans à accéder au Service ou à l'utiliser.",
+              "Si nous découvrons qu'une personne de moins de 18 ans nous a fourni des données à caractère personnel, Nous prendrons immédiatement des mesures pour supprimer ces informations de nos serveurs."
             ]
           },
           "collectingData": {
             "title": [
-              "Collecte et utilisation de vos données personnelles",
+              "Collecte et utilisation de vos données à caractère personnel",
               "Types de données collectées"
             ],
             "sub": {
               "personal": {
-                "title": "Données personnelles",
-                "para": "Lors de l’utilisation de Notre Service, nous pouvons vous demander de nous fournir certains renseignements personnels qui peuvent être utilisés pour vous contacter ou vous identifier. Les informations personnellement identifiables peuvent inclure, mais ne sont pas limitées à:",
+                "title": "Données à caractère personnel",
+                "para": "Lors de l’utilisation de Notre Service, nous pouvons vous demander de nous fournir certaines Données à caractère personnel pouvant être utilisées pour vous contacter ou vous identifier. Les Données à caractère personnel peuvent inclure, sans s’y limiter :",
                 "list": [
                   "Adresse e-mail",
                   "Prénom et nom",
@@ -399,101 +402,101 @@
                 ]
               },
               "usePersonal": {
-                "title": "Utilisation de vos données personnelles",
+                "title": "Utilisation de vos données à caractère personnel",
                 "para": [
                   "L'entreprise peut utiliser les données personnelles aux fins suivantes :",
                   "Nous pouvons partager vos informations personnelles dans les situations suivantes :"
                 ],
                 "list": [
                   [
-                    "{To provide and maintain our Service}, including to monitor the usage of our Service.",
-                    "{To manage Your Profile:} to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.",
-                    "{To contact You:} Pour vous contacter par courriel, appels téléphoniques, SMS ou autres formes équivalentes de communication électronique. comme les notifications push d'une application mobile concernant les mises à jour ou les communications informatives liées aux fonctionnalités, produits ou services contractuels, y compris les mises à jour de sécurité, si nécessaire ou raisonnable pour leur implémentation.",
-                    "{To provide You} avec des nouvelles, des offres spéciales et des informations générales sur d'autres biens, les services et les événements que nous offrons qui sont similaires à ceux que vous avez déjà achetés ou sollicités à moins que vous ayez choisi de ne pas recevoir de tels renseignements.",
-                    "{To manage Your requests:} To attend and manage Your requests to Us.",
-                    "{For business transfers:} We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding, in which Personal Data held by Us about our Service users is among the assets transferred.",
-                    "{For other purposes:} We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience."
+                    "{Pour fournir et maintenir notre Service}, y compris pour surveiller l'utilisation de notre Service.",
+                    "{Pour gérer votre Profil :} pour gérer votre inscription en tant qu'utilisateur du Service. Les Données à caractère personnel que Vous fournissez peuvent Vous donner accès à différentes fonctionnalités du Service qui Vous sont disponibles en tant qu'utilisateur enregistré.",
+                    "{Pour Vous contacter :} Pour vous contacter par courriel, appels téléphoniques, SMS ou autres formes équivalentes de communication électronique. comme les notifications push d'une application mobile concernant les mises à jour ou les communications informatives liées aux fonctionnalités, produits ou services contractuels, y compris les mises à jour de sécurité, si nécessaire ou raisonnable pour leur implémentation.",
+                    "{Vous fournir} avec des nouvelles, des offres spéciales et des informations générales sur d'autres biens, les services et les événements que nous offrons qui sont similaires à ceux que vous avez déjà achetés ou sollicités à moins que vous ayez choisi de ne pas recevoir de tels renseignements.",
+                    "{Gérer vos demandes} Pour traiter et gérer les demandes que vous nous adressez.",
+                    "{Pour les transferts d'activités :} Nous pouvons utiliser Vos informations pour évaluer ou effectuer une fusion, une cession, une restructuration, une réorganisation, une dissolution ou toute autre vente ou transfert de tout ou partie de Nos actifs, que ce soit dans le cadre de la poursuite de nos activités ou dans le cadre d'une faillite, d'une liquidation ou d'une procédure similaire, dans lesquelles les Données à caractère personnel que Nous détenons concernant les utilisateurs du Service font partie des actifs transférés.",
+                    "{Pour d'autres finalités :} Nous pouvons utiliser Vos informations à d'autres fins, telles que l'analyse de données, l'identification des tendances d'utilisation, la détermination de l'efficacité de nos campagnes promotionnelles, ainsi que pour évaluer et améliorer notre Service, nos produits, services, marketing et votre expérience."
                   ],
                   [
-                    "{With Service Providers:} We may share Your personal information with Service Providers to monitor and analyze the use of our Service, to contact You.",
-                    "{For business transfers:} We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.",
-                    "{With business partners:} We may share Your information with Our business partners to offer You certain products, services or promotions.",
-                    "{With other users:} when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside.",
-                    "{With Your consent:} We may disclose Your personal information for any other purpose with Your consent."
+                    "{Avec les Prestataires de services :} Nous pouvons partager Vos Données à caractère personnel avec des Prestataires de services afin de surveiller et d’analyser l’utilisation de Notre Service, ainsi que pour Vous contacter.",
+                    "{Pour les transferts d’activité :} Nous pouvons partager ou transférer Vos informations personnelles dans le cadre ou au cours de négociations liées à toute fusion, vente d’actifs de la Société, financement ou acquisition de tout ou partie de Notre activité par une autre société.",
+                    "{Avec des partenaires commerciaux :} Nous pouvons partager Vos informations avec Nos partenaires commerciaux afin de Vous proposer certains produits, services ou promotions.",
+                    "{Avec d'autres utilisateurs :} Lorsque Vous partagez des informations personnelles ou interagissez autrement dans les espaces publics avec d'autres utilisateurs, ces informations peuvent être vues par tous les utilisateurs et être distribuées publiquement en dehors.",
+                    "{Avec Votre consentement} Nous pouvons divulguer Vos informations personnelles à toute autre fin avec Votre consentement."
                   ]
                 ]
               },
               "retention": {
-                "title": "Conservation de vos données personnelles",
+                "title": "Conservation de vos données à caractère personnel",
                 "para": [
-                  "La Société ne conservera vos données personnelles que pour la durée nécessaire aux fins énoncées dans la présente Politique de confidentialité. Nous conserverons et utiliserons vos données personnelles dans la mesure nécessaire pour nous conformer à nos obligations légales (par exemple, si nous sommes tenus de conserver vos données afin de nous conformer aux lois applicables), de résoudre les différends et de mettre en œuvre nos conventions et politiques juridiques.",
-                  "La société conservera également les données d’utilisation à des fins d’analyse interne. Les données d'utilisation sont généralement conservées pour une période plus courte, sauf lorsque ces données sont utilisées pour renforcer la sécurité ou pour améliorer la fonctionnalité de notre service, ou nous sommes légalement tenus de conserver ces données pour des périodes plus longues."
+                  "La Société ne conservera Vos Données à caractère personnel que pour la durée nécessaire aux fins énoncées dans la présente Politique de confidentialité. Nous conserverons et utiliserons Vos Données à caractère personnel dans la mesure nécessaire pour Nous conformer à Nos obligations légales (par exemple, si Nous sommes tenus de conserver Vos Données à caractère personnel afin de respecter les lois applicables), résoudre des litiges et appliquer Nos accords et politiques juridiques.",
+                  "La Société conservera également les Données d'utilisation à des fins d’analyse interne. Les Données d'utilisation sont généralement conservées pour une période plus courte, sauf lorsqu’elles sont utilisées pour renforcer la sécurité, améliorer la fonctionnalité de Notre Service, ou lorsque Nous sommes légalement tenus de les conserver plus longtemps."
                 ]
               },
               "transfer": {
-                "title": "Transfert de vos données personnelles",
+                "title": "Transfert de vos données à caractère personnel",
                 "para": [
-                  "Vos informations, y compris vos données personnelles, est traité dans les bureaux d'exploitation de la Société et dans tout autre endroit où se trouvent les parties impliquées dans le traitement. Cela signifie que ces informations peuvent être transférées à des ordinateurs situés en dehors de votre état, de votre province, pays ou autre juridiction gouvernementale où les lois sur la protection des données peuvent différer de celles de votre juridiction.",
-                  "Nous prenons des mesures pour nous assurer que vos données personnelles sont traitées en toute sécurité et conformément aux lois en vigueur en matière de protection des données. Cela inclut l'utilisation de cryptage et les transferts de données sécurisés. En soumettant vos informations, vous consentez au transfert de vos données, sous réserve des mesures que nous avons mises en œuvre pour garantir le respect des lois applicables en matière de protection des données.",
-                  "Votre consentement à la présente politique de confidentialité suivie de la soumission de ces informations représente votre accord à ce transfert.",
-                  "La Société prendra toutes les mesures raisonnablement nécessaires pour s'assurer que vos données sont traitées en toute sécurité et conformément à la présente Politique de confidentialité, et aucun transfert de Vos données personnelles ne se fera à une organisation ou à un pays à moins qu'il n'y ait des contrôles adéquats, y compris la sécurité de vos données et d'autres informations personnelles."
+                  "Vos informations, y compris Vos Données à caractère personnel, sont traitées dans les bureaux d’exploitation de la Société et dans tout autre lieu où se trouvent les parties impliquées dans ce traitement. Cela signifie que ces informations peuvent être transférées vers des ordinateurs situés en dehors de Votre État, de votre province, de votre pays ou d’une autre juridiction gouvernementale où les lois relatives à la protection des données peuvent différer de celles de Votre juridiction.",
+                  "Nous prenons des mesures pour Nous assurer que Vos Données à caractère personnel sont traitées en toute sécurité et conformément aux lois en vigueur en matière de protection des données. Cela inclut l’utilisation du chiffrement et de transferts de données sécurisés. En soumettant Vos informations, Vous consentez au transfert de Vos Données à caractère personnel, sous réserve des mesures que nous avons mises en œuvre pour garantir le respect des lois applicables en matière de protection des données.",
+                  "Votre consentement à la Présente politique de confidentialité suivie de la soumission de ces informations représente Votre accord à ce transfert.",
+                  "La Société prendra toutes les mesures raisonnablement nécessaires pour s’assurer que Vos données sont traitées en toute sécurité et conformément à la présente Politique de confidentialité, et aucun transfert de Vos Données à caractère personnel ne sera effectué vers une organisation ou un Pays, à moins que des contrôles adéquats soient en place, y compris en ce qui concerne la sécurité de Vos données et d’autres informations."
                 ]
               },
               "delete": {
-                "title": "Supprimer vos données personnelles",
+                "title": "Supprimer vos données à caractère personnel",
                 "para": [
-                  "Vous avez le droit de supprimer ou de demander que Nous aidions à supprimer les données personnelles que nous avons collectées à votre sujet.",
-                  "Notre Service peut vous donner la possibilité de supprimer certaines informations vous concernant de l'intérieur du Service.",
-                  "Vous pouvez mettre à jour, modifier ou supprimer vos informations à tout moment en vous connectant à Votre profil, si vous en avez un, et en visitant la section Modifier votre profil qui vous permet de gérer vos informations personnelles. Vous pouvez également communiquer avec Nous pour nous demander l’accès, la correction ou la suppression de tout renseignement personnel que vous nous avez fourni.",
-                  "Veuillez toutefois noter que nous pourrions devoir conserver certaines informations lorsque nous avons une obligation légale ou une base légale pour le faire."
+                  "Vous avez le droit de supprimer ou de demander que Nous aidions à supprimer les Données à caractère personnel que Nous avons collectées à Votre sujet.",
+                  "Notre Service peut Vous donner la possibilité de supprimer certaines informations Vous concernant depuis l’intérieur du Service.",
+                  "Vous pouvez mettre à jour, modifier ou supprimer Vos informations à tout moment en Vous connectant à Votre Profil, si Vous en avez un, et en visitant la section « Modifier Votre Profil » qui Vous permet de gérer Vos Données à caractère personnel. Vous pouvez également communiquer avec Nous pour demander l’accès, la correction ou la suppression de toute Donnée à caractère personnel que Vous Nous avez fournie.",
+                  "Veuillez toutefois noter que Nous pourrions devoir conserver certaines informations lorsque nous avons une obligation légale ou une base légale pour le faire."
                 ]
               },
               "disclosure": {
-                "title": "Divulgation de vos données personnelles"
+                "title": "Divulgation de vos données à caractère personnel"
               },
               "businessTran": {
-                "title": "Transactions commerciales",
-                "para": "Si la société est impliquée dans une fusion, acquisition ou vente d'actifs, vos données personnelles peuvent être transférées. Nous vous informerons avant que vos données personnelles ne soient transférées et ne soient soumises à une politique de confidentialité différente."
+                "title": "Opérations commerciales",
+                "para": "Si la Société est impliquée dans une fusion, une acquisition ou une vente d’actifs, Vos Données à caractère personnel peuvent être transférées. Nous Vous informerons avant que Vos Données à caractère personnel ne soient transférées et soumises à une Politique de confidentialité différente."
               },
               "law": {
                 "title": "Service de police",
-                "para": "Dans certaines circonstances, La Société peut être tenue de divulguer vos données personnelles si elle y est tenue par la loi ou en réponse aux demandes valides des autorités publiques (e. . - un tribunal ou une agence gouvernementale)."
+                "para": "Dans certaines circonstances, la Société peut être tenue de divulguer Vos Données à caractère personnel si la loi l’exige ou en réponse à des demandes valides d’autorités publiques (par exemple un tribunal ou un organisme gouvernemental)."
               },
               "otherLegal": {
                 "title": "Autres exigences légales",
-                "para": "La société peut divulguer vos données personnelles en toute bonne foi croyant qu'une telle action est nécessaire à:",
+                "para": "La société peut divulguer Vos Données à caractère personnel en toute bonne foi croyant qu'une telle action est nécessaire à :",
                 "list": [
                   "Se conformer à une obligation légale",
-                  "Protéger et défendre les droits ou la propriété de la société",
+                  "Protéger et défendre les droits ou la propriété de la Société",
                   "Empêcher ou enquêter sur d'éventuels actes répréhensibles en relation avec le Service",
                   "Protéger la sécurité personnelle des Utilisateurs du Service ou du public",
                   "Protéger contre la responsabilité juridique"
                 ]
               },
               "security": {
-                "title": "Sécurité de vos données personnelles",
-                "para": "La sécurité de vos données personnelles est importante pour nous, mais rappelez-vous qu’aucune méthode de transmission sur Internet ou méthode de stockage électronique n’est 100 % sécurisée. Bien que nous nous efforcions d'utiliser des moyens commercialement acceptables pour protéger vos données personnelles, nous ne pouvons pas garantir leur sécurité absolue."
+                "title": "Sécurité de vos données à caractère personnel",
+                "para": "La sécurité de Vos Données à caractère personnel est importante pour Nous, mais rappelez-Vous qu’aucune méthode de transmission sur Internet ni aucun mode de stockage électronique n’est sécurisé à 100 %. Bien que Nous nous efforcions d'utiliser des moyens commercialement acceptables pour protéger Vos Données à caractère personnel, Nous ne pouvons pas en garantir la sécurité absolue."
               }
             }
           },
           "externalLinks": {
             "title": "Liens vers d'autres sites web",
             "para": [
-              "Notre Service peut contenir des liens vers d'autres sites Web qui ne sont pas exploités par nous. Si vous cliquez sur un lien tiers, Vous serez dirigé vers le site de ce tiers. Nous vous conseillons fortement de consulter la politique de confidentialité de chaque site que vous visitez.",
+              "Notre Service peut contenir des liens vers d'autres sites Web qui ne sont pas exploités par Nous. Si Vous cliquez sur un lien tiers, Vous serez dirigé vers le site de ce tiers. Nous Vous conseillons fortement de consulter la politique de confidentialité de chaque site que Vous visitez.",
               "Nous n'avons aucun contrôle sur le contenu, les politiques de confidentialité ou les pratiques des sites ou services de tiers et nous n'assumons aucune responsabilité à cet égard."
             ]
           },
           "changes": {
             "title": "Modifications de cette politique de confidentialité",
             "para": [
-              "Il se peut que nous mettions à jour notre politique de confidentialité de temps à autre. Nous vous informerons de tout changement en publiant la nouvelle politique de confidentialité sur cette page.",
-              "Nous vous informerons par e-mail et/ou par un avis important sur Notre Service, avant que le changement ne prenne effet et met à jour la date de la « dernière mise à jour » en haut de la présente Politique de confidentialité.",
-              "Nous vous conseillons de consulter cette politique de confidentialité périodiquement pour tout changement. Les modifications apportées à cette politique de confidentialité sont en vigueur lorsqu'elles sont affichées sur cette page."
+              "Il se peut que Nous mettions à jour Notre Politique de confidentialité de temps à autre. Nous Vous informerons de tout changement en publiant la nouvelle Politique de confidentialité sur cette page.",
+              "Nous Vous informerons par e-mail et/ou par un avis important sur Notre Service, avant que le changement ne prenne effet et mettrons à jour la date de « dernière mise à jour » en haut de la présente Politique de confidentialité.",
+              "Nous Vous conseillons de consulter cette Politique de confidentialité périodiquement pour tout changement. Les modifications apportées à cette Politique de confidentialité prennent effet lorsqu'elles sont publiées sur cette page."
             ]
           },
           "contact": {
             "title": "Contactez-nous",
-            "para": "Si vous avez des questions au sujet de cette politique de confidentialité, vous pouvez nous contacter :",
+            "para": "Si vous avez des questions au sujet de cette Politique de confidentialité, Vous pouvez nous contacter :",
             "list": [
               "Par courriel :",
               "En visitant :"
@@ -504,22 +507,22 @@
     },
     "/terms": {
       "meta": {
-        "title": "Conditions d'utilisation",
+        "title": "Conditions générales d'utilisation",
         "tags": [
           {
             "name": "description",
-            "content": "Examinez les conditions d'utilisation du casino de quête. Comprenez les règles, les responsabilités et les droits lors de l'utilisation de notre plateforme, y compris l'utilisation du compte, la propriété du contenu et les politiques."
+            "content": "Examinez les Conditions générales d'utilisation du casino de quête. Comprenez les règles, les responsabilités et les droits lors de l'utilisation de notre plateforme, y compris l'utilisation du compte, la propriété du contenu et les politiques."
           },
           {
             "name": "keywords",
-            "content": "conditions d'utilisation, conditions générales, conditions d'utilisation, politiques, règles de compte"
+            "content": "conditions générales d'utilisation, conditions générales, conditions d'utilisation, politiques, règles de compte"
           }
         ]
       },
       "content": {
         "header": {
           "lastUpdated": "Dernière mise à jour :",
-          "para": "Veuillez lire attentivement les conditions d'utilisation avant d'utiliser notre service."
+          "para": "Veuillez lire attentivement les Conditions générales d'utilisation avant d'utiliser Notre Service."
         },
         "section": {
           "interAndDef": {
@@ -531,18 +534,18 @@
               },
               "definitions": {
                 "title": "Définitions",
-                "para": "Aux fins des conditions d'utilisation :",
+                "para": "Aux fins des conditions générales d'utilisation :",
                 "list": [
-                  "{Application} signifie le logiciel fourni par la Société, le Casino de Quête",
-                  "{Affiliate} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où \"contrôle\" désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
-                  "{Country} refers to: Newfoundland and Labrador, Canada",
-                  "{Company} (referred to as either \"the Company\", \"We\", \"Us\"; or \"Our\" in this Agreement) refers to Quest Casino.",
-                  "{Device} means any device that can access the Service such as a computer, a cellphone or a digital tablet.",
+                  "{Application} désigne le logiciel fourni par la Société, nommée Quest Casino.",
+                  "{Affilié} signifie une entité qui contrôle, est contrôlée ou est sous contrôle commun avec un groupe, où « contrôle » désigne la propriété de 50 % ou plus des actions, des intérêts en capitaux propres ou autres titres ayant le droit de voter pour l'élection des administrateurs ou d'une autre autorité de gestion.",
+                  "{Pays} fait référence à : Terre-Neuve-et-Labrador, Canada",
+                  "{Société} (désignée par « la Société », « Nous », “Notre” ou « Nos » dans cet Accord) fait référence à Quest Casino.",
+                  "{Appareil} désigne tout appareil pouvant accéder au Service tel qu'un ordinateur, un téléphone cellulaire ou une tablette numérique.",
                   "{Service} fait référence à l'application.",
-                  "{Terms of Service} (également appelé \"Conditions\") désigne les Conditions d'utilisation qui constituent l'intégralité de l'accord entre vous et la Société concernant l'utilisation du Service.",
-                  "{Third-party Social Media Service} désigne tous les services ou contenus (y compris les données, les informations, les informations produits ou services) fournis par un tiers qui peut être affiché, inclus ou mis à disposition par le Service.",
-                  "{{CAD}} refers to Canadian dollars.",
-                  "{You} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
+                  "{Conditions générales d'utilisation} (également appelées « Conditions ») désignent les présentes conditions générales qui constituent l’intégralité de l’accord entre Vous et la Société concernant l’utilisation du Service.",
+                  "{Service de médias sociaux tiers} désigne tous les services ou contenus (y compris les données, les informations, les informations produits ou services) fournis par un tiers qui peut être affiché, inclus ou mis à disposition par le Service.",
+                  "{{CAD}} désigne les dollars canadiens.",
+                  "{Vous} signifie que la personne accède au Service ou utilise celui-ci, ou la société, ou toute autre entité juridique au nom de laquelle cette personne accède au Service ou en utilise, le cas échéant."
                 ]
               }
             }
@@ -550,18 +553,18 @@
           "acknowledgment": {
             "title": "Reconnaissance",
             "para": [
-              "Il s'agit des Conditions d'utilisation régissant l'utilisation de ce Service et de l'accord qui opère entre vous et la Société. Les présentes conditions énoncent les droits et obligations de tous les utilisateurs en ce qui concerne l'utilisation du Service.",
-              "Votre accès et votre utilisation du Service sont conditionnés à votre acceptation et à votre conformité aux Conditions d’utilisation. Les présentes conditions s'appliquent à tous les visiteurs, utilisateurs et autres qui accèdent ou utilisent le Service.",
-              "En accédant au Service ou en l'utilisant, vous acceptez d'être lié par ces Conditions. Si vous n'êtes pas d'accord avec une partie quelconque des Conditions d'utilisation, vous ne pouvez pas accéder au Service.",
+              "Il s'agit des Conditions générales d'utilisation régissant l'utilisation de ce Service et de l'accord qui opère entre Vous et la Société. Les présentes conditions énoncent les droits et obligations de tous les utilisateurs en ce qui concerne l'utilisation du Service.",
+              "Votre accès et votre utilisation du Service sont conditionnés à Votre acceptation et à votre conformité aux Conditions générales d'utilisation. Les présentes conditions s'appliquent à tous les visiteurs, utilisateurs et autres qui accèdent ou utilisent le Service.",
+              "En accédant au Service ou en l'utilisant, vous acceptez d'être lié par ces Conditions. Si vous n'êtes pas d'accord avec une partie quelconque des Conditions générales d'utilisation, vous ne pouvez pas accéder au Service.",
               "Vous déclarez que vous avez plus de 18 ans et que la Société ne permet pas à ceux qui ont moins de 18 ans d'utiliser le Service.",
-              "Votre accès et votre utilisation du Service sont également conditionnés à votre acceptation et respect de la Politique de confidentialité de la Société. Notre politique de confidentialité décrit nos politiques et procédures sur la collecte, l'utilisation et la divulgation de vos renseignements personnels lorsque vous utilisez l'application ou le site Web et vous informe sur vos droits en matière de confidentialité et sur la façon dont la loi vous protège. Veuillez lire attentivement notre politique de confidentialité avant d'utiliser notre service."
+              "Votre accès et votre utilisation du Service sont également conditionnés à votre acceptation et à votre respect de la Politique de confidentialité de la Société. La Politique de confidentialité décrit Nos politiques et procédures relatives à la collecte, à l'utilisation et à la divulgation de Vos renseignements personnels lorsque Vous utilisez l'Application ou le site Web, et Vous informe de Vos droits en matière de confidentialité ainsi que de la manière dont la loi Vous protège. Veuillez lire attentivement Notre Politique de confidentialité avant d'utiliser le Service."
             ]
           },
           "profiles": {
             "title": "Profils de l'utilisateur",
             "para": [
               "Vous pouvez créer un compte.",
-              "Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe. Toute activité effectuée via votre compte est de votre responsabilité.",
+              "Vous êtes responsable du maintien de la confidentialité de Votre compte et de Votre mot de passe. Toute activité effectuée via Votre compte relève de Votre responsabilité.",
               "Nous nous réservons le droit de résilier les comptes qui violent nos règles."
             ],
             "sub": {
@@ -585,24 +588,24 @@
             "title": "Liens vers d'autres sites web",
             "para": [
               "Notre Service peut contenir des liens vers des sites Web ou des services de tiers qui ne sont pas détenus ou contrôlés par la Société.",
-              "La Société n'a aucun contrôle et n'assume aucune responsabilité quant au contenu, aux politiques de confidentialité ou aux pratiques des sites ou services Web de tiers. Vous reconnaissez en outre et acceptez que la Société ne soit pas responsable ou responsable, directement ou indirectement, pour tout dommage ou perte causé ou supposé être causé par ou en relation avec l'utilisation ou la confiance d'un tel contenu, biens ou services disponibles sur ou par l'intermédiaire de tels sites ou services.",
-              "Nous vous conseillons fortement de lire les conditions de service et les politiques de confidentialité de tout site Web ou service tiers que vous visitez."
+              "La Société n’a aucun contrôle sur le contenu, les politiques de confidentialité ou les pratiques des sites Web ou services de tiers, et n’assume aucune responsabilité à cet égard. Vous reconnaissez et acceptez en outre que la Société ne saurait être tenue responsable, directement ou indirectement, de tout dommage ou perte causé ou présumé causé par, ou en lien avec, l’utilisation ou la confiance accordée à un tel contenu, à des biens ou à des services disponibles sur ou via de tels sites ou services.",
+              "Nous Vous conseillons fortement de lire les conditions générales d'utilisation et les politiques de confidentialité de tout site Web ou Service de tiers que Vous visitez."
             ]
           },
           "termination": {
             "title": "Résiliation",
             "para": [
-              "Nous pouvons résilier ou suspendre votre accès immédiatement, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris sans limitation si vous enfreignez les conditions d'utilisation.",
-              "En cas de résiliation, votre droit d’utiliser le Service cessera immédiatement."
+              "Nous pouvons suspendre ou résilier Votre accès au Service immédiatement, sans préavis ni responsabilité, pour quelque raison que ce soit, y compris, sans limitation, en cas de non-respect des présentes Conditions générales d'utilisation.",
+              "En cas de résiliation, Votre droit d’utiliser le Service cessera immédiatement."
             ]
           },
           "liability": {
             "title": "Limitation de responsabilité",
             "para": [
-              "Dans toute la mesure permise par la loi applicable, la responsabilité totale de l'entreprise et de ses fournisseurs pour toute réclamation liée au Service sera limitée au montant effectivement payé par vous pour le Service, ou {{$100 CAD}} si vous n'avez fait aucun achat via le Service.",
-              "En aucun cas la Société ou ses fournisseurs ne peuvent être tenus responsables de quelque nature que ce soit indirecte, accessoire, spéciale, dommages consécutifs, ou punitifs, y compris, mais sans s'y limiter, la perte de profits, la perte de données, l'interruption de l'entreprise, une blessure corporelle, ou une perte de confidentialité, due ou liée à l'utilisation ou à l'incapacité d'utiliser le service, des logiciels tiers ou du matériel utilisés avec le Service, même s'il est avisé de la possibilité de tels dommages.",
-              "Certaines provinces et certains territoires ne permettent pas l'exclusion ou la limitation de certains dommages ou garanties implicites. Dans de tels cas, les limites ci-dessus ne s'appliquent que dans la mesure permise par les lois de votre juridiction.",
-              "Rien dans ces conditions ne peut exclure ou limiter toute responsabilité dans la mesure où cette exclusion ou limitation est interdite par les lois canadiennes applicables sur la protection des consommateurs y compris, mais sans s'y limiter, les lois régissant les pratiques commerciales trompeuses, les contrats de consommation et la responsabilité pour les dommages causés par la négligence."
+              "Dans toute la mesure permise par la loi applicable, la responsabilité totale de la Société et de ses fournisseurs à l’égard de toute réclamation liée au Service sera limitée au montant que Vous avez effectivement payé pour le Service, ou à {{$100 CAD}} si Vous n’avez effectué aucun achat via le Service.",
+              "En aucun cas la Société ou ses fournisseurs ne pourront être tenus responsables de tout dommage indirect, accessoire, spécial, consécutif ou punitif, y compris, sans s’y limiter, la perte de profits, la perte de données, l’interruption d’activité, les blessures corporelles ou la perte de confidentialité, résultant de ou liés à l’utilisation ou à l’impossibilité d’utiliser le Service, les logiciels tiers ou le matériel utilisé avec le Service, même s’ils ont été informés de la possibilité de tels dommages.",
+              "Certaines provinces ou certains territoires ne permettent pas l’exclusion ou la limitation de certains dommages ou garanties implicites. Dans de tels cas, les limitations ci-dessus ne s’appliquent que dans la mesure permise par les lois de Votre juridiction.",
+              "Aucune disposition des présentes Conditions générales d’utilisation ne peut exclure ou limiter toute responsabilité dans la mesure où une telle exclusion ou limitation est interdite par les lois canadiennes applicables en matière de protection des consommateurs, y compris, sans s’y limiter, les lois régissant les pratiques commerciales trompeuses, les contrats de consommation et la responsabilité pour les dommages causés par négligence."
             ]
           },
           "asIs": {
@@ -610,56 +613,56 @@
             "para": [
               "Quest Casino est un jeu virtuel à des fins de divertissement seulement. Aucun argent réel n'est parié ou gagné. Cette plateforme ne fournit aucune forme de jeu d'argent réel et n'est pas réglementée en tant que service de jeu en vertu de la loi.",
               "Le Service vous est fourni \"TEL QUEL\" et \"TEL QUEL DISPONIBLE\" et avec tous les défauts et défauts sans garantie d'aucune sorte. Dans la mesure maximale permise par la loi applicable, la Société, en son propre nom et au nom de ses affiliés et de ses concédants de licence et fournisseurs de services respectifs, rejette expressément toute garantie, qu'elle soit expresse, implicite, légale ou autre, en ce qui concerne le Service, y compris toutes les garanties implicites de qualité marchande, d'adaptation à un usage particulier, le titre et la non-contrefaçon, ainsi que les garanties qui peuvent découler de la négociation, du cours de performance, de l'utilisation ou de la pratique commerciale. Sans limitation de ce qui précède, la Société ne fournit aucune garantie ou engagement, et ne fait aucune représentation d'aucune sorte que le Service répondra à vos exigences, atteindra les résultats escomptés, être compatible ou travailler avec tout autre logiciel, application, système ou services, fonctionner sans interruption, satisfont à toutes les normes de performance ou de fiabilité ou sont exemptes d’erreurs ou de défauts qui peuvent ou seront corrigés.",
-              "Sans limiter ce qui précède, ni la Société ni aucun des fournisseurs de l'entreprise ne fait de représentation ou de garantie d'aucune sorte, expresse ou implicite: (i) quant à l’opération ou à la disponibilité du Service, ou aux informations, contenus, matériaux ou produits qui y sont inclus ; (ii) que le Service soit ininterrompu ou sans erreur; (iii) quant à l'exactitude, la fiabilité ou l'actualité de toute information ou contenu fourni par l'intermédiaire du Service ; ou (iv) que le Service, ses serveurs, le contenu ou les e-mails envoyés par ou pour le compte de la Société sont exempts de virus, scripts, chevaux de Troie, vers, logiciels malveillants, bombes à retardement ou autres composants nocifs.",
-              "Certaines juridictions n'autorisent pas l'exclusion de certains types de garanties ou de limitations sur les droits statutaires applicables d'un consommateur, de sorte que certaines ou toutes les exclusions et limitations ci-dessus peuvent ne pas s’appliquer à vous. Mais dans un tel cas, les exclusions et les limites énoncées dans le présent article seront appliquées dans la plus grande mesure possible en vertu de la loi applicable."
+              "Sans limiter ce qui précède, ni la Société ni aucun de ses fournisseurs ne donne de déclaration ni de garantie, expresse ou implicite : (i) quant au fonctionnement ou à la disponibilité du Service, ni aux informations, contenus, éléments ou produits qui y sont inclus ; (ii) quant à l’absence d’interruptions ou d’erreurs dans le Service ; (iii) quant à l’exactitude, la fiabilité ou l’actualité de toute information ou contenu fourni par l’intermédiaire du Service ; ou (iv) quant à l’absence de virus, de scripts, de chevaux de Troie, de vers, de logiciels malveillants, de bombes logiques ou d’autres éléments nuisibles dans le Service, ses serveurs, son contenu ou les courriels envoyés par ou pour le compte de la Société.",
+              "Certaines juridictions n’autorisent pas l’exclusion de certains types de garanties ou la limitation des droits statutaires applicables à un consommateur. Par conséquent, certaines ou l’ensemble des exclusions et limitations ci-dessus peuvent ne pas s’appliquer à Vous. Toutefois, dans un tel cas, les exclusions et limitations énoncées dans le présent article seront appliquées dans la mesure maximale permise par la loi applicable."
             ]
           },
           "governingLaw": {
             "title": "Loi Gouvernante",
             "para": [
               "Les présentes modalités et votre utilisation du Service seront régies par et interprétées conformément aux lois de la province de Terre-Neuve-et-Labrador et aux lois fédérales du Canada qui y sont applicables, à l'exclusion de toute disposition en conflit de lois qui appliquerait les lois d'une autre juridiction.",
-              "Votre utilisation de la Demande peut également être assujettie à d'autres lois municipales, provinciales ou fédérales au Canada."
+              "Votre utilisation de l’Application peut également être soumise à d’autres lois municipales, provinciales ou fédérales en vigueur au Canada."
             ]
           },
           "disputes": {
             "title": "Résolution des différends",
-            "para": "Si vous avez des préoccupations ou des différends au sujet du Service, vous acceptez d’abord de tenter de résoudre le différend de façon informelle en contactant la Société."
+            "para": "Si Vous avez des préoccupations ou des différends au sujet du Service, vous acceptez d’abord de tenter de résoudre le différend de façon informelle en contactant la Société."
           },
           "european": {
             "title": "Pour les utilisateurs de l'Union européenne (UE)",
-            "para": "Si vous êtes un consommateur de l'Union européenne, vous bénéficierez de toutes les dispositions obligatoires de la loi du pays dans lequel vous résidez."
+            "para": "Si Vous êtes un consommateur de l'Union européenne, vous bénéficierez de toutes les dispositions obligatoires de la loi du pays dans lequel Vous résidez."
           },
           "unitedStates": {
             "title": "Conformité juridique des États-Unis",
-            "para": "Vous déclarez et garantissez que (i) vous n'êtes pas situé dans un pays soumis à l'embargo du gouvernement américain, ou qui a été désigné par le gouvernement des États-Unis comme un pays de soutien aux terroristes, et (ii) Vous n'êtes inscrit sur aucune liste de parties interdites ou restreintes du gouvernement des États-Unis."
+            "para": "Vous déclarez et garantissez que (i) Vous ne vous trouvez pas dans un pays faisant l’objet d’un embargo imposé par le gouvernement des États-Unis, ou désigné par ce dernier comme soutenant le terrorisme ; et (ii) Vous ne figurez sur aucune liste du gouvernement des États-Unis de parties interdites ou restreintes."
           },
           "severAndWaiver": {
-            "title": "Séparabilité et dispense",
+            "title": "Divisibilité et renonciation",
             "sub": {
               "severability": {
-                "title": "Séparabilité",
+                "title": "Divisibilité",
                 "para": "Si l'une des dispositions de ces conditions est jugée inexécutable ou invalide, une telle disposition sera modifiée et interprétée de manière à atteindre les objectifs de cette disposition dans la mesure du possible en vertu de la loi applicable, et les autres dispositions demeureront pleinement en vigueur."
               },
               "waiver": {
-                "title": "Abandon",
+                "title": "Renonciation",
                 "para": "Sauf si fourni dans les présentes, le fait de ne pas exercer un droit ou d'exiger l'exécution d'une obligation en vertu des présentes conditions n'affecte pas la capacité d'une partie à exercer ce droit ou à exiger une telle exécution à aucun moment par la suite et la renonciation à une infraction ne constituera pas une renonciation à toute violation subséquente."
               }
             }
           },
           "translation": {
             "title": "Interprétation de traduction",
-            "para": "Les conditions d'utilisation peuvent avoir été traduites si nous vous les avons mises à disposition sur notre Service. Vous convenez que le texte original anglais prévaudra en cas de litige."
+            "para": "Les Conditions générales d'utilisation peuvent avoir été traduites si nous Vous les avons mises à disposition sur notre Service. Vous convenez que le texte original anglais prévaudra en cas de litige."
           },
           "changes": {
-            "title": "Modifications des conditions d'utilisation",
+            "title": "Modifications des conditions générales d'utilisation",
             "para": [
-              "Nous nous réservons le droit, à notre entière discrétion, de modifier ou de remplacer ces conditions à tout moment. Si une révision est importante, Nous ferons des efforts raisonnables pour fournir au moins 30 jours de préavis avant toute nouvelle entrée en vigueur. Ce qui constitue un changement important sera déterminé à notre seule discrétion.",
-              "En continuant à accéder ou à utiliser Notre Service après l'entrée en vigueur de ces révisions, vous acceptez d'être lié par les conditions révisées. Si vous n’acceptez pas les nouvelles modalités, en tout ou en partie, veuillez cesser d’utiliser le site Web et le Service."
+              "Nous nous réservons le droit, à Notre entière discrétion, de modifier ou de remplacer ces Conditions à tout moment. Si une révision est importante, Nous ferons des efforts raisonnables pour fournir au moins 30 jours de préavis avant toute nouvelle entrée en vigueur. Ce qui constitue un changement important sera déterminé à Notre seule discrétion.",
+              "En continuant à accéder ou à utiliser Notre Service après l'entrée en vigueur de ces révisions, Vous acceptez d'être lié par les conditions révisées. Si Vous n’acceptez pas les nouvelles modalités, en tout ou en partie, veuillez cesser d’utiliser le site web et le Service."
             ]
           },
           "contact": {
             "title": "Contactez-nous",
-            "para": "Si vous avez des questions au sujet des conditions d'utilisation, vous pouvez nous contacter :",
+            "para": "Si vous avez des questions au sujet des Conditions générales d'utilisation, Vous pouvez nous contacter :",
             "list": [
               "Par courriel :",
               "En visitant :"
@@ -814,7 +817,7 @@
       "bonuses": "Bonus",
       "about": "À propos de nous",
       "support": "Contacter le support",
-      "terms": "Conditions d'utilisation",
+      "terms": "Conditions générales d'utilisation",
       "policy": "Politique de confidentialité",
       "language": "Langue"
     },
@@ -977,7 +980,7 @@
       "back": "Retour à la connexion",
       "form": {
         "error": {
-          "tokenExpired": "Il semble que votre lien de réinitialisation ait expiré{ou qu'il n'ait pas été envoyé}. Veuillez en demander un nouveau."
+          "tokenExpired": "Il semble que votre lien de réinitialisation a expiré ou est manquant. Veuillez en demander un nouveau."
         }
       },
       "aria": {
@@ -1041,7 +1044,6 @@
     },
     "ViewProfileModal": {
       "error": {
-        "unexpected": "Une erreur serveur inattendue s'est produite. Essayez de rafraîchir la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}.",
         "unknown": "Une erreur inconnue s'est produite. Le serveur pourrait être en panne ou il y a eu un problème lors du traitement de votre requête. Essayez d'actualiser la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}."
       },
       "section": {
@@ -1337,20 +1339,122 @@
           "completed": "Complété"
         }
       }
+    },
+    "RestrictView": {
+      "title": "Session de connexion requise",
+      "invalid": "Vous devez être connecté pour accéder à cette page."
+    },
+    "verTokenRequiredView": {
+      "reset": "réinitialisation",
+      "invalid": "Il semble que le lien {{param}} n'est pas valide. Veuillez vous assurer que vous avez accédé à cette page via le lien fourni dans votre e-mail."
     }
   },
   "api": {
-    "message": {
+    "welcome": "Bienvenue",
+    "welcomeIssue": "Problème de bienvenue",
+    "countryRequired": "Pays requis",
+    "unexpectedTitle": "Erreur inattendue",
+    "sessionExpiredTitle": "Session expirée",
+    "error": {
+      "unexpectedLogin": "Une erreur inattendue s'est produite lors de l'initialisation de votre session de connexion.",
+      "unexpected": "Une erreur inattendue s'est produite.",
+      "tryRefresh": " Veuillez essayer de rafraîchir la page.",
+      "unexpectedFull": "{{message}}{{refresh}} Si l'erreur persiste, n'hésitez pas à contacter {soutien}.",
+      "unexpectedServer": "Une erreur serveur inattendue s'est produite.",
+      "sessionExpired": "Votre session de connexion a expiré, {se connecter}."
+    },
+    "errorHandler": {
+      "verification": "Vérification requise"
+    },
+    "getUsers": {
       "error": {
-        "unexpected": "Une erreur serveur inattendue est survenue. Veuillez essayer de rafraîchir la page. Si l'erreur persiste, n'hésitez pas à contacter {Soutien}.",
-        "unexpectedIDK": "{An unexpected error occurred.}{ Please try refreshing the page.} If the error persists, feel free to reach out to {support}."
+        "verifiedRequired": "Vous devez être vérifié pour rechercher des utilisateurs."
+      }
+    },
+    "getUser": {
+      "error": {
+        "notFound": "Nous n'avons pas pu trouver votre profil sur notre serveur."
+      }
+    },
+    "updateProfile": {
+      "blocked": "Bloqué",
+      "unblocked": "Débloqué",
+      "cantBlock": "Impossible de bloquer",
+      "tooManyAttempts": "Trop de tentatives de mise à jour",
+      "email": "Vérification en attente",
+      "success": {
+        "blocked": "Bloqué avec succès.",
+        "blockedFriend": "Cet ami a également été retiré de votre liste d'amis en raison de son blocage.",
+        "unblocked": "Débloqué avec succès.",
+        "email": "En raison de la mise à jour de votre e-mail, vous devez vérifier à nouveau. Nous vous avons envoyé un nouvel e-mail de vérification. "
+      },
+      "error": {
+        "settingsUnexpected": "Lors de l'ajout de vos paramètres précédemment sélectionnés, il y a eu une erreur inattendue du serveur. Vous devrez peut-être modifier ces paramètres à nouveau, désolé pour la gêne occasionnée.",
+        "notFound": "Nous n'avons pas pu trouver votre profil sur notre serveur."
+      }
+    },
+    "updateUserFavourites": {
+      "error": {
+        "unexpected": "Une erreur inattendue s'est produite lors de l'ajout de vos favoris de jeu précédemment sélectionnés."
       }
     },
     "resetPassword": {
-      "message": {
-        "error": {
-          "tokenExpired": "Il semble que votre lien de confirmation ait expiré{ ou qu'il n'ait pas été envoyé}. Veuillez réessayer."
-        }
+      "tooManyAttempts": "Trop de tentatives",
+      "expired": "Expiré",
+      "error": {
+        "tokenExpired": "Il semble que votre lien de confirmation a expiré ou est manquant. Veuillez réessayer."
+      }
+    },
+    "sendConfirmPasswordEmail": {
+      "pending": "Confirmation en attente"
+    },
+    "logout": {
+      "success": {
+        "message": "La session de connexion de l'utilisateur a expiré."
+      }
+    },
+    "manageFriendRequest": {
+      "unauthorized": "Non autorisé",
+      "already": "Déjà envoyé/Ami",
+      "blocked": "Utilisateur bloqué",
+      "notFound": "Non Trouvé",
+      "cannotSend": "Impossible d'envoyer",
+      "maxReached": "Maximum atteint",
+      "error": {
+        "unauthorized": "Vous devez être vérifié pour ajouter des amis. {envoyer courriel de vérification}.",
+        "already": "Vous avez déjà demandé ou ajouté cet ami.",
+        "blocked": "Vous ne pouvez pas ajouter un utilisateur que vous avez bloqué comme ami.",
+        "maxReached": " Essayez de supprimer des amis inutiles."
+      }
+    },
+    "unfriend": {
+      "success": {
+        "message": "{{username}} supprimé avec succès de votre liste d'amis."
+      }
+    },
+    "manageChatRoom": {
+      "error": {
+        "unexpected": "Impossible de se connecter au salon en raison d'une erreur inattendue du serveur."
+      }
+    },
+    "chatMessage": {
+      "duplicate": "Trop de messages en double",
+      "success": {
+        "message": "Vous avez été temporairement restreint en raison de l'envoi de trop nombreux messages en double. Attendez que le délai de spam expire."
+      }
+    },
+    "getGames": {
+      "error": {
+        "unexpected": "Inattendu, il y a eu un problème de récupération de nos jeux depuis le serveur."
+      }
+    },
+    "getQuests": {
+      "notFound": "Quêtes introuvables"
+    },
+    "manageProgress": {
+      "activated": "Bonus activé",
+      "success": {
+        "message": " Tous les bonus durent 24 heures."
       }
     },
     "action": {
@@ -1387,6 +1491,23 @@
       }
     }
   },
+  "utils": {},
+  "hooks": {
+    "useHandleUpdate": {
+      "verify": "Votre profil n'a pas encore été vérifié, veuillez vérifier pour mettre à jour votre profil.",
+      "nothingChanged": "Rien n'a été changé. Changez au moins un champ ci-dessous pour mettre à jour.",
+      "conflictTitle": "Conflit",
+      "conflict": "Votre adresse e-mail a été modifiée et d'autres champs si fournis. Cependant, vous devez vérifier votre nouvel e-mail avant d'essayer de changer votre mot de passe. Une fois vérifié, revenez et changez votre mot de passe.",
+      "passwordTitle": "Traitement du mot de passe",
+      "password": "Nous sommes en train de traiter la réinitialisation du mot de passe. Veuillez rester sur cette page et accrochez-vous...",
+      "passwordAlso": "Parce que vous avez également mis à jour votre mot de passe, nous sommes en train de traiter la réinitialisation du mot de passe. Restez sur cette page et accrochez-vous..."
+    },
+    "useWorldData": {
+      "countryUnexpected": "Une erreur inattendue est survenue, aucun pays n'a pu être trouvé.",
+      "regionUnexpected": "Une erreur inattendue est survenue, aucune région n'a été trouvée.",
+      "regionNotFound": "Aucune région n'a été trouvée dans le pays sélectionné, vous pouvez sauter cette étape."
+    }
+  },
   "general": {
     "noResults": "Aucun résultat",
     "games": "Jeux",
@@ -1400,6 +1521,7 @@
     "submit": "Soumettre",
     "update": "Mise à jour",
     "unauthorized": "L'autorisation de l'utilisateur est manquante ou requise.",
+    "forbidden": "L'autorisation de l'utilisateur a échoué.",
     "form": {
       "user": {
         "first_name": "Prénom",

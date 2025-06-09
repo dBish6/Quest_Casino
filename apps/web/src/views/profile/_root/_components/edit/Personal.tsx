@@ -41,8 +41,7 @@ function parsePhoneNumber(phoneNumber: string | undefined) {
 };
 
 export default function Personal({ localeEntry, user }: ProfilePersonalProps) {
-  const [userEmail, setUserEmail] = useState(user.email),
-    [parsedPhone, setParsedPhone] = useState<ParsedPhone>(parsePhoneNumber(user.phone_number)),
+  const [parsedPhone, setParsedPhone] = useState<ParsedPhone>(parsePhoneNumber(user.phone_number)),
     oldPasswordInputRef = useRef<HTMLInputElement>(null);
 
   const MButton = useRef(m(Button));
@@ -72,14 +71,11 @@ export default function Personal({ localeEntry, user }: ProfilePersonalProps) {
   ] = useSendConfirmPasswordEmailMutation();
 
   const { fetcher, useForm, handleSubmit } = useHandleUpdate(
-      { ...user, email: userEmail, ...parsedPhone },
+      { ...user, ...parsedPhone },
       { patchUpdateProfile, postSendConfirmPasswordEmail },
       () => {
         updateReset();
         confirmReset();
-      },
-      (data) => {
-        if (data.refreshed) setUserEmail(data.user.email);
       }
     ),
     { formRef, form, setError, setErrors } = useForm,
@@ -117,23 +113,27 @@ export default function Personal({ localeEntry, user }: ProfilePersonalProps) {
         onSubmit={handleSubmit}
         onClick={() => setInteraction(true)}
         formLoading={processing}
-        resSuccessMsg={(updateSuccess && updateData.message) || (confirmSuccess && "Profile successfully updated.")}
+        resSuccessMsg={(updateSuccess && updateData.message) || (confirmSuccess && localeEntry.success)}
         resError={
-          fetcher.data?.ERROR || form.error.global ||
+          fetcher.data?.ERROR ||
+          form.error.global ||
           (isFetchBaseQueryError(updateError) &&
             (updateError.data as any)?.ERROR &&
-            injectElementInText(
-              (updateError.data as any).ERROR,
-              "cancel password reset",
-              (text) => (
-                <Link asChild intent="primary" to="">
-                  <Button onClick={() => handleRevokePasswordReset(dispatch)}>
-                    {text}
-                  </Button>
-                </Link>
-              )
-            ))
-            || confirmError
+            ((updateError.data as any).name === "PASS_CONFIRM_STILL_PENDING"
+              ? injectElementInText(
+                  (updateError.data as any).ERROR,
+                  null,
+                  (text) => (
+                    <Link asChild intent="primary" to="">
+                      <Button onClick={() => handleRevokePasswordReset(dispatch)}>
+                        {text}
+                      </Button>
+                    </Link>
+                  ),
+                  { localeMarker: true }
+                )
+              : (updateError.data as any).ERROR)) 
+          || confirmError
         }
         clearErrors={() => setErrors({})}
         noBots
@@ -146,7 +146,7 @@ export default function Personal({ localeEntry, user }: ProfilePersonalProps) {
           id="email"
           name="email"
           type="email"
-          defaultValue={userEmail}
+          defaultValue={user.email}
           error={form.error.email}
           disabled={processing}
           onInput={() => setError("email", "")}

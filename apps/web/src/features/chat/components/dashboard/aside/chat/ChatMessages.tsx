@@ -7,6 +7,8 @@ import type { LastChatMessageDto } from "@qc/typescript/dtos/ChatMessageEventDto
 
 import { useRef, memo, useState, useMemo, useEffect, cloneElement } from "react";
 
+import { STRIP_BRACKETS, STRIP_BRACKETS_AND_TEXT } from "@constants/LOCALE_STRIP_MARKERS";
+
 import { logger, capitalize } from "@qc/utils";
 import injectElementInText from "@utils/injectElementInText";
 import CircularQueue from "@chatFeat/utils/CircularQueue";
@@ -296,8 +298,8 @@ export default function ChatMessages({ localeEntry, user, asideState }: ChatMess
       aria-roledescription="chat conversation"
       aria-label={
         chatRoom.loading
-          ? localeEntry.aria.label.chat.replace(/[{}]/g, "")
-          : localeEntry.aria.label.chat.replace(/\s*{[^{}]*}\s*/g, "")
+          ? localeEntry.aria.label.chat.replace(STRIP_BRACKETS, "")
+          : localeEntry.aria.label.chat.replace(STRIP_BRACKETS_AND_TEXT, "")
       }
       orientation="vertical"
       id="chatMsgs"

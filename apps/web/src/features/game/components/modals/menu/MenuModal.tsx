@@ -63,6 +63,8 @@ export default function MenuModal() {
         formatUnit = (n: number) => numberFormat().format(n).padStart(2, "0");
 
       const updateCountdown = () => {
+        if (!renewRef.current) return;
+
         const timeLeft = Math.max(0, targetTime - Date.now());
 
         const hours = Math.floor(timeLeft / (1000 * 60 * 60)),
@@ -71,8 +73,8 @@ export default function MenuModal() {
 
         const formattedTime = `${formatUnit(hours)}:${formatUnit(minutes)}:${formatUnit(seconds)}`;
 
-        renewRef.current!.innerHTML = formattedTime;
-        renewRef.current!.dateTime = formattedTime;
+        renewRef.current.innerHTML = formattedTime;
+        renewRef.current.dateTime = formattedTime;
 
         if (timeLeft <= 0) clearInterval(timerInterval);
       };

@@ -8,7 +8,6 @@
     height: 14px;
     margin-block: 1.5rem 1rem;
     &:first-of-type {
-      /* margin-top: 0.75rem; */
       margin-top: 0.5rem;
     }
     & h4 {
@@ -27,17 +26,19 @@
   }
 
   & nav {
-    /* & div:first-child a:first-child svg {
-      position: relative;
-      bottom: 2px;
-    } */
     & div a {
       margin-inline: 0.5rem;
+      &[aria-current="page"],
+      &[aria-current="location"],
+      &[data-current="true"] {
+        color: var(--c-purple-200) !important;
+        & svg use {
+          fill: var(--c-purple-200) !important;
+        }
+      }
     }
     & div a:not(:last-child),
     & div button:not(:last-child) {
-      /* margin-bottom: 1rem; */
-      /* margin-bottom: 0.75rem; */
       margin-bottom: 0.5rem;
     }
     &:first-of-type div a {
@@ -59,19 +60,10 @@
           fill: var(--c-heading-1);
         }
       }
-      &[aria-current="page"],
-      &[aria-current="location"],
-      &[aria-expanded="true"] {
-        color: var(--c-purple-200);
-        & svg use {
-          fill: var(--c-purple-200);
-        }
-      }
     }
 
     &:last-of-type div {
       &:first-child {
-        /* margin-bottom: 1.5rem; */
         margin-bottom: 1.25rem;
       }
       & a {
@@ -85,12 +77,8 @@
   @media (--small-breakpoint) {
     & .divider {
       &:first-of-type {
-        /* margin-top: 0.75rem; */
         margin-top: 0.5rem;
       }
-      /* & h4 { */
-        /* font-size: 11px; */
-      /* } */
     }
 
     & nav {
@@ -104,15 +92,8 @@
         }
       }
       &:last-of-type div {
-        /* &:first-child { */
-          /* margin-bottom: 1.5rem; */
-          /* margin-bottom: 0.75rem; */
-        /* } */
         & a {
           font-size: 12px;
-          /* &:not(:last-child) { */
-            /* margin-bottom: 6px; */
-          /* } */
         }
       }
     }

@@ -74,7 +74,7 @@ export default function BankModal() {
 
       if (reqBody.amount) {
         const res = await postTransaction({ type: transactionType, body: reqBody });
-        if (res.data?.message?.startsWith("Successful")) form.reset();
+        if (res.data?.success) form.reset();
       }
     } finally {
       setLoading(false);

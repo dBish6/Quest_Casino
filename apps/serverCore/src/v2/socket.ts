@@ -12,6 +12,8 @@ import { Server as SocketServer } from "socket.io";
 import cookieParser from "cookie-parser";
 
 import { logger } from "@qc/utils";
+import { handleSocketMiddlewareError } from "@utils/handleError";
+import getLocale from "@utils/getLocale";
 
 import { redisClient } from "@cache";
 
@@ -21,9 +23,14 @@ import userVerificationRequired from "@authFeat/middleware/userVerificationRequi
 import authNamespace from "@authFeatSocket/namespaces/authNamespace";
 import chatNamespace from "@chatFeatSocket/namespaces/chatNamespace";
 import gameNamespace from "@gameFeatSocket/namespaces/gameNamespace";
+import { localeChangeListener } from "@authFeat/socket/services/SocketAuthService";
 
 const baseUrl = "/api/v2/socket",
-  namespaces = [`${baseUrl}/auth`, `${baseUrl}/chat`, `${baseUrl}/game`];
+  namespaces = [
+    { nsp: `${baseUrl}/auth`, handler: authNamespace },
+    { nsp: `${baseUrl}/chat`, handler: chatNamespace },
+    { nsp: `${baseUrl}/game`, handler: gameNamespace }
+  ] as const;
 
 export default function initializeSocketIo(
   httpServer: HttpServer,
@@ -33,33 +40,43 @@ export default function initializeSocketIo(
     cors: corsOptions
   });
 
-  // *Middleware*
   io.engine.use(cookieParser());
 
-  namespaces.forEach((nsp) => {
+  for (const { nsp, handler } of namespaces) {
+    const feature = nsp.split("/")[4];
+
+    // *Middleware*
+    io.of(nsp).use(async (socket, next) => {
+      // Locale initialization
+      try {
+        const locale = socket.handshake.query.lang;
+
+        await getLocale(locale as string, socket);
+
+        logger.debug(`Successfully initialized local data for ${feature} namespace.`);
+        next();
+      } catch (error: any) {
+        next(handleSocketMiddlewareError(socket, error, "socketGetLocale middleware error."));
+      }
+    });
     io.of(nsp).use((socket, next) => verifyUserToken(socket, null, next));
     io.of(nsp).use((socket, next) => userVerificationRequired(socket, null, next));
-  });
 
-  // *Namespaces*
-  io.of(`${baseUrl}/auth`).on("connection", (socket) => {
-    // Caches their auth socket ID for getting a certain socket, sending events directly with the socket ID and to know what
-    // user's are currently connected, etc.
-    redisClient.set(`user:${socket.userDecodedClaims!.member_id}:socket_id`, socket.id).then(() => {
+    // *Namespaces*
+    io.of(nsp).on("connection", async (socket) => {
+      await redisClient.sAdd(
+        `user:${socket.userDecodedClaims!.member_id}:${feature}:socket_ids`, socket.id
+      );
+
+      if (feature === "auth") {
         logger.debug(`Client connected to auth namespace; ${socket.id}`);
         authNamespace(socket, io.of(`${baseUrl}/auth`));
-      });
-  });
 
-  io.of(`${baseUrl}/chat`).on("connection", (socket) => {
-    logger.debug(`Client connected to chat namespace; ${socket.id}.`);
-
-    chatNamespace(socket, io.of(`${baseUrl}/chat`));
-  });
-
-  io.of(`${baseUrl}/game`).on("connection", (socket) => {
-    logger.debug(`Client connected to game namespace; ${socket.id}.`);
-
-    gameNamespace(socket, io.of(`${baseUrl}/game`));
-  });
+        localeChangeListener(socket, io, namespaces);
+      } else {
+        handler(socket, io.of(nsp));
+        logger.debug(`Client connected to ${feature} namespace; ${socket.id}.`);
+      }
+    });
+  };
 }

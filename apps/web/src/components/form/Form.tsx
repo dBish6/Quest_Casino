@@ -4,10 +4,10 @@ import type { SerializedError } from "@reduxjs/toolkit";
 
 import { forwardRef, isValidElement, useEffect } from "react";
 
-import GENERAL_UNAUTHORIZED_MESSAGE from "@authFeat/constants/GENERAL_UNAUTHORIZED_MESSAGE";
-import GENERAL_FORBIDDEN_MESSAGE from "@authFeat/constants/GENERAL_FORBIDDEN_MESSAGE";
-
+import injectElementInText from "@utils/injectElementInText";
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
+
+import useLocale from "@hooks/useLocale";
 
 import { Link } from "@components/common";
 
@@ -25,6 +25,8 @@ export interface FormProps extends Omit<React.ComponentProps<"form">, "aria-erro
 
 const Form = forwardRef<HTMLFormElement, React.PropsWithChildren<FormProps>>(
   ({ children, fetcher, formLoading, resSuccessMsg, resError, clearErrors, noBots, provideLang, className, ...props }, ref) => {
+    const { type, content, getContent } = useLocale("Form");
+
     const FormElm = (fetcher ? fetcher.Form : "form") as React.ElementType<React.ComponentProps<"form">>;
 
     useEffect(() => {
@@ -45,20 +47,27 @@ const Form = forwardRef<HTMLFormElement, React.PropsWithChildren<FormProps>>(
                     {[400, 401, 403, 409].includes(resError.status as number) ? (
                       <>
                         {[400, 409].includes(resError.status as number) && resError.data!.ERROR}
-                        {resError.status === 401 && `${GENERAL_UNAUTHORIZED_MESSAGE} `}
-                        {resError.status === 403 && `${GENERAL_FORBIDDEN_MESSAGE} `}
+                        {resError.status === 401 && `${content.general.unauthorized}`}
+                        {resError.status === 403 && `${content.general.forbidden}`}
                       </>
                     ) : (
-                      <>
-                        {(resError.status as number) >= 400 && (resError.status as number) < 500 && resError.data?.ERROR // if within 400s.
-                          ? resError.data.ERROR + " "
-                          : "An unexpected server error occurred. Please try refreshing the page. "}
-                        If the error persists, feel free to reach out to{" "}
-                        <Link intent="primary" to="/support">
-                          support
-                        </Link>
-                        .
-                      </>
+                      (() => {
+                        const localeApi = getContent("api");
+                        return injectElementInText(
+                          (resError.status as number) >= 400 && (resError.status as number) < 500 && resError.data?.ERROR // if within 400s.
+                            ? localeApi.error.unexpectedFull.replace("{{message}}{{refresh}}", resError.data.ERROR)
+                            : localeApi.error.unexpectedFull
+                                .replace("{{message}}", localeApi.error.unexpectedServer)
+                                .replace("{{refresh}}", localeApi.error.tryRefresh),
+                          null,
+                          (text) => (
+                            <Link intent="primary" to="/support">
+                              {text}
+                            </Link>
+                          ),
+                          { localeMarker: true }
+                        )
+                      })()
                     )}
                   </span>
                 )
@@ -71,14 +80,26 @@ const Form = forwardRef<HTMLFormElement, React.PropsWithChildren<FormProps>>(
                   {typeof resError === "string" ? (
                     resError
                   ) : (
-                    <>
-                      {(resError as SerializedError)?.message || "Serialization error"}
-                      {!(resError as SerializedError)?.message?.endsWith(".") ? ". " : " "}
-                      If the error persists, feel free to reach out to{" "}
-                      <Link intent="primary" to="/support">
-                        support
-                      </Link>.
-                    </>
+                    (() => {
+                      const localeApi = getContent("api"),
+                        message = (resError as SerializedError)?.message || "Serialization error";
+
+                      return injectElementInText(
+                        localeApi.error.unexpectedFull
+                          .replace(
+                            "{{message}}",
+                            message + (["en", "fr"].includes(type) && !message.endsWith(".") ? "." : "")
+                          )
+                          .replace("{{refresh}}", ""),
+                        null,
+                        (text) => (
+                          <Link intent="primary" to="/support">
+                            {text}
+                          </Link>
+                        ),
+                        { localeMarker: true }
+                      )
+                    })()
                   )}
                 </span>
               )

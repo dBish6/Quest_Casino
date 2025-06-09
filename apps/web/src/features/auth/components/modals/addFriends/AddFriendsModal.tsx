@@ -116,7 +116,7 @@ export default function AddFriendsModal() {
 
               <ul aria-live="polite">
                 {pendingFriendsArr!.map((request) => (
-                  <li>
+                  <li key={request.username}>
                     <article
                       title={`${user!.username} | ${user!.legal_name.first} ${user!.legal_name.last}`}
                       aria-label={content.section.requests.aria.label.pending.replace(

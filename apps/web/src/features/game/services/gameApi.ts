@@ -16,6 +16,7 @@ import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
 import { injectEndpoints } from "@services/api";
 import { getSocketInstance, emitAsPromise } from "@services/socket";
+import apiEntry from "@services/getLocaleEntry";
 import allow500ErrorsTransform from "@services/allow500ErrorsTransform";
 
 import { UPDATE_USER_CREDENTIALS, UPDATE_USER_STATISTICS_PROGRESS } from "@authFeat/redux/authSlice";
@@ -40,7 +41,7 @@ const gameApi = injectEndpoints({
         queryFulfilled.catch((error) => {
           if (isFetchBaseQueryError(error.error) && (error.error.status as number) >= 500)
             dispatch(
-              unexpectedErrorToast("Unexpectedly, there was an issue retrieving our games from the server.")
+              unexpectedErrorToast(apiEntry("getGames").error.unexpected)
             );
         })
       },
@@ -80,7 +81,7 @@ const gameApi = injectEndpoints({
           if (isFetchBaseQueryError(error.error) && (error.error.status as number) === 404)
             dispatch(
               ADD_TOAST({
-                title: "Quests Not Found",
+                title: apiEntry("getQuests").notFound,
                 message: error.error.data!.ERROR,
                 intent: "error",
                 duration: 6500
@@ -139,22 +140,27 @@ const gameApi = injectEndpoints({
      * Manages user statistics progress for quests and bonuses.
      * @emitter
      */
-    manageProgress: builder.mutation<SocketResponse<ManageProgressResponseDto>, ManageProgressEventDto>({
+    manageProgress: builder.mutation<
+      SocketResponse<ManageProgressResponseDto>,
+      Omit<ManageProgressEventDto, "type"> & { type: "bonus" } // Only bonus is used here. A quest will be used within a game.
+    >({
       queryFn: async (data) => emitAsPromise(socket)(GameEvent.MANAGE_PROGRESS, data),
       onQueryStarted: async ({ type, action }, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
 
           if (data.status === "ok") {
-            if (type === "bonus" && action === "activate")
+            if (type === "bonus" && action === "activate") {
+              const { success, ...title } = apiEntry("manageProgress");
               dispatch(
                 ADD_TOAST({
-                  title: "Bonus Activated",
-                  message: `${data.message} All bonuses last 24 hours.`,
+                  title: title.activated,
+                  message: data.message + success.message,
                   intent: "success",
                   duration: 6500
                 })
               );
+            }
 
             dispatch(UPDATE_USER_STATISTICS_PROGRESS(data.progress));
           }
@@ -165,10 +171,10 @@ const gameApi = injectEndpoints({
               dispatch(
                 ADD_TOAST({
                   title:
-                  resError.data.ERROR.startsWith("The bonus is already activated") ||
-                  resError.data.ERROR.startsWith("You can only have one bonus active")
-                    ? "Currently Active"
-                    : resError.data.ERROR.startsWith("You can only have one bonus active")
+                    resError.data.name === "MANAGE_PROGRESS_BONUS_LOCKED_NEW" ||
+                    resError.data.name === "MANAGE_PROGRESS_BONUS_LOCKED_ACTIVE"
+                      ? "Currently Active"
+                      : resError.data.name === "MANAGE_PROGRESS_BONUS_USED"
                       ? "Already Used"
                       : undefined,
                   message: resError.data.ERROR,

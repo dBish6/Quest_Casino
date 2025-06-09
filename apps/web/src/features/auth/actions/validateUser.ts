@@ -30,7 +30,7 @@ async function validate(formData: FormData) {
   formData.delete("bot");
 
   const lang = formData.get("lang")?.toString();
-  if (!LANGUAGES[lang || ""]) return { errors: { lang: "Access Denied" } };
+  if (!LANGUAGES[lang as keyof typeof LANGUAGES || ""]) return { errors: { lang: "Access Denied" } };
 
   const localeData = (await import(`../../../locales/${lang}.json`)).default as LocaleData,
     localeContent = localeData.api.action.validateUser;
@@ -40,7 +40,7 @@ async function validate(formData: FormData) {
   formData.delete("isProfile");
 
   const errors: Record<string, string> = {},
-    reqBody: Record<string, string | { old: string, new: string }> = {};
+    reqBody: Record<string, string> = {};
 
   for (const [key, value] of formData.entries()) {
     if (key === "calling_code") continue;

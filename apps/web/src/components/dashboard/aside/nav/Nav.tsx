@@ -2,14 +2,23 @@ import type { LocaleContextValues } from "@components/LocaleProvider";
 import type { BreakpointContextValues } from "@components/BreakpointProvider";
 
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 
-import { LANGUAGES } from "@qc/constants";
+import { type AvailableLocales, LANGUAGES } from "@qc/constants";
+
+import { delay } from "@qc/utils";
 
 import useLocale from "@hooks/useLocale";
+
+import { useAppSelector } from "@redux/hooks";
+import { selectUserCredentials } from "@authFeat/redux/authSelectors";
+
+import { useLocaleChangeMutation } from "@authFeat/services/authApi";
 
 import { Icon, Link } from "@components/common";
 import { ModalTrigger } from "@components/modals";
 import { Select } from "@components/common/controls";
+import { Spinner } from "@components/loaders";
 
 import s from "./nav.module.css";
 
@@ -52,13 +61,28 @@ export default function Nav({ viewport }: { viewport: BreakpointContextValues["v
             <Icon aria-hidden="true" id={viewport === "small" ? "joystick-14" : "joystick-16"} /> {content.general.games}
           </Link>
 
-          <ModalTrigger query={{ param: "menu", value: "Leaderboard" }}>
+          <ModalTrigger
+            query={{ param: "menu", value: "Leaderboard" }}
+            {...(location.search.includes("menu=Leaderboard", -1) && {
+              "data-current": "true"
+            })}
+          >
             <Icon aria-hidden="true" id={viewport === "small" ? "list-14" : "list-16"} /> {content.leaderboard}
           </ModalTrigger>
-          <ModalTrigger query={{ param: "menu", value: "Quests" }}>
+          <ModalTrigger
+            query={{ param: "menu", value: "Quests" }}
+            {...(location.search.includes("menu=Quests", -1) && {
+              "data-current": "true"
+            })}
+          >
             <Icon aria-hidden="true" id={viewport === "small" ? "scroll-14" : "scroll-16"} /> {content.quests}
           </ModalTrigger>
-          <ModalTrigger query={{ param: "menu", value: "Bonuses" }}>
+          <ModalTrigger
+            query={{ param: "menu", value: "Bonuses" }}
+            {...(location.search.includes("menu=Bonuses", -1) && {
+              "data-current": "true"
+            })}
+          >
             <Icon aria-hidden="true" id={viewport === "small" ? "gift-14" : "gift-16"} /> {content.bonuses}
           </ModalTrigger>
         </div>
@@ -98,6 +122,11 @@ function Divider({ heading, divide = true }: { heading?: string, divide?: boolea
 }
 
 function Languages({ locale, localeContent, setLocaleData, viewport }: LanguageProps) {
+  const [emitLocaleChange] = useLocaleChangeMutation(),
+    [loading, setLoading] = useState(false);
+
+  const user = useAppSelector(selectUserCredentials);
+
   return (
     <>
       <Divider heading={localeContent.language} />
@@ -107,7 +136,23 @@ function Languages({ locale, localeContent, setLocaleData, viewport }: LanguageP
         size={viewport === "small" ? "md" : "lrg"}
         id="languageSelect"
         defaultValue={locale}
-        onInput={(e) => setLocaleData(e.currentTarget.value)}
+        Loader={<Spinner intent="primary" size="sm" />}
+        loaderTrigger={loading}
+        disabled={loading}
+        onInput={(e) => {
+          const locale = e.currentTarget.value as AvailableLocales;
+          setLoading(true);
+          if (user?.email_verified) {
+            emitLocaleChange({ locale })
+              .then((res) => {
+                if (res.data?.status === "ok") setLocaleData(locale);
+              })
+              .finally(() => delay(1850, () => setLoading(false)));
+          } else {
+            setLocaleData(locale);
+            setLoading(false);
+          }
+        }}
       >
         {Object.values(LANGUAGES).map((lang) => (
           <option key={lang.locale} value={lang.locale}>

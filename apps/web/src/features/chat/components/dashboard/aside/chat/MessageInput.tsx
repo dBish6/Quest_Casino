@@ -67,7 +67,7 @@ export default function MessageInput({ localeEntry, user, asideState }: MessageI
         typeTrueSent.current = shouldEmit;
       }
     }
-  }
+  };
 
   // TODO: textarea.
   return (

@@ -73,8 +73,8 @@ export default function ResourceLoaderProvider({ children }: React.PropsWithChil
               await initializeFriends();
             }
           } catch (error: any) {
-            logger.error("Loading resources error:\n", error.message);
-            if (error.message.includes("stable connection")) history.push("/error-500");
+            logger.error("Loading resources error:\n", error?.message);
+            if (error?.message.includes("stable connection")) history.push("/error-500");
           } finally {
             setProgress((prev) => ({ ...prev, loading: false }));
           }
