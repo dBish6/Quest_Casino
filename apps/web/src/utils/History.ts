@@ -3,7 +3,7 @@ import type { NavigateFunction, To, NavigateOptions } from "react-router-dom";
 import { useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import preserveUrl from "./preserveUrl";
+import preserveUrl, { type PreserveUrlOptions } from "./preserveUrl";
 
 /**
  * Programmatic navigation; allows the use of `useNavigate` outside react components. A custom interface that 
@@ -18,8 +18,9 @@ class History {
     this.navigate = useNavigate;
   }
 
-  public push(target: To, options?: NavigateOptions) {
-    const { pathname, search, hash } = preserveUrl(target, window.location);
+  public push(target: To, { preserveLocale, ...options }: NavigateOptions & PreserveUrlOptions = {}) {
+    const { pathname, search, hash } = preserveUrl(target, window.location, { preserveLocale });
+
     this.navigate({ pathname, search, ...(hash && { hash }) }, { ...options });
   }
 

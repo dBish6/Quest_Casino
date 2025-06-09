@@ -6,9 +6,9 @@ import type ManageChatRoomEventDto from "@qc/typescript/dtos/ManageChatRoomEvent
 import type ManageChatRoomCallbackDto from "@chatFeat/dtos/ManageChatRoomCallbackDto";
 import type TypingEventDto from "@qc/typescript/dtos/TypingEventDto";
 import type TypingActivityEventDto from "@chatFeat/dtos/TypingActivityEventDto";
-import type ChatMessageEventDto from "@qc/typescript/dtos/ChatMessageEventDto";
+import type { ChatMessageEventDto } from "@qc/typescript/dtos/ChatMessageEventDto";
 
-import { ChatEvent } from "@qc/constants";
+import { ChatEvent, CHAT_ROOM_ACTIONS } from "@qc/constants";
 
 import { logger } from "@qc/utils";
 import { history } from "@utils/History";
@@ -16,6 +16,7 @@ import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
 import { injectEndpoints } from "@services/api"
 import { getSocketInstance, emitAsPromise } from "@services/socket";
+import apiEntry from "@services/getLocaleEntry";
 import allow500ErrorsTransform from "@services/allow500ErrorsTransform";
 import { UPDATE_TARGET_FRIEND, TOGGLE_RESTRICTION } from "@chatFeat/redux/chatSlice";
 import { ADD_TOAST, unexpectedErrorToast } from "@redux/toast/toastSlice";
@@ -44,7 +45,9 @@ const chatApi = injectEndpoints({
           if (isFetchBaseQueryError(error.error)) {
             if (["bad request", "internal error"].includes(error.error.status as string))
               dispatch(
-                unexpectedErrorToast("Unable to connect to the chat room due to an unexpected server error.")
+                unexpectedErrorToast(
+                  apiEntry("manageChatRoom").error.unexpected
+                )
               );
           }
         })
@@ -97,10 +100,11 @@ const chatApi = injectEndpoints({
             // Too many duplicate messages (restrict on spam).
             dispatch(TOGGLE_RESTRICTION(true));
             if (!seenRestrictionMessage) {
+              const { success, ...title } = apiEntry("chatMessage");
               dispatch(
                 ADD_TOAST({
-                  title: "Too Many Duplicate Messages",
-                  message: "You have been temporarily restricted due to sending too many duplicate messages. Wait for the spam cooldown to expire.",
+                  title: title.duplicate,
+                  message: success.message,
                   intent: "error"
                 })
               );
@@ -135,7 +139,7 @@ const chatApi = injectEndpoints({
 
               if (
                 !chatMessage.username &&
-                ["has joined", "has left"].some((str) => chatMessage.message.includes(str))
+                CHAT_ROOM_ACTIONS.includes(chatMessage.action as any)
               )
                 return dispatch(ADD_TOAST({ message: chatMessage.message, intent: "info" }));
 

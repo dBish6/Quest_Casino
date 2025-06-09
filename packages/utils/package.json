@@ -18,6 +18,9 @@
     "rollup": "^4.18.0",
     "tslib": "^2.6.2"
   },
+  "peerDependencies": {
+    "@qc/typescript": "*"
+  },
   "publishConfig": {
     "access": "public"
   },

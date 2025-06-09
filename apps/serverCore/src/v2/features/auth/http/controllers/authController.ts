@@ -13,8 +13,6 @@ import type { UpdateProfileRequestDto, UpdateUserFavouritesRequestDto, SendConfi
 import type { DeleteNotificationsRequestDto } from "@authFeatHttp/dtos/DeleteNotificationsRequestDto";
 import type LogoutRequestDto from "@authFeatHttp/dtos/LogoutRequestDto";
 
-import GENERAL_BAD_REQUEST_MESSAGE from "@constants/GENERAL_BAD_REQUEST_MESSAGE";
-
 import { logger } from "@qc/utils";
 import { handleHttpError } from "@utils/handleError";
 import { generateOStateToken } from "@qc/server";
@@ -25,8 +23,6 @@ import { User } from "@authFeat/models";
 import { getUsers as getUsersService, getUser as getUserService } from "@authFeat/services/authService";
 import * as httpAuthService from "@authFeatHttp/services/httpAuthService";
 import { loginWithGoogle } from "@authFeatHttp/services/googleService";
-
-const VERIFICATION_EMAIL_SUCCESS_MESSAGE = "Verification email successfully sent. The verification link will expire in 20 minutes. If you can't find it in your inbox, please check your spam or junk folder.";
 
 const authService = { getUsers: getUsersService, getUser: getUserService, ...httpAuthService }
 
@@ -46,14 +42,15 @@ export async function register(
     const exists = await User.exists({ email: req.body.email });
     if (exists)
       return res.status(409).json({
-        ERROR:
-          "A user with this email address already exists. Please try using a different email address."
+        name: "EMAIL_ALREADY_EXISTS",
+        ERROR: req.locale.data.auth.error.EMAIL_ALREADY_EXISTS
       });
 
     await authService.registerUser({ ...req.body });
 
     return res.status(200).json({
-      message: "Successfully registered! You can now log in with your newly created profile."
+      message: req.locale.data.auth.success.REGISTER,
+      success: true
     });
   } catch (error: any) {
     next(handleHttpError(error, "register controller error."));
@@ -77,10 +74,20 @@ export async function login(
       req.headers["x-xsrf-token"] as string
     );
     if (typeof clientUser === "string")
-      return res.status(404).json({ ERROR: clientUser });
+      return res.status(404).json({
+        name: clientUser,
+        ERROR: req.locale.data.auth.error[clientUser]
+      });
+
+    let message = req.locale.data.auth.success.LOGIN.replace(
+      "{{username}}", clientUser.username
+    );
+    if (!clientUser.email_verified)
+      message += req.locale.data.auth.success.LOGIN_VERIFY_NOTICE;
 
     return res.status(200).json({
-      message: "User session created successfully.",
+      message,
+      success: true,
       user: clientUser
     });
   } catch (error: any) {
@@ -103,9 +110,14 @@ export async function loginGoogle(
     const { isNew, clientUser } = await loginWithGoogle(req, res);
 
     return res.status(200).json({
-      message: "User session created successfully.",
+      message: req.locale.data.auth.success[
+        isNew ? "LOGIN_NEW" : "LOGIN"
+      ].replace("{{username}}", clientUser.username),
+      success: true,
       user: clientUser,
-      new: isNew
+      ...(isNew && {
+        google_new: req.locale.data.auth.success.LOGIN_GOOGLE_NOTICE
+      })
     });
   } catch (error: any) {
     next(handleHttpError(error, "loginGoogle controller error."));
@@ -134,7 +146,8 @@ export async function emailVerify(
     });
 
     return res.status(200).json({
-      message: "Email address successfully verified. Please close your previous tab.",
+      message: req.locale.data.auth.success.EMAIL_VERIFY,
+      success: true,
       user: { email_verified: updatedUser.email_verified }
     });
   } catch (error: any) {
@@ -153,8 +166,12 @@ export async function sendVerifyEmail(
 ) {
   try {
     await authService.sendVerifyEmail(req.userDecodedClaims!);
-
-    return res.status(200).json({ message: VERIFICATION_EMAIL_SUCCESS_MESSAGE });
+    
+    const success = req.locale.data.auth.success;
+    return res.status(200).json({
+      message: success.SEND_EMAIL_VERIFY + success.SEND_EMAIL_VERIFY_INFO,
+      success: true
+    });
   } catch (error: any) {
     next(handleHttpError(error, "sendVerifyEmail controller error."));
   }
@@ -166,7 +183,8 @@ export async function sendVerifyEmail(
  * @response `success` with all users formatted for the client, `forbidden`, `HttpError` or `ApiError`.
  */
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
-  const { username, count } = req.query as Record<string, string>;
+  const { general } = req.locale.data,
+    { username, count } = req.query as Record<string, string>;
   let clientUsers;
 
   try {
@@ -175,7 +193,10 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
       clientUsers = await authService.searchUsers(username);
     } else if (!count && process.env.NODE_ENV !== "development") {
       // All users is restricted.
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: general.error.ACCESS_DENIED
+      });
     } else {
       // Else a random set of users based on count if provided.
       clientUsers = await authService.getUsers(true, parseInt(count, 10));
@@ -183,6 +204,7 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
 
     return res.status(200).json({
       message: `Successfully retrieved ${username ? "searched" : count ? `random ${count}` : "all"} users.`,
+      success: true,
       users: clientUsers
     });
   } catch (error: any) {
@@ -196,10 +218,14 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
  * @response `success` with the current user formatted for the client, `not found`, `forbidden`, `HttpError` or `ApiError`.
  */
 export async function getUser(req: Request, res: Response, next: NextFunction) {
-  const { notifications, email } = req.query as Record<string, string>;
+  const { general } = req.locale.data,
+    { notifications, email } = req.query as Record<string, string>;
 
   if (email && process.env.NODE_ENV !== "development")
-    return res.status(403).json({ ERROR: "Access Denied" });
+    return res.status(403).json({
+      name: "ACCESS_DENIED",
+      ERROR: general.error.ACCESS_DENIED
+    });
 
   try {
     let clientUser = await authService.getUser(
@@ -214,7 +240,10 @@ export async function getUser(req: Request, res: Response, next: NextFunction) {
       }
     );
     if (!clientUser)
-      return res.status(404).json({ ERROR: "User doesn't exist." });
+      return res.status(404).json({
+        name: "USER_NOT_FOUND",
+        ERROR: general.error.USER_NOT_FOUND
+      });
 
     if (notifications) {
       const result = await httpAuthService.getSortedUserNotifications(clientUser._id);
@@ -225,8 +254,9 @@ export async function getUser(req: Request, res: Response, next: NextFunction) {
     }
 
     return res.status(200).json({
-      message: 
+      message:
         `Successfully retrieved ${notifications ? "the current user's notifications" : email ? `user ${email}` : "the current user"}.`,
+      success: true,
       user: clientUser
     });
   } catch (error: any) {
@@ -241,6 +271,7 @@ export async function getUser(req: Request, res: Response, next: NextFunction) {
  */
 export async function getUserProfile(req: Request, res: Response, next: NextFunction) {
   const username = req.query.username as string;
+
   try {
     const profileData = await authService.getUserProfile(
       username ? username : req.userDecodedClaims!.sub
@@ -248,6 +279,7 @@ export async function getUserProfile(req: Request, res: Response, next: NextFunc
 
     return res.status(200).json({
       message: "Successfully retrieved the user's profile data.",
+      success: true,
       user: profileData
     });
   } catch (error: any) {
@@ -267,9 +299,11 @@ export async function updateProfile(
 ) {
   const body = req.body;
   logger.debug("/auth/user PATCH body:", body);
+  const { general, auth } = req.locale.data
   
   try {
-    if (!Object.values(req.body).length) return res.status(400).json({ ERROR: "There was no data provided." });
+    if (!Object.values(body).length) 
+      return res.status(400).json({ name: "NO_DATA", ERROR: general.error.NO_DATA });
     const user = req.userDecodedClaims!;
 
     const { updatedUser, updatedFields, unfriended } = await authService.updateProfile(user, body);
@@ -287,8 +321,9 @@ export async function updateProfile(
 
     return res.status(200).json({
       message: "Profile successfully updated.",
+      success: true,
       user: updatedFields,
-      ...(updatedUser && { refreshed: VERIFICATION_EMAIL_SUCCESS_MESSAGE }),
+      ...(updatedUser && { refreshed: auth.success.SEND_EMAIL_VERIFY_INFO }),
       ...(unfriended && { unfriended })
     });
   } catch (error: any) {
@@ -310,15 +345,19 @@ export async function updateUserFavourites(
 
   try {
     if (!Array.isArray(favourites) || !favourites.length)
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     const updatedFavourites = await authService.updateUserFavourites(
       req.userDecodedClaims!.sub,
-      req.body.favourites
+      favourites
     );
 
     return res.status(200).json({ 
       message: "Successfully updated the user's favourites.",
+      success: true,
       favourites: updatedFavourites
     });
   } catch (error: any) {
@@ -340,10 +379,11 @@ export async function resetPassword(
 
   try {
     const { sub, email } = req.verDecodedClaims!;
-    authService.resetPassword(sub, email);
+    await authService.resetPassword(sub, email);
 
     return res.status(200).clearCookie("session").clearCookie("refresh").json({
-      message: "Your password has been successfully reset. All active sessions have been terminated, you'll need to log in again.",
+      message: req.locale.data.auth.success.RESET_PASSWORD,
+      success: true,
       oState: generateOStateToken()
     });
   } catch (error: any) {
@@ -363,20 +403,29 @@ export async function sendConfirmPasswordEmail(
   next: NextFunction
 ) {
   logger.debug("/auth/user/reset-password/confirm body:", req.body);
-  const { password } = req.body;
+  const { password } = req.body,
+    { general, auth } = req.locale.data;
 
   try {
     if (typeof password === "object") {
-      if (!password.old && !password.new) return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      if (!password.old && !password.new)
+        return res.status(400).json({
+          name: "NO_DATA_INVALID",
+          ERROR: general.error.NO_DATA_INVALID
+        });
     } else if (typeof password !== "string") {
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: general.error.ACCESS_DENIED
+      });
     }
  
     const { sub, email } = req.verDecodedClaims || req.userDecodedClaims!;
     await authService.sendConfirmPasswordEmail(sub, email, req.body);
 
-    return res.status(200).json({ 
-      message: "To complete your password change, you must confirm this password reset by a confirmation link sent to your email. The link will expire in 15 minutes. If you can't find it in your inbox, please check your spam or junk folder."
+    return res.status(200).json({
+      message: auth.success.SEND_CONFIRM_PASSWORD_EMAIL,
+      success: true
     });
   } catch (error: any) {
     next(handleHttpError(error, "sendResetPasswordEmail controller error."));
@@ -396,12 +445,17 @@ export async function sendForgotPasswordEmail(
   const email = req.body.email;
  
   try {
-    if (!email) return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+    if (!email) 
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     await authService.sendForgotPasswordEmail(email);
 
-    return res.status(200).json({ 
-      message: "If a profile with the provided email exists, an email with a password reset link has been sent."
+    return res.status(200).json({
+      message: req.locale.data.auth.success.SEND_FORGOT_PASSWORD_EMAIL,
+      success: true
     });
   } catch (error: any) {
     next(handleHttpError(error, "sendResetPasswordEmail controller error."));
@@ -418,7 +472,8 @@ export async function revokePasswordReset(req: Request, res: Response, next: Nex
     await authService.revokePasswordResetConfirmation(req.userDecodedClaims!.sub);
 
     return res.status(200).json({
-      message: "Password reset successfully canceled."
+      message: "Password reset successfully canceled.",
+      success: true
     });
   } catch (error: any) {
     next(handleHttpError(error, "clear controller error."));
@@ -446,10 +501,16 @@ export async function refresh(
     );
 
     const refreshResult = await initializeSession(res, {}, user);
-    if (typeof refreshResult === "string") 
-      return res.status(404).json({ ERROR: refreshResult });
+    if (typeof refreshResult === "string")
+      return res.status(404).json({
+        name: refreshResult,
+        ERROR: req.locale.data.auth.error[refreshResult]
+      });
 
-    return res.status(200).json({ message: "Session successfully refreshed." });
+    return res.status(200).json({
+      message: "Session successfully refreshed.",
+      success: true
+    });
   } catch (error: any) {
     next(handleHttpError(error, "refresh controller error."));
   }
@@ -481,6 +542,7 @@ export async function logout(
 
     return res.status(200).clearCookie("session").clearCookie("refresh").json({
       message: "Session cleared, log out successful.",
+      success: true,
       oState: generateOStateToken()
     });
   } catch (error: any) {
@@ -498,7 +560,8 @@ export async function wipeUser(req: Request, res: Response, next: NextFunction) 
     await authService.wipeUser(req.userDecodedClaims!.sub);
 
     return res.status(200).clearCookie("session").clearCookie("refresh").json({
-      message: "All refresh and csrf tokens successfully removed."
+      message: "All refresh and csrf tokens successfully removed.",
+      success: true
     });
   } catch (error: any) {
     next(handleHttpError(error, "clear controller error."));
@@ -516,11 +579,14 @@ export async function deleteUser(
   next: NextFunction
 ) {
   try {
-    const userId = req.userDecodedClaims!.sub;
+    const user = req.userDecodedClaims!;
 
-    await authService.deleteUser(userId);
+    await authService.deleteUser(user.sub);
 
-    return res.status(200).json({ message: `User ${userId} successfully deleted.` });
+    return res.status(200).json({
+      message: `Successfully deleted user ${user.username} from existence`,
+      success: true
+    });
   } catch (error: any) {
     next(handleHttpError(error, "deleteUser controller error."));
   }
@@ -547,7 +613,8 @@ export async function deleteUserNotifications(
 
     return res.status(200).json({
       message: `Successfully deleted ${toDelete.length} notifications from current user.`,
-      user: { notifications: result.notifications },
+      success: true,
+      user: { notifications: result.notifications }
     });
   } catch (error: any) {
     next(handleHttpError(error, "deleteUserNotifications controller error."));

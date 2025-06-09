@@ -1,11 +1,15 @@
 import type Country from "@qc/typescript/typings/Country";
 import type { Region, Regions } from "@authFeat/typings/Region";
+import type { LocaleData } from "@typings/Locale";
 
 import { useEffect, useState } from "react";
+
+import useLocale from "@hooks/useLocale";
 
 import { useLazyGetCountriesQuery, useLazyGetRegionsQuery } from "@services/api";
 
 function getSelectedRegion(
+  localeHook: LocaleData["hooks"],
   regions: Regions[],
   countryName: string,
   setError?: any
@@ -15,11 +19,8 @@ function getSelectedRegion(
   if (region) {
     return region.regions;
   } else {
-    const errorMsg =
-      "No regions was found from your selected country, you can skip this step.";
-
-    setError && setError(errorMsg);
-    return errorMsg;
+    setError && setError(localeHook.regionNotFound);
+    return localeHook.regionNotFound;
   }
 }
 
@@ -36,6 +37,8 @@ export default function useWorldData(
       regions: Region[] | string;
     }>({ country: defaultSelected?.country || "", regions: [] });
 
+  const { content } = useLocale("useWorldData");
+
   const [fetchRegions] = useLazyGetRegionsQuery(),
     [fetchCountries] = useLazyGetCountriesQuery();
 
@@ -49,7 +52,7 @@ export default function useWorldData(
       } catch (error) {
         setWorldData((prev) => ({
           ...prev,
-          countries: "Unexpected error occurred, couldn't find any countries."
+          countries: content.countryUnexpected
         }));
       }
     }
@@ -65,7 +68,7 @@ export default function useWorldData(
       } catch (error) {
         setSelected((prev) => ({
           ...prev,
-          regions: "Unexpected error occurred, couldn't find any regions."
+          regions: content.regionUnexpected
         }));
       }
     }
@@ -80,6 +83,7 @@ export default function useWorldData(
       setSelected((prev) => ({
         ...prev,
         regions: getSelectedRegion(
+          content,
           worldData.regions,
           selected.country,
           setError

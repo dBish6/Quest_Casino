@@ -1,8 +1,11 @@
-import type { FriendsDefaultProps } from "./FriendsDefault";
+import type { LocaleContent } from "@typings/Locale";
 import type { FriendCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { FriendsDefaultProps } from "./FriendsDefault";
 import type { ChatRoomState } from "@chatFeat/redux/chatSlice";
 
 import { useRef, useState, useMemo } from "react";
+
+import useLocale from "@hooks/useLocale";
 
 import { useAppDispatch } from "@redux/hooks";
 import { UPDATE_USER_FRIEND_IN_LIST } from "@authFeat/redux/authSlice";
@@ -18,6 +21,7 @@ import Timestamp from "../Timestamp";
 import s from "../aside.module.css";
 
 interface FriendsDisplayEnlargedProps {
+  localContent: LocaleContent
   friend: FriendCredentials;
   targetFriend?: ChatRoomState["targetFriend"];
   isPrev?: boolean;
@@ -33,6 +37,8 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
     [friendsListArr]
   );
 
+  const { content } = useLocale("FriendsEnlarged");
+
   const [search, setSearch] = useState<{
     start: boolean;
     results: FriendCredentials[];
@@ -45,7 +51,7 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
 
     if (value.trim().length > 0) {
       if (!search.start)
-        mergedFriendsArr.current = [...friendsListArr, ...friendsWithPrevChatsArr]
+        mergedFriendsArr.current = [...friendsListArr, ...friendsWithPrevChatsArr];
 
       const results = mergedFriendsArr.current.filter((friend) =>
         friend.username.toLowerCase().includes(value.toLowerCase())
@@ -53,7 +59,7 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
       setSearch({ start: true, results });
     } else {
       setSearch({ start: false, results: [] });
-      mergedFriendsArr.current = []
+      mergedFriendsArr.current = [];
     }
   }
   
@@ -67,7 +73,7 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
           />
         </Blob>
       )}
-      <div className={s.inner} role="group" aria-roledescription="chat room management">
+      <div className={s.inner} role="group" aria-roledescription={content.aria.descrip.group}>
         {user && (
           <>
             <header className={s.targetFriend}>
@@ -83,11 +89,10 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
                       ? {
                           role: "group",
                           "aria-roledescription": "heading group",
-                          "aria-label": "Selected Recipient",
+                          "aria-label": content.aria.label.selectRecipient[0]
                         }
                       : {
-                          "aria-label":
-                            "Select a Recipient to Start a Conversation",
+                          "aria-label": content.aria.label.selectRecipient[1]
                         })}
                     id="targetFriendDetails"
                     className={s.details}
@@ -100,7 +105,7 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
                         </p>
                       </>
                     ) : (
-                      <h3>Select a Recipient</h3>
+                      <h3>{content.selectRecipient}</h3>
                     )}
                   </hgroup>
 
@@ -111,14 +116,14 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
 
             <Form onSubmit={(e) => handleSearch(e)}>
               <Input
-                aria-label="Search for Friends or Previous Chats"
+                aria-label={content.aria.label.search}
                 aria-controls="searchResults"
                 aria-expanded={search.start}
-                label="Search"
+                label={content.search}
                 intent="primary"
                 size="lrg"
                 id="searchFriends"
-                Icon={<Icon id="search-18" />}
+                Icon={<Icon aria-hidden="true" id="search-18" />}
                 onInput={(e) => {
                   if (!e.currentTarget.value.length) setSearch((prev) => ({ ...prev, start: false }));
                 }}
@@ -129,12 +134,13 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
                 <ScrollArea orientation="vertical" id="searchResults" className={s.searchResults}>
                   <ul>
                     {!search.results.length ? (
-                      <p className={s.noResults}>No Results</p>
+                      <p className={s.noResults}>{content.general.noResults}</p>
                     ) : (
                       <ul>
                         {search.results.map((friend) => (
                           <FriendsDisplayEnlarged
                             key={friend.member_id}
+                            localContent={content}
                             friend={friend}
                             targetFriend={chatRoom.targetFriend}
                           />
@@ -146,16 +152,17 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
               ) : (
                 <>
                   <section className={s.prevChatsContainer}>
-                    <h4 className="hUnderline">Previous Chats</h4>
+                    <h4 className="hUnderline">{content.prevChats}</h4>
 
                     <ScrollArea orientation="vertical" className={s.prevChats}>
                       {!friendsWithPrevChatsArr.length ? (
-                        <p className={s.noResults}>No Results</p>
+                        <p className={s.noResults}>{content.general.noResults}</p>
                       ) : (
                         <ul>
                           {friendsWithPrevChatsArr.map((friend) => (
                             <FriendsDisplayEnlarged
                               key={friend.member_id}
+                              localContent={content}
                               friend={friend}
                               targetFriend={chatRoom.targetFriend}
                               isPrev={true}
@@ -170,9 +177,9 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
 
                   <section className={s.friendsListContainer}>
                     <div>
-                      <h4 className="hUnderline">Friends</h4>
+                      <h4 className="hUnderline">{content.friends}</h4>
                       <ModalTrigger query={{ param: "add" }} intent="primary">
-                        Add Friends
+                        {content.add}
                       </ModalTrigger>
                     </div>
 
@@ -181,12 +188,13 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
                       className={s.friendsList}
                     >
                       {!friendsListArr.length ? (
-                        <p className={s.noResults}>No Results</p>
+                        <p className={s.noResults}>{content.general.noResults}</p>
                       ) : (
                         <ul>
                           {friendsListArr.map((friend) => (
                             <FriendsDisplayEnlarged
                               key={friend.member_id}
+                              localContent={content}
                               friend={friend}
                               targetFriend={chatRoom.targetFriend}
                             />
@@ -205,7 +213,7 @@ export default function FriendsEnlarged({ user, chatRoom, friendsListArr }: Frie
   );
 }
 
-function FriendsDisplayEnlarged({ friend, isPrev, targetFriend }: FriendsDisplayEnlargedProps) {
+function FriendsDisplayEnlarged({ localContent, friend, isPrev, targetFriend }: FriendsDisplayEnlargedProps) {
   const { status, inactivity_timestamp: timestamp } = friend.activity,
     isTarget = friend.member_id === targetFriend?.friend?.member_id;
 
@@ -217,8 +225,8 @@ function FriendsDisplayEnlarged({ friend, isPrev, targetFriend }: FriendsDisplay
       
       {isPrev ? (
         <button
-          {...(!isTarget && { title: "Enter Previous Chat Conversation" })}
-          aria-label={`Enter Previous Chat Conversation With ${friend.username}`}
+          {...(!isTarget && { title: localContent.aria.title.friendBtn[0] })}
+          aria-label={localContent.aria.label.friendBtn[0].replace("{{username}}", friend.username)}
           aria-pressed={isTarget}
           aria-controls="targetFriendDetails"
           aria-expanded={!!targetFriend?.friend}
@@ -232,12 +240,14 @@ function FriendsDisplayEnlarged({ friend, isPrev, targetFriend }: FriendsDisplay
             <Timestamp activity={{ status, timestamp }} prefix />
           </div>
 
-          <p>{friend.last_chat_message || `Introduce yourself to ${friend.username}!`}</p>
+          <p>
+            {friend.last_chat_message || localContent.introduce.replace("{{username}}", friend.username)}
+          </p>
         </button>
       ) : (
         <button
-          {...(!isTarget && { title: "Start or Enter Previous Chat Conversation" })}
-          aria-label={`Start a New Chat Conversation With ${friend.username}`}
+          {...(!isTarget && { title: localContent.aria.title.friendBtn[1] })}
+          aria-label={localContent.aria.label.friendBtn[1].replace("{{username}}", friend.username)}
           aria-pressed={isTarget}
           aria-controls="targetFriendDetails"
           aria-expanded={!!targetFriend?.friend}

@@ -148,6 +148,7 @@
   height: 100vh;
   max-height: 316px;
   padding: 10px 0.75rem 0.5rem;
+  pointer-events: visible !important;
   z-index: var(--z-modal);
 
   & h3 {

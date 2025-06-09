@@ -51,7 +51,7 @@ export function formatEmailTemplate(
   if (link) {
     html = html.replace(/<!--url-->/g, CLIENT_BASE_URL!).replace("<!--token-->", link.token);
   } else if (Object.keys(TEMPLATE.auth).includes(type)) {
-    new HttpError("The link parameter must be included with this type of email.");
+    throw new HttpError("FORMAT_EMAIL_LINK_REQUIRED", "auth", 500);
   }
 
   Object.entries({
@@ -87,9 +87,10 @@ export async function sendEmail(to: string, html: string) {
     transporter.verify((error: any) => {
       if (error)
         throw new HttpError(
-          "There was an issue connecting to our email SMTP server.",
+          "SEND_EMAIL_SMTP_CONNECT",
+          "auth",
           500,
-          "sendEmail verify SMTP error."
+          { from: "sendEmail verify SMTP error." }
         );
     });
 
@@ -100,10 +101,7 @@ export async function sendEmail(to: string, html: string) {
       html
     });
     if (info.rejected.length)
-      throw new HttpError(
-        "Your email was rejected by our SMTP server during sending. Please consider using a different email address. If the issue persists, feel free to reach out to support.",
-        541
-      );
+      throw new HttpError("SEND_EMAIL_SMTP_REJECTED", "auth", 541);
 
     return info;
   } catch (error: any) {

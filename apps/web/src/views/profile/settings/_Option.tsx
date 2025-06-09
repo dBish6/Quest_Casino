@@ -1,4 +1,5 @@
-import type { UserCredentials, MinUserWithBioCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { UserCredentials, MinUserCredentials } from "@qc/typescript/typings/UserCredentials";
+import type { LocaleEntry } from "@typings/Locale";
 
 import { useState } from "react";
 
@@ -18,13 +19,14 @@ export interface SelectedOptions extends Omit<Partial<UserCredentials["settings"
 
 export interface SettingsOptionEntry {
   type?: "switch" | "list";
-  title: string;
-  text: string;
+  title?: string;
+  text?: string;
 }
 
 interface SettingsOptionProps extends SettingsOptionEntry {
+  localeEntry: LocaleEntry;
   user: UserCredentials;
-  blkUser?: MinUserWithBioCredentials,
+  blkUser?: MinUserCredentials,
   selectedOptions: React.MutableRefObject<SelectedOptions>;
   blockListOpened?: boolean;
   setBlockListOpened?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,6 +37,7 @@ function toSnakeCase(txt: string) {
 }
 
 export default function Option({
+  localeEntry,
   type = "" as any,
   title,
   text,
@@ -45,7 +48,7 @@ export default function Option({
 }: SettingsOptionProps) {
   const { viewport } = useBreakpoint()
 
-  const titleSnake = toSnakeCase(title) as keyof typeof selectedOptions["current"],
+  const titleSnake = toSnakeCase(title || "") as keyof typeof selectedOptions["current"],
     [isEnabled, setIsEnabled] = useState(!!user.settings[titleSnake]);
 
   const handleSettingSelected = (e: React.MouseEvent<Element, MouseEvent>) => {
@@ -90,17 +93,19 @@ export default function Option({
               },
               ...(type === "switch"
                 ? {
-                    "aria-label": isEnabled ? `Disable ${title}` : `Enable ${title}`,
+                    "aria-label": isEnabled
+                      ? localeEntry.aria.label.disable.replace("{{title}}", title)
+                      : localeEntry.aria.label.enable.replace("{{title}}", title),
                     "aria-checked": isEnabled
                   }
                 : {
-                    "aria-label": "Open Block List",
+                    "aria-label": localeEntry.aria.label.open,
                     "aria-controls": "blockList",
                     "aria-expanded": props.blockListOpened
                   }),
             }
           : blkUser && {
-              "aria-label": `Unblock ${blkUser.username}`,
+              "aria-label": localeEntry.aria.label.unblock.replace("{{username}}", blkUser.username),
               "data-checked": isEnabled
             })}
       >

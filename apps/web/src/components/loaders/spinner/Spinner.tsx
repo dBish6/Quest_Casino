@@ -6,19 +6,19 @@ const spinner = cva(s.spinner, {
   variants: {
     intent: {
       primary: s.primary,
-      secondary: s.secondary,
+      secondary: s.secondary
     },
     size: {
       sm: s.sm,
       md: s.md,
       lrg: s.lrg,
       xl: s.xl,
-      xxl: s.xxl,
-    },
+      xxl: s.xxl
+    }
   },
   defaultVariants: {
-    size: "md",
-  },
+    size: "md"
+  }
 });
 
 export interface SpinnerProps

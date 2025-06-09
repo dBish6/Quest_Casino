@@ -1,15 +1,20 @@
+import type { ModalQueryKeyValues } from "@components/modals";
+
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { nanoid, createAction } from "@reduxjs/toolkit";
 
+import injectElementInText from "@utils/injectElementInText";
+import apiEntry from "@services/getLocaleEntry";
+
+interface ToastInjectOption {
+  sequence?: Parameters<typeof injectElementInText>[1];
+  linkTo?: string | { param: ModalQueryKeyValues; };
+  btnOnClick?: () => void;
+  localeMarker?: NonNullable<Parameters<typeof injectElementInText>[3]>["localeMarker"];
+}
+
 export interface ToastOptions {
-  link?: {
-    sequence: string;
-    to: string;
-  };
-  button?: {
-    sequence: string;
-    onClick: () => void;
-  };
+  inject?: ToastInjectOption
 }
 
 export interface ToastPayload {
@@ -26,7 +31,7 @@ export interface ToastState {
 }
 
 const initialState: ToastState = {
-  count: [],
+  count: []
 };
 
 const toastSlice = createSlice({
@@ -53,15 +58,19 @@ export default toastSlice;
 export const unexpectedErrorToast = createAction(
   ADD_TOAST.type,
   function (message?: string, askRefresh: boolean = true) {
+    const localeApi = apiEntry();
+
     return {
       payload: {
-        title: "Unexpected Error",
-        message: `${message ?? "An unexpected error occurred."}${askRefresh ? " Please try refreshing the page." : ""} If the error persists, feel free to reach out to support.`,
+        title: localeApi.unexpectedTitle,
+        message: localeApi.error.unexpectedFull
+          .replace("{{message}}", message ?? localeApi.error.unexpected)
+          .replace("{{refresh}}", askRefresh ? localeApi.error.tryRefresh : ""),
         intent: "error",
         options: {
-          link: {
-            sequence: "support",
-            to: "/support"
+          inject: {
+            linkTo: "/support",
+            localeMarker: true
           }
         }
       }
@@ -72,15 +81,17 @@ export const unexpectedErrorToast = createAction(
 export const authTokenExpiredToast = createAction(
   ADD_TOAST.type,
   function () {
+    const localeApi = apiEntry();
+
     return {
       payload: {
-        title: "Session Expired",
-        message: "Your login session has expired, log in.",
+        title: localeApi.sessionExpiredTitle,
+        message: localeApi.error.sessionExpired,
         intent: "error",
         options: {
-          link: {
-            sequence: "log in",
-            to: `${window.location.pathname}?login=true`
+          inject: {
+            linkTo: { param: "login" },
+            localeMarker: true
           }
         }
       }

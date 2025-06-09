@@ -31,7 +31,10 @@ export function getSocketInstance(namespace: SocketNamespaces) {
       autoConnect: false,
       reconnection: false,
       transports: ["websocket", "polling"],
-      withCredentials: true
+      withCredentials: true,
+      query: {
+        lang: typeof document !== "undefined" ? document.documentElement.lang : ""
+      }
     });
 
     socketInstances[namespace] = socket;
@@ -46,7 +49,7 @@ export function emitAsPromise(socket: Socket) {
       socket.emit(event, data, (res: SocketResponse<TData>) => {
         if (res.status !== "ok") {
           // Mimics the structure of what RTK does for their FetchBaseQueryError.
-          const { status, ...rest } = res
+          const { status, ...rest } = res;
           resolve({ error: { data: { ...rest }, status } });
         } else {
           resolve({ data: res });
@@ -105,7 +108,7 @@ export async function socketInstancesConnectionProvider(
 
               // Sockets verify the tokens on the connection attempts.
               if (["unauthorized", "forbidden"].includes(err?.status)) {
-                if (err.ERROR === "Within refresh threshold.") {
+                if (err.name === "TOKEN_REFRESH_THRE") {
                   if (!onGoingRequest.refresh)
                     onGoingRequest.refresh = dispatch(
                       authEndpoints.refresh.initiate({ username })
@@ -116,7 +119,7 @@ export async function socketInstancesConnectionProvider(
                     .catch(async () => logout())
                     .finally(() => (onGoingRequest.refresh = null));
                 } else if (
-                  err.ERROR.includes("expired") || err.ERROR.includes("missing")
+                  err.name.includes("EXPIRED") || err.name.includes("MISSING")
                 ) {
                   await logout();
                 } else {

@@ -4,7 +4,9 @@ import type { UserCredentials, UserProfileCredentials } from "@qc/typescript/typ
 import { useEffect, useRef, useMemo, useState } from "react";
 import { cva } from "class-variance-authority";
 
-import { calcWinRate, capitalize } from "@qc/utils";
+import { calcWinRate } from "@qc/utils";
+
+import useLocale from "@hooks/useLocale";
 
 import { Icon } from "@components/common";
 import { Select } from "@components/common/controls";
@@ -70,6 +72,9 @@ export default function UserStatistics({
 }: UserStatisticsProps) {
   const questsContainerRef = useRef<HTMLDivElement>(null);
 
+  const { type, getContent, content, numberFormat } = useLocale("UserStatistics"),
+    formatter = useRef(numberFormat());
+
   const record = useMemo(() => initializeRecord(stats), [stats]),
     [category, setCategory] = useState({ index: 0, winRate: stats.wins.rate });
 
@@ -98,7 +103,7 @@ export default function UserStatistics({
           scaleWithText
         />
         <h2 id="hStatistics" {...(!scaleText && { className: "hUnderline" })}>
-          Statistics
+          {content.title}
         </h2>
       </hgroup>
       
@@ -106,10 +111,12 @@ export default function UserStatistics({
         <>
           <div className={s.winLoss}>
             <header>
-              <h3 id="hWinLoss" className="hUnderline">Win/Loss</h3>
+              <h3 id="hWinLoss" className="hUnderline">
+                {content.section.winLoss.title}
+              </h3>
               <Select
                 aria-controls="winLossTable"
-                label="Change Category"
+                label={content.section.winLoss.changeCat}
                 intent="ghost"
                 id="WinLossSelect"
                 defaultValue="total"
@@ -130,7 +137,7 @@ export default function UserStatistics({
                 }}
               >
                 {record.wins.map(([title]) => (
-                  <option key={title} value={title}>{capitalize(title)}</option>
+                  <option key={title} value={title}>{content[title]}</option>
                 ))}
               </Select>
             </header>
@@ -141,52 +148,113 @@ export default function UserStatistics({
               aria-live="polite"
               id="winLossTable"
             >
-              <div role="caption" id="cWinLoss" style={{ position: "absolute", opacity: 0 }}>
-                Your win and loss record for the selected category.
+              <div
+                role="caption"
+                id="cWinLoss"
+                style={{ position: "absolute", opacity: 0, zIndex: -1 }}
+              >
+                {content.section.winLoss.caption}
               </div>
               <div role="rowgroup">
-                <div role="row" title={record.wins[category.index][1] + " Wins"}>
-                  <span role="rowheader">Wins</span>
-                  <span role="cell">{record.wins[category.index][1]}</span>
+                <div
+                  role="row"
+                  title={
+                    formatter.current.format(record.wins[category.index][1]) + " " + content.wins
+                  }
+                >
+                  <span role="rowheader">{content.wins}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.wins[category.index][1])}
+                  </span>
                 </div>
-                <div role="row" title={record.wins[category.index][1] + " Losses"}>
-                  <span role="rowheader">Losses</span>
-                  <span role="cell">{record.losses[category.index][1]}</span>
+                <div
+                  role="row"
+                  title={
+                    formatter.current.format(record.losses[category.index][1]) + " " + content.losses
+                  }
+                >
+                  <span role="rowheader">{content.losses}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.losses[category.index][1])}
+                  </span>
                 </div>
-                <div role="row" title={category.winRate + "%" + " Win Rate"}>
-                  <span role="rowheader">Win Rate</span>
-                  <span role="cell">{category.winRate + "%"}</span>
+                <div
+                  role="row"
+                  title={
+                    numberFormat({ style: "percent" }).format(category.winRate / 100) + " " + content.rate
+                  }
+                >
+                  <span role="rowheader">{content.rate}</span>
+                  <span role="cell">
+                    {numberFormat({ style: "percent" }).format(category.winRate / 100)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className={s.gamesPlayed}>
-            <h3 id="hGamesPlayed" className="hUnderline">Games Played</h3>
+            <h3 id="hGamesPlayed" className="hUnderline">
+              {content.section.gamesPlayed.title}
+            </h3>
             <div
               role="table"
               aria-labelledby="hGamesPlayed"
               aria-describedby="cGamesPlayed"
             >
-              <div role="caption" id="cGamesPlayed" style={{ position: "absolute", opacity: 0 }}>
-                {username + "'s" || "Your"} total games played for all categories.
+              <div
+                role="caption"
+                id="cGamesPlayed"
+                style={{ position: "absolute", opacity: 0, zIndex: -1 }}
+              >
+                {username
+                  ? content.section.gamesPlayed.caption.replace("Your", username)
+                  : content.section.gamesPlayed.caption}
               </div>
               <div role="rowgroup">
-                <div role="row" title={record.gamesPlayed.table + " Table Games Played"}>
-                  <span role="rowheader">Table</span>
-                  <span role="cell">{record.gamesPlayed.table}</span>
+                <div
+                  role="row"
+                  title={
+                    `${formatter.current.format(record.gamesPlayed.table)} ${content.table} ${content.general.games} ${content.played}`
+                  }
+                >
+                  <span role="rowheader">{content.table}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.gamesPlayed.table)}
+                  </span>
                 </div>
-                <div role="row" title={record.gamesPlayed.slots + " Slots Games Played"}>
-                  <span role="rowheader">Slots</span>
-                  <span role="cell">{record.gamesPlayed.slots}</span>
+                <div
+                  role="row"
+                  title={
+                    `${formatter.current.format(record.gamesPlayed.slots)} ${content.slots} ${content.general.games} ${content.played}`
+                  }
+                >
+                  <span role="rowheader">{content.slots}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.gamesPlayed.slots)}
+                  </span>
                 </div>
-                <div role="row" title={record.gamesPlayed.dice + " Dice Games Played"}>
-                  <span role="rowheader">Dice</span>
-                  <span role="cell">{record.gamesPlayed.dice}</span>
+                <div
+                  role="row"
+                  title={
+                    `${formatter.current.format(record.gamesPlayed.dice)} ${content.dice} ${content.general.games} ${content.played}`
+                  }
+                >
+                  <span role="rowheader">{content.dice}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.gamesPlayed.dice)}
+                  </span>
                 </div>
-                <div role="row" title={record.gamesPlayed.total + " Total Games Played"}>
-                  <span role="rowheader">Total</span>
-                  <span role="cell">{record.gamesPlayed.total}</span>
+                <div
+                  role="row"
+                  title={
+                    `${formatter.current.format(record.gamesPlayed.total)} ${content.total} ${content.general.games} ${content.played}`
+                  }
+                >
+                  <span role="rowheader">{content.total}</span>
+                  <span role="cell">
+                    {formatter.current.format(record.gamesPlayed.total)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -197,12 +265,15 @@ export default function UserStatistics({
       <div ref={questsContainerRef} className={s.quests}>
         {intent === "table" && (
           <>
-            <h3 aria-label="Quests Summery" className="hUnderline">
-              Quests
+            <h3 aria-label={content.section.quests.aria.label.summary} className="hUnderline">
+              {content.section.quests.title}
             </h3>
             <ScrollArea orientation="horizontal">
               {record.conqueredQuests.length > 0 && (
-                <ul aria-label="Completed Quests" aria-describedby="questCount">
+                <ul
+                  aria-label={`${content.section.quests.completed} ${content.section.quests.title}`}
+                  aria-describedby="questCount"
+                >
                   {record.conqueredQuests.map((quest) => (
                     <li key={quest} title={quest}>
                       {quest}
@@ -217,42 +288,55 @@ export default function UserStatistics({
         {intent === "block" &&
           <>
             <div className={s.wins}>
-              <h4>Total Wins</h4>
-              <p>{record.wins[0][1]}</p>
+              <h4>{content.total} {content.wins}</h4>
+              <p>{formatter.current.format(record.wins[0][1])}</p>
             </div>
 
             <div className={s.losses}>
-              <h4>Total Losses</h4>
-              <p>{record.losses[0][1]}</p>
+              <h4>{content.total} {content.losses}</h4>
+              <p>{formatter.current.format(record.losses[0][1])}</p>
             </div>
 
             <div className={s.played}>
-              <h4>Total Games</h4>
-              <p>{record.gamesPlayed.total}</p>
+              <h4>{content.total} {content.general.games}</h4>
+              <p>{formatter.current.format(record.gamesPlayed.total)}</p>
             </div>
 
             <div className={s.rate}>
-              <h4>Win Rate</h4>
-              <p>{record.wins[4][1] + "%"}</p>
+              <h4>{content.rate}</h4>
+              <p>{numberFormat({ style: "percent" }).format(category.winRate / 100)}</p>
             </div>
           </>
         }
         <div className={s.conquered}>
           <p id="questCount">
-            <span>{record.conqueredQuests.length}</span> Quest
-            {record.conqueredQuests.length === 1 ? "" : "s"} Completed
+            <span>
+              {formatter.current.format(record.conqueredQuests.length)}
+            </span>{" "}
+            {type === "en" && record.conqueredQuests.length === 1
+              ? content.section.quests.title.replace("s", "")
+              : content.section.quests.title}{" "}
+            {content.section.quests.completed}
           </p>
-          <ModalTrigger
-            aria-label={`View All ${username}'s Completed Quests`}
-            intent="primary"
-            query={{ param: "qhist", value: encodeURIComponent(username) }}
-            className={s.viewBtn}
-          >
-            View Quests
-          </ModalTrigger>
+          {record.conqueredQuests.length > 0 && (
+            <ModalTrigger
+              aria-label={content.section.quests.aria.label.viewBtn.replace(
+                "{{username}}",
+                type === "en" ? username + "'s" : username
+              )}
+              intent="primary"
+              query={{ param: "qhist", value: encodeURIComponent(username) }}
+              className={s.viewBtn}
+            >
+              {content.section.quests.viewBtn}
+            </ModalTrigger>
+          )}
         </div>
         {intent === "block" && gameHistory && (
-          <ResentGame gameHistory={gameHistory} />
+          <ResentGame
+            localeEntry={getContent("UserGameHistory")}
+            gameHistory={gameHistory}
+          />
         )}
       </div>
     </div>

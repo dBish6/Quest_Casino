@@ -1,6 +1,7 @@
 import { useFetcher } from "react-router-dom";
 import { Title } from "@radix-ui/react-dialog";
 
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useSwitchModal from "@authFeat/hooks/useSwitchModal";
 import useHandleUserValidationResponse from "@authFeat/hooks/useHandleUserValidationResponse";
@@ -15,6 +16,8 @@ import { Spinner } from "@components/loaders";
 import s from "./passwordModal.module.css";
 
 export default function ForgotPasswordModal() {
+  const { content } = useLocale("ForgotPasswordModal");
+
   const fetcher = useFetcher(),
     { formRef, form, setLoading, setError, setErrors } = useForm<{ email: string }>();
 
@@ -46,9 +49,9 @@ export default function ForgotPasswordModal() {
       {() => (
         <>
           <Title asChild>
-            <h2 aria-label="Forgot Password">Forgot</h2>
+            <h2 aria-label={content.aria.title}>{content.title}</h2>
           </Title>
-          <p id="reTxt">Enter your email below and we'll email you a password reset link.</p>
+          <p id="reTxt">{content.para}</p>
 
           <Form
             ref={formRef}
@@ -67,7 +70,7 @@ export default function ForgotPasswordModal() {
           >
             <div className="inputs">
               <Input
-                label="Email"
+                label={content.general.form.user.email}
                 intent="primary"
                 size="lrg"
                 id="email"
@@ -80,7 +83,7 @@ export default function ForgotPasswordModal() {
               />
             </div>
             <Button
-              aria-label="Submit User Email"
+              aria-label={content.aria.label.submitBtn}
               aria-live="polite"
               intent="primary"
               size="xl"
@@ -91,7 +94,7 @@ export default function ForgotPasswordModal() {
               {form.processing ? (
                 <Spinner intent="primary" size="md" />
               ) : (
-                "Submit"
+                content.general.submit
               )}
             </Button>
           </Form>
@@ -102,7 +105,7 @@ export default function ForgotPasswordModal() {
               intent="primary"
               onClick={(e) => handleSwitch(e)}
             >
-              Back to Login
+              {content.back}
             </ModalTrigger>
           </div>
         </>

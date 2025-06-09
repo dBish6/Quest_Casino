@@ -2,9 +2,14 @@ import type { ToastProps as RadixToastProps } from "@radix-ui/react-toast";
 import type { VariantProps } from "class-variance-authority";
 import type { ToastPayload } from "@redux/toast/toastSlice";
 
-import { useRef, Fragment } from "react";
+import { useRef } from "react";
 import { Provider, Root, Title, Description, Close, Viewport } from "@radix-ui/react-toast";
+import { Portal } from "@radix-ui/react-portal";
 import { cva } from "class-variance-authority";
+
+import injectElementInText from "@utils/injectElementInText";
+
+import useLocale from "@hooks/useLocale";
 
 import { useAppSelector, useAppDispatch } from "@redux/hooks";
 import { selectToasts } from "@redux/toast/toastSelectors";
@@ -12,9 +17,9 @@ import { REMOVE_TOAST } from "@redux/toast/toastSlice";
 
 import { Button } from "@components/common/controls";
 import { Icon, Link } from "@components/common";
+import { ModalTrigger } from "@components/modals";
 
 import s from "./toast.module.css";
-import { Portal } from "@radix-ui/react-portal";
 
 const toast = cva(s.toast, {
   variants: {
@@ -36,12 +41,6 @@ export interface ToastProps
   close: () => void;
 }
 
-const defaultTitles = {
-  success: "Success!",
-  error: "Error",
-  info: "Info"
-};
-
 const ANIMATION_DURATION = 490;
 
 export default function Toast({
@@ -53,12 +52,9 @@ export default function Toast({
   options,
   ...props
 }: ToastProps) {
-  const toastRef = useRef<HTMLLIElement>(null),
-    { link, button } = options || {};
+  const { content } = useLocale("Toast");
 
-  let messageParts = [message];
-  if (link || button)
-    messageParts = message.split(link?.sequence || button?.sequence || "");
+  const toastRef = useRef<HTMLLIElement>(null);
 
   return (
     <Root
@@ -96,34 +92,39 @@ export default function Toast({
         )}
       </div>
       <Title asChild>
-        <h3>{title ?? defaultTitles[intent || "info"]}</h3>
+        <h3>{title ?? content[intent || "info"]}</h3>
       </Title>
       <Description asChild>
         <p>
-          {messageParts.map((part, index) => (
-            <Fragment key={index}>
-              {part}
-              {index < messageParts.length - 1 && (
-                <>
-                  {(link || button) && (
-                    <Link
-                      {...(button && { asChild: true })}
+          {options?.inject
+            ? (() => {
+                const { sequence, linkTo, btnOnClick, ...opts } = options.inject,
+                  Elem: any = typeof linkTo === "object" ? ModalTrigger : Link;
+
+                return injectElementInText(
+                  message,
+                  sequence,
+                  (text) => (
+                    <Elem
+                      {...(btnOnClick && { asChild: true })}
                       intent="primary"
-                      to={link ? link.to : ""}
+                      {...(Elem === Link ? {
+                        to: linkTo ?? ""
+                      } : { query: linkTo })}
                     >
-                      {link
-                        ? link.sequence
-                        : button && (
-                            <Button id="toastBtn" onClick={button.onClick}>
-                              {button.sequence}
+                      {linkTo
+                        ? text
+                        : btnOnClick && (
+                            <Button id="toastBtn" onClick={btnOnClick}>
+                              {text}
                             </Button>
                           )}
-                    </Link>
-                  )}
-                </>
-              )}
-            </Fragment>
-          ))}
+                    </Elem>
+                  ),
+                  { ...opts }
+                );
+              })()
+            : message}
         </p>
       </Description>
     </Root>

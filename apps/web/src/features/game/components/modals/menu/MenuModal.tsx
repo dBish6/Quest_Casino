@@ -1,12 +1,15 @@
-import type DeepReadonly from "@qc/typescript/typings/DeepReadonly";
 import type { SetURLSearchParams } from "react-router-dom";
 import type Direction from "@typings/Direction";
 import type { IconIds } from "@components/common";
+import type { LocaleContent } from "@typings/Locale";
 
 import { useSearchParams } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
+import injectElementInText from "@utils/injectElementInText";
+
+import useLocale from "@hooks/useLocale";
 import useLeaderboard from "@hooks/useLeaderboard";
 
 import { ModalQueryKey, ModalTemplate } from "@components/modals";
@@ -20,51 +23,11 @@ import s from "./menuModal.module.css";
 
 export type MenuSlide = "Leaderboard" | "Quests" | "Bonuses";
 
-const SLIDE_MAP: DeepReadonly<
-  Record<string, { icon: string; Comp: (setRenewsIn?: any) => React.JSX.Element; steps?: React.JSX.Element[] }>
-> = {
+const SLIDE_MAP = {
   Leaderboard: { icon: "list", Comp: Leaderboard },
-  Quests: {
-    icon: "scroll",
-    Comp: Quests,
-    steps: [
-      <>Check the <b>quest description</b> on the quest card to see what objective you need to complete.</>,
-      <>Track your progress; the <b>meter</b> will fill as you get closer to completion. For example, if the quest is to win 8 games of blackjack, and you've won 2 games, the progress will <b>show 2/8</b>. Some quest's have single steps (e.g., 1/1).</>,
-      <>Complete the objective by <b>playing our games</b>.</>,
-      <>Once you've completed the quest, <b>press "Claim"</b> to receive the reward outlined on the quest card. Rewards could include <b>money</b> or <b>game-specific</b> rewards like Free Spins.</>
-    ]
-  },
-  Bonuses: {
-    icon: "gift",
-    Comp: Bonuses,
-    steps: [
-      <>Check the <b>bonus title</b> on the bonus card to understand the objective for claiming a bonus.</>,
-      <>Some bonuses track progress using a <b>meter</b>, such as "5 Daily Logins." For example, after 2 logins, your progress will <b>show 2/5</b>.</>,
-      <>Bonuses reward you with boosts in games. For example, with a <b>10x bonus</b>, if you <b>win $100</b>, you'll get an extra $10 (10% of your total winnings).</>,
-      <>
-        Each bonus has a <b>sliding cap</b> that depends on your total winnings
-        and the game's <b>absolute max cap</b>. The sliding cap is always 10% of
-        your winnings, but the <b>absolute max cap</b> is a fixed limit that
-        bonuses cannot exceed. For example:
-        <ul aria-label="Bonus Examples">
-          <li>
-            If your bet is $100 and your winnings are $1,000{" "}
-            <b>with a 10x multiplier</b>, the sliding cap would be 10% of $1,000
-            = $100. If the absolute max cap is $80, your bonus will be capped at
-            $80.
-          </li>
-          <li>
-            If your bet is $50 and your winnings are $200{" "}
-            <b>with a 4x multiplier</b>, the sliding cap would be 10% of $200 =
-            $20. Since $20 is below the absolute max cap, your bonus will be
-            $20.
-          </li>
-        </ul>
-      </>,
-      <>Once a bonus is completed, <b>press "Claim"</b> to activate the bonus multiplier to use it in our games. <b>All bonuses last 24 hours</b> and <b>only one bonus can be activated at a time</b>.</>
-    ]
-  }
-};
+  Quests: { icon: "scroll", Comp: Quests },
+  Bonuses: { icon: "gift", Comp: Bonuses }
+} as const;
 
 function handleTransition(setSearchParams: SetURLSearchParams, direction?: Direction) {
   setSearchParams((params) => {
@@ -85,6 +48,8 @@ export default function MenuModal() {
   const [searchParams, setSearchParams] = useSearchParams(),
     currentSlide = searchParams.get(ModalQueryKey.MENU_MODAL)! as MenuSlide;
 
+  const { content, numberFormat } = useLocale("MenuModal");
+
   const renewRef = useRef<HTMLTimeElement>(null),
     [renewsIn, setRenewsIn] = useState("00:00:00");
 
@@ -94,19 +59,22 @@ export default function MenuModal() {
 
   useEffect(() => {
     if (renewsIn !== "00:00:00") {
-      const targetTime = new Date(renewsIn).getTime();
+      const targetTime = new Date(renewsIn).getTime(),
+        formatUnit = (n: number) => numberFormat().format(n).padStart(2, "0");
 
       const updateCountdown = () => {
+        if (!renewRef.current) return;
+
         const timeLeft = Math.max(0, targetTime - Date.now());
 
         const hours = Math.floor(timeLeft / (1000 * 60 * 60)),
           minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)),
           seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        const formattedTime = `${formatUnit(hours)}:${formatUnit(minutes)}:${formatUnit(seconds)}`;
 
-        renewRef.current!.innerHTML = formattedTime;
-        renewRef.current!.dateTime = formattedTime;
+        renewRef.current.innerHTML = formattedTime;
+        renewRef.current.dateTime = formattedTime;
 
         if (timeLeft <= 0) clearInterval(timerInterval);
       };
@@ -124,17 +92,17 @@ export default function MenuModal() {
   
   return (
     <ModalTemplate
-      aria-description="Menu slides. Use the arrow buttons to navigate between slides, or select specific slides using the indicators at the bottom to view the our games leaderboard, manage bonuses, or manage quests."
+      aria-description={content.aria.descrip.modal}
       queryKey="menu"
       width="768px"
       className={s.modal}
-      onCloseAutoFocus={() => setSelectedUser(null)} // Resets selected leaderboard user on close.
+      onCloseAutoFocus={() => setSelectedUser(null)} // Resets the selected leaderboard user on close.
     >
       {() => (
         <div
           role="group"
           aria-roledescription="carousel"
-          aria-label="Menu"
+          aria-label={content.aria.label.menu}
           aria-live="polite"
         >
           <div className="head" data-slide={currentSlide}>
@@ -144,12 +112,12 @@ export default function MenuModal() {
                 id={((SLIDE_MAP[currentSlide]?.icon || "list") + "-48") as IconIds}
               />
               <Title asChild>
-                <h2>{currentSlide}</h2>
+                <h2>{content[currentSlide]?.title}</h2>
               </Title>
             </hgroup>
             <div className={s.controls}>
-              {currentSlide !== "Leaderboard" && (
-                <InfoCard currentSlide={currentSlide} />
+              {currentSlide && currentSlide !== "Leaderboard" && (
+                <InfoCard localeContent={content} currentSlide={currentSlide} />
               )}
               <div>
                 <Button
@@ -159,7 +127,7 @@ export default function MenuModal() {
                   iconBtn
                   onClick={() => handleTransition(setSearchParams, "left")}
                 >
-                  <Icon aria-label="Move Left" id="expand-22" />
+                  <Icon aria-label={content.aria.label.left} id="expand-22" />
                 </Button>
                 <Button
                   aria-controls="lSlide"
@@ -168,26 +136,34 @@ export default function MenuModal() {
                   iconBtn
                   onClick={() => handleTransition(setSearchParams, "right")}
                 >
-                  <Icon aria-label="Move Right" id="expand-22" />
+                  <Icon aria-label={content.aria.label.right} id="expand-22" />
                 </Button>
               </div>
             </div>
           </div>
   
           {/* Slide */}
-          {SlideComponent ? <SlideComponent setRenewsIn={setRenewsIn} /> : <p>Slide not found.</p>}
+          {SlideComponent ? (
+            <SlideComponent
+              localeEntry={content[currentSlide]}
+              numberFormat={numberFormat}
+              setRenewsIn={setRenewsIn}
+            />
+          ) : (
+            <p>{content.notFound}</p>
+          )}
 
           <div>
             {currentSlide !== "Leaderboard" && (
               <div className={s.timer}>
-                <span id="renew">Renews in</span>{" "}
+                <span id="renew">{content.renewsIn}</span>{" "}
                 <time ref={renewRef} dateTime={renewsIn}>{renewsIn}</time>
               </div>
             )}
 
             <div
               role="group"
-              aria-label="Slide Indicators"
+              aria-label={content.general.indicators}
               className={s.indicators}
             >
               {Object.entries(SLIDE_MAP).map(([slide, obj]) => {
@@ -208,7 +184,9 @@ export default function MenuModal() {
                     }
                   >
                     <Icon
-                      aria-label={`${slide} Slide ${currSlide ? "Active" : "Inactive"}`}
+                      aria-label={`${content[slide.toLowerCase()]} ${content.general.indicator[0]}${
+                        currSlide ? content.general.indicator[1] : ""
+                      }`}
                       id={((obj.icon || "list") + "-20") as IconIds}
                     />
                   </Button>
@@ -222,7 +200,7 @@ export default function MenuModal() {
   );
 }
 
-function InfoCard({ currentSlide }: { currentSlide: MenuSlide }) {
+function InfoCard({ localeContent, currentSlide }: { localeContent: LocaleContent; currentSlide: MenuSlide }) {
   const [keepInfoOpen, setSeepInfoOpen] = useState(false);
 
   return (
@@ -239,22 +217,56 @@ function InfoCard({ currentSlide }: { currentSlide: MenuSlide }) {
           className={s.info}
           onClick={() => setSeepInfoOpen(!keepInfoOpen)}
         >
-          <Icon aria-hidden="true" id="info-21" /> Info
+          <Icon aria-hidden="true" id="info-21" /> {localeContent.infoBtn}
         </Button>
       }
-      open={keepInfoOpen || undefined}
+      open={keepInfoOpen}
       openDelay={keepInfoOpen ? 0 : 500}
     >
       {({ Arrow }) => (
         <>
           <Arrow />
-          <h3>{currentSlide} Info</h3>
-          <p>{currentSlide} renew with new {currentSlide?.toLowerCase()} every 2 weeks.</p>
+          <h3>{localeContent.info.replace("{{slide}}", localeContent[currentSlide].title)}</h3>
+          <p>{localeContent.renew.replaceAll("{{type}}", localeContent[currentSlide].title)}</p>
           <ScrollArea orientation="vertical">
             <ul id="stepsList" aria-label="Steps">
-              {SLIDE_MAP[currentSlide]?.steps!.map((step, i) => (
-                <li key={i}>{step}</li>
-              ))}
+              {localeContent[currentSlide].info.map(
+                (step: string | string[], i: number) => (
+                  <li key={i}>
+                    {(() => {
+                      const element = (text: any): React.ReactNode => <strong>{text}</strong>;
+
+                      if (Array.isArray(step)) {
+                        return (
+                          <>
+                            {injectElementInText(step[0], null, element, {
+                              localeMarker: true,
+                              injectAll: true
+                            })}
+                            {
+                              <ul aria-label={localeContent.Bonuses.aria.label.innerList}>
+                                {(step[1] as any).map((innerStep: string, i: number) => (
+                                  <li key={i}>
+                                    {injectElementInText(innerStep, null, element, {
+                                        localeMarker: true,
+                                        injectAll: true
+                                      })}
+                                  </li>
+                                ))}
+                              </ul>
+                            }
+                          </>
+                        );
+                      }
+
+                      return injectElementInText(step, null, element, {
+                        localeMarker: true,
+                        injectAll: true
+                      });
+                    })()}
+                  </li>
+                )
+              )}
             </ul>
           </ScrollArea>
         </>

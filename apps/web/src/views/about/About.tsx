@@ -1,3 +1,5 @@
+import useLocale from "@hooks/useLocale";
+
 import { Main } from "@components/dashboard";
 import Carousel from "./_Carousel";
 import { Link } from "@components/common";
@@ -5,64 +7,46 @@ import { Link } from "@components/common";
 import s from "./about.module.css";
 
 export default function About() {
+  const { content, numberFormat } = useLocale();
+
   return (
     <Main className={s.about}>
       <section aria-labelledby="hWelcome" className={s.welcome}>
-        <h2 id="hWelcome">Welcome! 👋</h2>
+        <h2 id="hWelcome">{content.section.welcome.title} 👋</h2>
         <p>
-          Welcome to Quest Casino, where your gaming experience is our top
-          priority. We've built this platform with a commitment to transparency,
-          user-friendliness, and, most importantly, your safety. We understand
-          the concerns many players have had with other online casinos, and
-          we're here to change that.
+          {content.section.welcome.para}
         </p>
       </section>
 
       <section aria-labelledby="hSafety" className={s.safety}>
-        <h2 id="hSafety">Safety and Security!</h2>
-        <p>
-          At Quest Casino, we take your safety seriously. Our platform employs
-          cutting-edge security measures to protect your data and financial
-          transactions. You can enjoy your favorite games with confidence,
-          knowing that your information is safeguarded.
-        </p>
+        <h2 id="hSafety">{content.section.safety.title}</h2>
+        <p>{content.section.safety.para}</p>
       </section>
 
       <section aria-labelledby="hFair" className={s.play}>
-        <h2 id="hFair">Fair Play and Transparency</h2>
-        <p>
-          Unlike many other online casinos, Quest Casino is committed to
-          transparency. We provide you with insights into our operations,
-          including our odds and how they work; you can view the odds for games
-          when pressing the info icon on the game. We believe that every player
-          deserves to know the ins and outs of the games they enjoy.
-        </p>
+        <h2 id="hFair">{content.section.fair.title}</h2>
+        <p>{content.section.fair.para}</p>
       </section>
 
       <section aria-labelledby="hCommunity" className={s.community}>
-        <h2 id="hCommunity">Community and Connections</h2>
-        <p>
-          Beyond gaming, Quest Casino is also your place to connect with a
-          vibrant community of players. Share your experiences, make friends,
-          and enhance the social aspect of your gaming journey.
-        </p>
-        <p>
-          Quest Casino is more than just a gaming platform; it's a haven for
-          players looking for a safe, transparent, and enjoyable online casino
-          experience. Join us today and become a part of our growing community!
-          We're here to provide a new standard in online gambling.
-        </p>
+        <h2 id="hCommunity">{content.section.community.title}</h2>
+        {content.section.community.para.map((para: string, i: number) => (
+          <p key={i}>{para}</p>
+        ))}
 
-        <Carousel />
+        <Carousel
+          localeEntry={{ ...content.Carousel, general: content.general }}
+          numberFormat={numberFormat}
+        />
       </section>
 
       <footer>
-        <p>learn more about the creator:</p>
+        <p>{content.footer.para}</p>
         <Link
           intent="primary"
           to="https://www.davidbishop.info"
           external
-          title="The Creator of Quest Casino Personal Website"
+          title={content.footer.aria.title.portfolio}
         >
           https://www.davidbishop.info
         </Link>

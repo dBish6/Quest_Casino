@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BreakpointContext } from "@components/dashboard";
+import { BreakpointContext } from "@components/BreakpointProvider";
 
 export default function useBreakpoint() {
   const context = useContext(BreakpointContext);

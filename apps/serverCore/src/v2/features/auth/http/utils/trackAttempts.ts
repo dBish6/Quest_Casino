@@ -1,4 +1,5 @@
 import type { ObjectId } from "mongoose";
+import type FeatureCategory from "@typings/FeatureCategory";
 
 import { handleHttpError, HttpError } from "@utils/handleError";
 
@@ -16,7 +17,7 @@ import { scheduleUnlockUser } from "@authFeat/jobs/schedule";
 export default async function trackAttempts<TReturn = any>(
   userId: string | ObjectId,
   cacheId: string,
-  errorMsg: string,
+  error: { name: string; category: FeatureCategory },
   callback: () => Promise<any> | any,
   options: { max?: number } = { max: 6 }
 ) {
@@ -32,7 +33,7 @@ export default async function trackAttempts<TReturn = any>(
 
       await scheduleUnlockUser(userId, 60 * 60 * 24 * 1000); // 24 hours from now.
 
-      throw new HttpError(errorMsg, 429);
+      throw new HttpError(error.name, error.category, 429);
     }
 
     try {

@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
+import useLocale from "@hooks/useLocale";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
 import { useLazyGetQuestsQuery } from "@gameFeat/services/gameApi";
 
@@ -23,6 +24,8 @@ interface QuestsState {
 export default function ViewCompletedQuestsModal() {
   const [searchParams] = useSearchParams(),
     username = searchParams.get(ModalQueryKey.PROFILE_QUESTS_HISTORY_MODAL);
+
+  const { content, numberFormat } = useLocale("ViewCompletedQuestsModal");
 
   const [completedQuests, setCompletedQuests] = useState<QuestsState>({ active: [], inactive: [] });
 
@@ -52,7 +55,7 @@ export default function ViewCompletedQuestsModal() {
 
   return (
     <ModalTemplate
-      aria-description={`Completed quests history for ${username}`}
+      aria-description={content.aria.descrip.modal.replace("{{username}}", username)}
       aria-live="polite"
       queryKey="qhist"
       width="674px"
@@ -63,7 +66,7 @@ export default function ViewCompletedQuestsModal() {
           <hgroup className="head">
             <Icon aria-hidden="true" id="scroll-48" scaleWithText />
             <Title asChild>
-              <h2 title="Completed Quests">Completed Quests</h2>
+              <h2 title={content.title}>{content.title}</h2>
             </Title>
           </hgroup>
 
@@ -73,10 +76,16 @@ export default function ViewCompletedQuestsModal() {
             <>
               <span className={s.username}>{username}</span>
 
-              <section aria-label="Active Completed Quests" className={s.active}>
+              <section
+                aria-label={content.section.active.aria.label.section}
+                className={s.active}
+              >
                 <div>
-                  <h3 id="hRequest">Active for Round</h3>
-                  <small>{completedQuests.active.length} Results</small>
+                  <h3 id="hRequest">{content.section.active.title}</h3>
+                  <small>
+                    {numberFormat().format(completedQuests.active.length)}{" "}
+                    {content.general.results}
+                  </small>
                 </div>
                 {completedQuests.active.length ? (
                   <ul>
@@ -90,14 +99,20 @@ export default function ViewCompletedQuestsModal() {
                     ))}
                   </ul>
                 ) : (
-                  <p>No Results</p>
+                  <p>{content.general.noResults}</p>
                 )}
               </section>
 
-              <section aria-label="Previous Completed Quests" className={s.inactive}>
+              <section
+                aria-label={content.section.previous.aria.label.section}
+                className={s.inactive}
+              >
                 <div>
-                  <h3 id="hRequest">Previous</h3>
-                  <small>{completedQuests.inactive.length} Results</small>
+                  <h3 id="hRequest">{content.section.previous.title}</h3>
+                  <small>
+                    {numberFormat().format(completedQuests.inactive.length)}{" "}
+                    {content.general.results}
+                  </small>
                 </div>
                 {completedQuests.inactive.length ? (
                   <ul>
@@ -111,7 +126,7 @@ export default function ViewCompletedQuestsModal() {
                     ))}
                   </ul>
                 ) : (
-                  <p>No Results</p>
+                  <p>{content.general.noResults}</p>
                 )}
               </section>
             </>

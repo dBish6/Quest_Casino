@@ -1,12 +1,11 @@
 import type { PaymentHistoryEntry } from "@qc/typescript/dtos/PaymentHistoryDto";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
-import formatCurrency from "@authFeat/utils/formatCurrency";
-import { capitalize } from "@qc/utils";
-
+import useLocale from "@hooks/useLocale";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
 import { useLazyGetPaymentHistoryQuery } from "@gameFeat/services/gameApi";
 
@@ -16,9 +15,18 @@ import { Spinner } from "@components/loaders";
 
 import s from "./viewPaymentHistoryModal.module.css";
 
+interface PaymentCard {
+  type: string;
+  numberFormat: LocaleContextValues["numberFormat"];
+  dateTimeFormat: LocaleContextValues["dateTimeFormat"];
+  history: PaymentHistoryEntry;
+}
+
 export default function ViewPaymentHistoryModal() {
   const [searchParams] = useSearchParams(),
     modalParam = searchParams.get(ModalQueryKey.PROFILE_PAYMENT_HISTORY_MODAL);
+
+  const { content, numberFormat, dateTimeFormat } = useLocale("ViewPaymentHistoryModal");
 
   const [getPaymentHistory, { data: historyData, isFetching: historyLoading }] = useLazyGetPaymentHistoryQuery(),
     [history, setHistory] = useState<PaymentHistoryEntry[]>([]);
@@ -47,7 +55,7 @@ export default function ViewPaymentHistoryModal() {
 
   return (
     <ModalTemplate
-      aria-description={`Payment history for ${modalParam}`}
+      aria-description={content.aria.descrip.modal}
       queryKey="phist"
       width="455px"
       className={s.modal}
@@ -55,25 +63,24 @@ export default function ViewPaymentHistoryModal() {
       {() => (
         <>
           <Title asChild>
-            <h2>Payment History</h2>
+            <h2>{content.title}</h2>
           </Title>
-          {/* TODO: Limit on back-end, whatever it will be. */}
-          <p>Only the last 50 payments are shown here.</p>
+          <p>{content.para}</p>
 
           <div>
             <Select
               aria-controls="payHistoryList"
-              label="Filter by"
+              label={content.filterBy}
               intent="ghost"
               id="paymentTypeSelect"
               defaultValue="all"
               onInput={handleSort}
             >
-              <option value="all">All</option>
-              <option value="deposit">Deposit</option>
-              <option value="withdraw">Withdraw</option>
+              <option value="all">{content.all}</option>
+              <option value="deposit">{content.deposit}</option>
+              <option value="withdraw">{content.withdraw}</option>
             </Select>
-            <small>{history.length} Results</small>
+            <small>{numberFormat().format(history.length)} {content.general.results}</small>
           </div>
           {historyLoading ? (
             <Spinner intent="primary" size="xl" />
@@ -81,12 +88,18 @@ export default function ViewPaymentHistoryModal() {
             <>
               <ul id="payHistoryList" aria-live="polite" className={s.list}>
                 {history.map((history) => (
-                  <PaymentCard history={history} />
+                  <PaymentCard
+                    key={history.timestamp}
+                    numberFormat={numberFormat}
+                    dateTimeFormat={dateTimeFormat}
+                    type={content[history.type]}
+                    history={history}
+                  />
                 ))}
               </ul>
             </>
           ) : (
-            <p>No Results</p>
+            <p>{content.general.noResults}</p>
           )}
         </>
       )}
@@ -94,24 +107,24 @@ export default function ViewPaymentHistoryModal() {
   );
 }
 
-function PaymentCard({ history }: { history: PaymentHistoryEntry }) {
+function PaymentCard({ numberFormat, dateTimeFormat, type, history }: PaymentCard) {
   return (
     <li>
       <article data-type={history.type}>
         <div>
-          <h4>{capitalize(history.type)}</h4>
+          <h4>{type}</h4>
           <time dateTime={history.timestamp}>
-            {new Date(history.timestamp).toLocaleString("en-CA", {
+            {dateTimeFormat({
               year: "numeric",
               month: "2-digit",
               day: "2-digit",
               hour: "2-digit",
               minute: "2-digit",
               hour12: false
-            }).replace(",", "")}
+            }).format(new Date(history.timestamp))}
           </time>
         </div>
-        <p>{formatCurrency(history.amount)}</p>
+        <p>{numberFormat({ currency: "show" }).format(history.amount)}</p>
       </article>
     </li>
   );

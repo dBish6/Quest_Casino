@@ -1,12 +1,11 @@
 import type { Variants } from "framer-motion";
 
 import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useAnimate, AnimatePresence, m } from "framer-motion";
 import { throttle } from "tiny-throttle";
 
-import CURRENT_YEAR from "@constants/CURRENT_YEAR";
-
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 import useUser from "@authFeat/hooks/useUser";
 
@@ -19,6 +18,7 @@ import { Button } from "@components/common/controls";
 import Nav from "./nav/Nav";
 
 import s from "./aside.module.css";
+import injectElementInText from "@utils/injectElementInText";
 
 const ANIMATION_DURATION = 850,
   shrinkInOut: Variants = {
@@ -41,6 +41,9 @@ const ANIMATION_DURATION = 850,
   };
 
 export default function Aside() {
+  const { content, numberFormat, dateTimeFormat } = useLocale("AsideGeneral"),
+    formatter = useRef(numberFormat());
+
   const { viewport } = useBreakpoint();
 
   const [searchParams, setSearchParams] = useSearchParams(),
@@ -114,12 +117,18 @@ export default function Aside() {
                       <>
                         <h3 title={user.username}>{user.username}</h3>
                         <div>
-                          <span title={`${user.statistics.wins.total} Total Wins`} className={s.wins}>
-                            <span>{user.statistics.wins.total}</span> Wins
+                          <span
+                            title={`${formatter.current.format(user.statistics.wins.total)} ${content.total} ${content.wins}`}
+                            className={s.wins}
+                          >
+                            <span>{formatter.current.format(user.statistics.wins.total)}</span> {content.wins}
                           </span>
                           <span className={s.divider} />
-                          <span title={`${user.statistics.wins.streak} Win Streak`} className={s.streak}>
-                            <span>{user.statistics.wins.streak}</span> Streak
+                          <span 
+                            title={`${formatter.current.format(user.statistics.wins.streak)} ${content.winStreak}`} 
+                            className={s.streak}
+                          >
+                            <span>{formatter.current.format(user.statistics.wins.streak)}</span> {content.streak}
                           </span>
                         </div>
                       </>
@@ -132,12 +141,12 @@ export default function Aside() {
                           <Button
                             onClick={() => throttle(() => postLogout({ username: user!.username }), 300)()}
                           >
-                            Logout
+                            {content.logout}
                           </Button>
                         </Link>
                       ) : (
                         <ModalTrigger query={{ param: "login" }} intent="primary">
-                          Login
+                          {content.login}
                         </ModalTrigger>
                       )}
                     </div>
@@ -160,8 +169,15 @@ export default function Aside() {
                   </Link>
                 </div>
                 <small>
-                  Copyright © <time dateTime={CURRENT_YEAR}>{CURRENT_YEAR}</time>{" "}
-                  Quest Casino
+                  {injectElementInText(
+                    content.footer.para,
+                    null,
+                    () => {
+                      const year = dateTimeFormat({ year: "numeric" }).format(new Date());
+                      return <time dateTime={year}>{year}</time>;
+                    },
+                    { localeMarker: true }
+                  )}
                 </small>
               </footer>
             </m.div>

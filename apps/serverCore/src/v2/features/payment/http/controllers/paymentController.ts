@@ -8,7 +8,6 @@
 import type { Request, Response, NextFunction } from "express";
 
 import { type TransactionType, TRANSACTION_TYPES } from "@qc/constants";
-import GENERAL_BAD_REQUEST_MESSAGE from "@constants/GENERAL_BAD_REQUEST_MESSAGE";
 
 import { handleHttpError } from "@utils/handleError";
 
@@ -28,7 +27,10 @@ export async function transaction(
 
   try {
     if (typeof type !== "string" || !TRANSACTION_TYPES.includes(type))
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     const user = await paymentService.transaction(
       req.userDecodedClaims!.sub,

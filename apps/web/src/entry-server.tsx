@@ -1,5 +1,6 @@
 import type { Request as ERequest, Response as EResponse } from "express";
 import type { Store } from "@reduxjs/toolkit";
+import type { LocaleData } from "@typings/Locale";
 
 import { renderToString } from "react-dom/server";
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from "react-router-dom/server";
@@ -8,8 +9,13 @@ import { Provider as ReduxProvider } from "react-redux";
 
 import { routes } from "./routes";
 
-export async function render(req: ERequest, res: EResponse, store: Store) {
-  const { query, dataRoutes } = createStaticHandler(routes),
+export async function render(
+  req: ERequest,
+  res: EResponse,
+  store: Store,
+  locale: { type: string; data: LocaleData }
+) {
+  const { query, dataRoutes } = createStaticHandler(routes(locale)),
     request = createFetchRequest(req, res),
     context = await query(request);
 

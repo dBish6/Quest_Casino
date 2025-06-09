@@ -3,21 +3,25 @@ import type { ParsedPhone } from "../_components/edit/Personal";
 import type { UpdateProfileBodyDto } from "@qc/typescript/dtos/UpdateUserDto";
 import type { MutationResponse } from "@authFeat/hooks/useHandleUserValidationResponse";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useFetcher } from "react-router-dom";
 
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useHandleUserValidationResponse from "@authFeat/hooks/useHandleUserValidationResponse";
 
 import { useAppDispatch } from "@redux/hooks";
 import { ADD_TOAST } from "@redux/toast/toastSlice";
 
+// FIXME: onlyPassword is handled horribly.
 export function useHandleUpdate(
-  user: Partial<Omit<UserProfileCredentials, "phone_number"> & ParsedPhone>,
+  user: Partial<UserProfileCredentials & ParsedPhone>,
   mutationTrigger: { patchUpdateProfile: any; postSendConfirmPasswordEmail?: any },
   updateReset: () => void,
   onSuccess?: (data: NonNullable<MutationResponse["data"]>) => void
 ) {
+  const { content } = useLocale("useHandleUpdate");
+
   const fetcher = useFetcher(),
     form = useForm<
       UpdateProfileBodyDto & { calling_code: string } & {
@@ -26,13 +30,14 @@ export function useHandleUpdate(
       }
     >(),
     password = useRef<{ old_password?: string; new_password?: string } | null>(null);
+  const [onlyPassword, setOnlyPassword] = useState<true | undefined>();
 
   const dispatch = useAppDispatch();
 
   const handlePassword = async (password: { old?: string; new?: string }) => {
     mutationTrigger.postSendConfirmPasswordEmail({ password })
       .then((res: MutationResponse) => {
-        if (res.data?.message?.includes("successfully")) form.formRef.current!.reset();
+        if (res.data?.success) form.formRef.current!.reset();
       })
       .finally(() => form.setLoading(false));
   }
@@ -40,10 +45,7 @@ export function useHandleUpdate(
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user.email_verified)
-      return form.setError(
-        "global",
-        "Your profile hasn't been verified yet, please verify to update your profile."
-      );
+      return form.setError("global", content.verify);
 
     form.setLoading(true);
     form.setError("global", "");
@@ -79,15 +81,15 @@ export function useHandleUpdate(
         }
       }
     }
-    if (password.current?.old_password || password.current?.new_password)
-      Object.entries(password.current).forEach(([key, value]) => formData.append(key, value));
 
-    const formDataLength = Array.from(formData.values()).length;
+    if (password.current?.old_password || password.current?.new_password) {
+      Object.entries(password.current).forEach(([key, value]) => formData.append(key, value));
+      if (Array.from(formData.keys()).length === 4) setOnlyPassword(true);
+    }
+
+    const formDataLength = Array.from(formData.keys()).filter((key) => key !== "lang").length;
     if (formDataLength <= 1) {
-      form.setError(
-        "global",
-        "Nothing was changed. Change at least one field below to update."
-      );
+      form.setError("global", content.nothingChanged);
       form.setLoading(false);
     } else {
       formData.append("isProfile", "true");
@@ -113,16 +115,16 @@ export function useHandleUpdate(
           if (meta.request.body.email) {
             dispatch(
               ADD_TOAST({
-                title: "Conflict",
-                message: "Your email has been changed and other fields if provided. However, you must verify your new email before attempting to change your password. When verified, come back and change your password.",
+                title: content.conflictTitle,
+                message: content.conflict,
                 intent: "error"
               })
             );
           } else {
             dispatch(
               ADD_TOAST({
-                title: "Processing Password",
-                message: "Because you updated your password also, we are now processing the password reset. Please stay on this page and hang tight...",
+                title: content.passwordTitle,
+                message: onlyPassword ? content.password : content.passwordAlso,
                 intent: "info",
                 duration: 6500
               })
@@ -136,7 +138,7 @@ export function useHandleUpdate(
         if (error.status === 429) form.setError("global", error.data!.ERROR);
       },
     },
-    { extraBody: { password: undefined } }
+    { extraBody: { password: undefined, profileOnlyPassword: onlyPassword } }
   );
 
   return { fetcher, useForm: form, handleSubmit };

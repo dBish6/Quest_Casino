@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { logger } from "@qc/utils";
 import { ApiError } from "@utils/handleError";
 
 export default function httpErrorHandler(
   error: ApiError | Error,
-  _: Request,
+  req: Request,
   res: Response,
   __: NextFunction
 ) {
@@ -12,15 +12,17 @@ export default function httpErrorHandler(
 
   if (
     err.statusCode === 500 ||
-    err.message?.toLowerCase().includes("unexpectedly") ||
+    err.name === "UNEXPECTED" ||
     !err.statusCode
   )
     logger.error(err.stack || err);
 
   return res.status(err.statusCode || 500).json({
+    name: err.name,
     ...(process.env.NODE_ENV === "development" && {
-      message: err.from || "unknown"
+      message: err.options.from || "unknown"
     }),
-    ERROR: err.message || "An unexpected error occurred."
+    ERROR: 
+      req.locale?.resolveErrorMsg(err.category || "general", err.name, err.options?.var) || "Unexpectedly locale not initialized."
   });
 }

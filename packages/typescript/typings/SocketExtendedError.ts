@@ -4,5 +4,5 @@
  * they should be.
  */
 export default interface SocketExtendedError extends Error {
-  data: { ERROR: string; status: string };
+  data: { name: string; ERROR: string; status: string };
 }

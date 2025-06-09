@@ -13,6 +13,8 @@
 
       "@jobs/*": ["./src/v2/jobs/*"],
 
+      "@locales/*": ["./src/v2/locales/*"],
+
       "@middleware/*": ["./src/v2/middleware/*"],
 
       "@model/*": ["./src/v2/model/*"],

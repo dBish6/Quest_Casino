@@ -8,8 +8,6 @@ import { handleHttpError } from "@utils/handleError";
 
 import { getUser } from "@authFeat/services/authService";
 
-const ERROR = "Email or password is incorrect.";
-
 /**
  * Validates the standard login form fields.
  * @middleware
@@ -21,8 +19,10 @@ export default async function validateLogin(
   next: NextFunction
 ) {
   try {
-    const error = validateEmail(req.body.email);
-    if (error) return res.status(400).json({ ERROR });
+    const ERROR = req.locale.data.auth.error.LOGIN_EMAIL_PASSWORD;
+
+    const isValid = validateEmail(req.body.email);
+    if (!isValid) return res.status(400).json({ ERROR });
 
     const user = await getUser(
       { by: "email", value: req.body.email },
@@ -32,13 +32,13 @@ export default async function validateLogin(
 
     if (user.password === "google provided")
       return res.status(400).json({
-        ERROR: `This profile is linked with Google. Please use the "Google" button below to log in.`
+        ERROR: req.locale.data.auth.error.LOGIN_GOOGLE_LINKED
       });
 
     if (!(await compare(req.body.password, user.password)))
       return res.status(400).json({ ERROR });
 
-    logger.debug(`Login ${user.id} successfully validated.`);
+    logger.debug(`Login ${user.email} successfully validated.`);
     next();
   } catch (error: any) {
     next(handleHttpError(error, "validateLogin middleware error."));

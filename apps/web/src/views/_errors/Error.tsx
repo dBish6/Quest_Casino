@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import injectElementInText from "@utils/injectElementInText";
 import { history } from "@utils/History";
+
+import useLocale from "@hooks/useLocale";
 
 import { useAppDispatch, useAppSelector } from "@redux/hooks";
 import { selectUserCredentials } from "@authFeat/redux/authSelectors";
@@ -15,13 +18,14 @@ import s from "./errors.module.css";
 
 export interface ErrorPageProps {
   status: number;
-  title: string;
-  description: string;
 }
 
 const LOGOUT_STATUSES = new Set([401, 403]);
 
-export default function Error({ status, title, description }: ErrorPageProps) {
+export default function Error({ status }: ErrorPageProps) {
+  const { content } = useLocale(),
+    title = content.title;
+
   const [_, setSearchParams] = useSearchParams(),
     user = useAppSelector(selectUserCredentials),
     dispatch = useAppDispatch();
@@ -33,12 +37,21 @@ export default function Error({ status, title, description }: ErrorPageProps) {
   }
 
   return (
-    <Main className={s.error} {...(title === "Application Error" && { style: { height: "100vh" } })}>
+    <Main className={s.error}>
       <hgroup role="group" aria-roledescription="heading group">
         <h2>
-          Error {status}: <span>{title}</span>
+          {injectElementInText(
+            title,
+            null,
+            (text) => (
+              <span>{text}</span>
+            ),
+            { localeMarker: true }
+          )}
         </h2>
-        <p aria-roledescription="subtitle">{description}</p>
+        <p aria-roledescription="subtitle">
+          {status === 401 ? content.general.unauthorized : content.para}
+        </p>
       </hgroup>
 
       {[500, 404].includes(status) && (
@@ -53,10 +66,12 @@ export default function Error({ status, title, description }: ErrorPageProps) {
                 onClick: () => history.replacePath("/home")
               })}
         >
-          {title.includes("Page") ? (
-            <Link aria-label="Quest Casino Home" to="/home">Home</Link>
+          {content.home ? (
+            <Link aria-label={content.general.aria.label.logoTitle} to="/home">
+              {content.home}
+            </Link>
           ) : (
-            "Refresh"
+            content.general.refresh
           )}
         </Button>
       )}

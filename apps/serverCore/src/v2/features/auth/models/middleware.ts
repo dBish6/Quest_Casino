@@ -23,11 +23,7 @@ function handleUniqueUsername(
 ) {
   const error = monError as MongoError;
   if (error.code === 11000 && error.keyPattern?.username)
-    throw new ApiError(
-      "Username is already taken. Please try a different username.",
-      409,
-      "conflict"
-    );
+    throw new ApiError("USERNAME_TAKEN", "auth", 409, "conflict");
 
   next();
 }
@@ -51,9 +47,11 @@ async function handleMaxFriends(next: CallbackWithoutResultAndOptionalError) {
         ]);
         if (exceeded.length) {
           throw new ApiError(
-            `Your max of ${MAX_FRIENDS_COUNT[type]} ${type === "list" ? "friends" : "friend requests"} has been reached.`,
+            "MAX_FRIENDS",
+            "auth",
             400,
-            "bad request"
+            "bad request",
+            { var: { count: MAX_FRIENDS_COUNT[type], type: type === "list" ? "friends" : "friend requests" } }
           );
         }
       }

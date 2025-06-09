@@ -1,11 +1,11 @@
 import type { LeaderboardContextValues } from "./LeaderboardProvider";
+import type { LocaleEntry } from "@typings/Locale";
+import type { LocaleContextValues } from "@components/LocaleProvider";
 import type { ViewUserProfileCredentials } from "@qc/typescript/typings/UserCredentials";
 import type { LeaderboardType } from "@qc/constants";
 
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
-
-import { capitalize } from "@qc/utils";
 
 import useLeaderboard from "@hooks/useLeaderboard";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
@@ -22,13 +22,20 @@ import { UserStatistics } from "@authFeat/components/userStatistics";
 
 import s from "./leaderboard.module.css";
 
-interface TopUserCard extends LeaderboardContextValues {
+interface TopUserProps extends LeaderboardContextValues {
+  localeSection: LocaleEntry;
+  numberFormat: LocaleContextValues["numberFormat"];
   type: LeaderboardType;
   user: ViewUserProfileCredentials;
   rank: number;
 }
 
-export default function Leaderboard() {
+interface LeaderboardProps {
+  localeEntry: LocaleEntry
+  numberFormat: LocaleContextValues["numberFormat"];
+}
+
+export default function Leaderboard({ localeEntry, numberFormat }: LeaderboardProps) {
   const [searchParams] = useSearchParams(),
     slide = searchParams.get(ModalQueryKey.MENU_MODAL) === "Leaderboard";
 
@@ -55,16 +62,19 @@ export default function Leaderboard() {
   return (
     <div
       role="group"
-      aria-label="Leaderboard"
+      aria-label={localeEntry.title}
       aria-roledescription="slide"
       id="lSlide"
       className={`slideContent ${s.leaderboard}`}
     >
-      <section aria-label="Top Users" className={s.board}>
+      <section
+        aria-label={localeEntry.section.topUsers.aria.label.section}
+        className={s.board}
+      >
         <div className={s.filter}>
           <Select
             aria-controls="topUsers"
-            label="Change Leaderboard"
+            label={localeEntry.section.topUsers.aria.label.changeCat}
             hideLabel
             intent="primary"
             size="lrg"
@@ -79,18 +89,27 @@ export default function Leaderboard() {
               }));
             }}
           >
-            <option value="rate">Win Rate</option>
-            <option value="total">Total Wins</option>
+            <option value="rate">
+              {localeEntry.section.topUsers.categories[0]}
+            </option>
+            <option value="total">
+              {localeEntry.section.topUsers.categories[1]}
+            </option>
           </Select>
         </div>
         <ScrollArea orientation="vertical" type="scroll" className={s.topUsers}>
           {leaderboardLoading ? (
             <Spinner intent="primary" size="xl" />
           ) : topUsers.users?.length ? (
-            <ul aria-label="Leaders" id="topUsers">
+            <ul
+              aria-label={localeEntry.section.topUsers.aria.label.leaders}
+              id="topUsers"
+            >
               {topUsers.users.map((user, i) => (
                 <TopUser
                   key={user.member_id}
+                  localeSection={localeEntry.section.topUsers}
+                  numberFormat={numberFormat}
                   type={topUsers.type}
                   user={user}
                   rank={i + 1}
@@ -100,14 +119,14 @@ export default function Leaderboard() {
               ))}
             </ul>
           ) : (
-            <p>Unexpectedly no users.</p>
+            <p>{localeEntry.section.topUsers.noResults}</p>
           )}
         </ScrollArea>
       </section>
 
-      <section aria-label="Selected User" className={s.selected}>
+      <section aria-label={localeEntry.section.selectedUser.aria.label.section} className={s.selected}>
         {!selectedUser ? (
-          <p>Select a user from the board.</p>
+          <p>{localeEntry.section.selectedUser.select}</p>
         ) : (
           <ScrollArea orientation="vertical">
             <UserGeneral size="compact" user={selectedUser} />
@@ -125,17 +144,36 @@ export default function Leaderboard() {
   );
 }
 
-function TopUser({ type, user, rank, selectedUser, setSelectedUser }: TopUserCard) {
+function TopUser({
+  localeSection,
+  numberFormat,
+  type,
+  user,
+  rank,
+  selectedUser,
+  setSelectedUser
+}: TopUserProps) {
+  const localeRank = numberFormat().format(rank),
+    localeWinStat = numberFormat({
+      ...(type === "rate" && { style: "percent" })
+    }).format(
+      type === "rate" ? user.statistics.wins[type] / 100 : user.statistics.wins[type]
+    );
+
   return (
     <li className={s.topUser}>
       <button
-        aria-label={`${rank}. ${user.username} ${user.statistics.wins[type]}${type === "rate" ? "% Win Rate" : " Total Wins" }`}
+        aria-label={localeSection.aria.label.topUser
+          .replace("{{rank}}", localeRank + ".")
+          .replace("{{username}}", user.username)
+          .replace("{{stat}}", localeWinStat)
+          .replace("{{type}}", type === "rate" ? localeSection.categories[0] : localeSection.categories[1])}
         aria-pressed={selectedUser?.member_id === user.member_id}
         onClick={() => setSelectedUser(user)}
       >
-        <span data-rank={rank}>{rank}.</span>
+        <span data-rank={rank}>{localeRank + "."}</span>
         <div className={s.content}>
-          <Avatar size="md" user={user} linkProfile={false} />
+          <Avatar size="md" user={user} showShortView={false} linkProfile={false} />
           <hgroup role="group" aria-roledescription="heading group">
             <h2 title={user.username}>{user.username}</h2>
             <p
@@ -148,13 +186,10 @@ function TopUser({ type, user, rank, selectedUser, setSelectedUser }: TopUserCar
         </div>
 
         <div className={s.wins}>
-          <p {...(type === "rate" && { "aria-label": "Win Rate" })}>
-            {capitalize(type)}
+          <p {...(type === "rate" && { "aria-label": localeSection.categories[0] })}>
+            {localeSection[type]}
           </p>
-          <p>
-            {user.statistics.wins[type]}
-            {type === "rate" && "%"}
-          </p>
+          <p>{localeWinStat}</p>
         </div>
       </button>
     </li>

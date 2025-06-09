@@ -18,13 +18,15 @@ export default async function verifyCsrfToken(req: Request, res: Response, next:
 
     if (!cachedTokens || !receivedToken)
       return res.status(401).json({
-        ERROR: "CSRF token is missing.",
+        name: "TOKEN_CSRF_MISSING",
+        ERROR: req.locale.data.auth.error.TOKEN_CSRF_MISSING
       });
 
     const match = cachedTokens.some((token) => token === receivedToken);
     if (!match)
       return res.status(403).json({
-        ERROR: "CSRF token is invalid.",
+        name: "TOKEN_INVALID",
+        ERROR: req.locale.data.auth.error.TOKEN_INVALID.replace("{{token}}", "CSRF")
       });
 
     logger.debug("Csrf token successfully verified.");

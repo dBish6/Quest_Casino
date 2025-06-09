@@ -1,6 +1,8 @@
 import { useSearchParams, Navigate } from "react-router-dom";
 import { useMemo } from "react";
 
+import useLocale from "@hooks/useLocale";
+
 import { useAppDispatch } from "@redux/hooks";
 import { unexpectedErrorToast } from "@redux/toast/toastSlice";
 
@@ -8,9 +10,11 @@ const isJwtString = (token: string) => /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a
 
 export default function verTokenRequiredView<TProps extends object>(
   Component: React.ComponentType<TProps>,
-  param: string
+  param = "reset"
 ) {
   return function (props: TProps) {
+    const { content } = useLocale("verTokenRequiredView");
+
     const [searchParams] = useSearchParams(),
       token = searchParams.get(param) || ""
     const dispatch = useAppDispatch();
@@ -20,7 +24,7 @@ export default function verTokenRequiredView<TProps extends object>(
     if (token && !isTokenValid) {
       dispatch(
         unexpectedErrorToast(
-          `It seems the ${param} link is invalid. Please ensure you accessed this page through the link provided in your email.`,
+          content.invalid.replace("{{param}}", content[param]),
           false
         )
       );

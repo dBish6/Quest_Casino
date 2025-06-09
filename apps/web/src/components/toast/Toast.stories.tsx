@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import type { ToastPayload } from "@redux/toast/toastSlice";
+import type { ToastOptions, ToastPayload } from "@redux/toast/toastSlice";
 
 import { useEffect } from "react";
 
@@ -30,29 +30,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function useAddToasts(
-  args: Record<string, any>,
-  options?: { link?: boolean; button?: boolean }
-) {
+function useAddToasts(args: Record<string, any>, options?: ToastOptions) {
   const dispatch = useMockDispatch();
 
   const mockToast: ToastPayload = {
-    message: `Lorem ipsum dolor sit amet, consectetur adipiscing elit${options?.link ? ", Link" : ""}${options?.button ? ", Button" : ""}.`,
+    message: `Lorem ipsum dolor sit amet, consectetur adipiscing elit${options?.inject?.linkTo != undefined ? ", Link" : ""}${options?.inject?.btnOnClick ? ", Button" : ""}.`,
     intent: args.intent,
-    options: {
-      ...(options?.link && {
-        link: {
-          sequence: "Link",
-          to: ""
-        }
-      }),
-      ...(options?.button && {
-        button: {
-          sequence: "Button",
-          onClick: () => console.log("clicked")
-        }
-      })
-    },
+    options
   };
 
   useEffect(() => {
@@ -103,7 +87,12 @@ export const WithLink: Story = {
       intent: "info",
     },
     render: (args) => {
-      useAddToasts(args, { link: true });
+      useAddToasts(args, {
+        inject: {
+          sequence: "Link",
+          linkTo: "/"
+        }
+      });
 
       return <ToastsProvider {...args} />;
     },
@@ -113,7 +102,12 @@ export const WithLink: Story = {
       intent: "info",
     },
     render: (args) => {
-      useAddToasts(args, { button: true });
+      useAddToasts(args, {
+        inject: {
+          sequence: "Button",
+          btnOnClick: () => console.log("clicked")
+        }
+      });
 
       return <ToastsProvider {...args} />;
     },

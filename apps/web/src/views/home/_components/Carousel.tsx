@@ -1,4 +1,5 @@
 import type { SetURLSearchParams } from "react-router-dom";
+import type { LocaleEntry } from "@typings/Locale";
 import type Direction from "@typings/Direction";
 import type { MinUserCredentials } from "@qc/typescript/typings/UserCredentials";
 
@@ -6,6 +7,8 @@ import { useSearchParams } from "react-router-dom";
 import { useRef, useState, useEffect, Fragment } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { throttle } from "tiny-throttle";
+
+import injectElementInText from "@utils/injectElementInText";
 
 import useUser from "@authFeat/hooks/useUser";
 import { useAppDispatch } from "@redux/hooks";
@@ -41,10 +44,23 @@ export interface CarouselContentResponseDto {
 type HeroCarouselSlides = (typeof HERO_SLIDES)[number];
 
 interface IndicatorsProps {
+  localeEntry: LocaleEntry;
   heroSlides: typeof HERO_SLIDES;
   currentSlide: HeroCarouselSlides;
   setSearchParams: SetURLSearchParams;
   interaction: boolean;
+}
+
+interface PlayersSlideProps {
+  localeEntry: LocaleEntry;
+  usersDataRef: React.MutableRefObject<MinUserCredentials[]>;
+  breakpoint: boolean;
+}
+
+interface CarouselProps {
+  localeEntry: LocaleEntry;
+  content?: CarouselContentResponseDto;
+  breakpoint: boolean;
 }
 
 const HERO_SLIDES = ["News", "Events", "Players"] as const;
@@ -61,43 +77,7 @@ function handleTransition(setCurrentSlide: React.Dispatch<React.SetStateAction<H
   });
 }
 
-function formatContent(content: SlideEntryDto) {
-  const { title_emp, link } = content.sequence || {};
-
-  let title: string | JSX.Element = content.title;
-  if (title_emp) {
-    const parts = content.title.split(title_emp);
-    if (parts.length) {
-      title = (
-        <>
-          {parts[0]}
-          <span>{title_emp}</span>
-          {parts[1]}
-        </>
-      );
-    }
-  }
-
-  let description: string | JSX.Element = content.description;
-  if (link) {
-    const parts = content.description.split(link.sequence);
-    if (parts.length) {
-      description = (
-        <>
-          {parts[0]}
-          <Link intent="primary" to={link.to}>
-            {link.sequence}
-          </Link>
-          {parts[1]}
-        </>
-      );
-    }
-  }
-
-  return { title, description };
-}
-
-export default function Carousel({ content, breakpoint }: { content?: CarouselContentResponseDto; breakpoint: boolean }) {
+export default function Carousel({ localeEntry, content, breakpoint }: CarouselProps) {
   const [searchParams, setSearchParams] = useSearchParams(),
     slideParam = content ? ((searchParams.get("hs") || "News") as HeroCarouselSlides) : "Players",
     heroSlides = (content ? HERO_SLIDES : HERO_SLIDES.slice(-1)) as typeof HERO_SLIDES;
@@ -131,7 +111,11 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
 
   return (
     <>
-      <div role="group" aria-label="Choose Slide to Display" className={s.chips}>
+      <div
+        role="group"
+        aria-label={localeEntry.aria.label.chips}
+        className={s.chips}
+      >
         {heroSlides.map((slideName) => {
           const selected = slideName === currentSlide;
 
@@ -151,7 +135,7 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
               }}
               disabled={interaction && selected}
             >
-              {slideName}
+              {localeEntry[slideName.toLowerCase()]}
             </Button>
           );
         })}
@@ -160,7 +144,7 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
       <m.div
         role="group"
         aria-roledescription="carousel"
-        aria-label="Welcome"
+        aria-label={localeEntry.aria.label.carousel}
         className={s.carousel}
         onClick={() => setInteraction(true)}
         onPan={(e, info) => {
@@ -187,7 +171,7 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
             <div
               role="group"
               aria-roledescription="slide"
-              aria-label={currentSlide}
+              aria-label={localeEntry[currentSlide.toLowerCase()]}
               id="heroSlide"
               className={s.slide}
               data-slide={currentSlide}
@@ -198,7 +182,7 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
                 const slideCont = content?.[currentSlide.toLowerCase() as keyof CarouselContentResponseDto] as any,
                   props = currentSlide === "Events"
                     ? slideCont?.entries
-                    : { ...slideCont, usersDataRef, ...(currentSlide === "Players" && { breakpoint }) };
+                    : { ...slideCont, usersDataRef, ...(currentSlide === "Players" && { localeEntry, breakpoint }) };
                   
                 return (
                   <>
@@ -217,6 +201,7 @@ export default function Carousel({ content, breakpoint }: { content?: CarouselCo
         </AnimatePresence>
 
         <Indicators
+          localeEntry={localeEntry}
           heroSlides={heroSlides}
           currentSlide={currentSlide}
           setSearchParams={setSearchParams}
@@ -247,7 +232,7 @@ const Slide = {
       </ScrollArea>
     );
   },
-  Players: ({ usersDataRef, breakpoint }: { usersDataRef: React.MutableRefObject<MinUserCredentials[]>; breakpoint: boolean }) => {
+  Players: ({ localeEntry, usersDataRef, breakpoint }: PlayersSlideProps) => {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const user = useUser(),
@@ -305,9 +290,9 @@ const Slide = {
     return (
       <>
         <div>
-          <h3>Meet Someone!</h3>
+          <h3>{localeEntry.meet}</h3>
           <Button
-            title="Refresh Users"
+            title={localeEntry.aria.title.refreshBtn}
             aria-pressed={usersLoading}
             intent="primary"
             size={breakpoint ? "md" : "lrg"}
@@ -321,7 +306,7 @@ const Slide = {
 
         <ScrollArea
           ref={scrollAreaRef}
-          aria-label={`${usersLoading ? "Loading" : ""}Users to Meet`}
+          aria-label={localeEntry.aria.label.meet}
           aria-live="polite"
           orientation="horizontal"
           className={s.users}
@@ -329,16 +314,19 @@ const Slide = {
           {user ? (
             !user.email_verified ? (
               <p>
-                You must verify your profile to meet and add friends,{" "}
-                <Link asChild intent="primary" to="">
-                  <Button
-                    id="heroVerBtn"
-                    onClick={() => handleSendVerifyEmail(dispatch, "heroVerBtn")}
-                  >
-                    send verification email
-                  </Button>
-                </Link>
-                .
+                {injectElementInText(localeEntry.friendsVerify, null, 
+                  (text) => (
+                    <Link asChild intent="primary" to="">
+                      <Button
+                        id="heroVerBtn"
+                        onClick={() => handleSendVerifyEmail(dispatch, "heroVerBtn")}
+                      >
+                        {text}
+                      </Button>
+                    </Link>
+                  ),
+                  { localeMarker: true }
+                )}
               </p>
             ) : usersLoading || usersData?.length ? (
               <ul>
@@ -351,14 +339,18 @@ const Slide = {
                     ))}
               </ul>
             ) : (
-              <p>We couldn't find any users at the moment. Please try again later!</p>
+              <p>{localeEntry.noUsersFound}</p>
             )
           ) : (
             <p>
-              <ModalTrigger query={{ param: "login" }} intent="primary">
-                Login
-              </ModalTrigger>{" "}
-              to see other players!
+              {injectElementInText(localeEntry.loginRequired, null,
+                (text) => (
+                  <ModalTrigger query={{ param: "login" }} intent="primary">
+                    {text}
+                  </ModalTrigger>
+                ),
+                { localeMarker: true }
+              )}
             </p>
           )}
         </ScrollArea>
@@ -368,12 +360,26 @@ const Slide = {
 };
 
 function SlideHeadline(content: SlideEntryDto) {
-  const { title, description } = formatContent(content);
-
   return (
     <div className={s.headline}>
-      <h3>{title}</h3>
-      <p>{description}</p>
+      <h3>
+        {injectElementInText(
+          content.title,
+          content.sequence.title_emp,
+          (text) => <span>{text}</span>
+        )}
+      </h3>
+      <p>
+        {injectElementInText(
+          content.description,
+          content.sequence.link?.sequence,
+          (text) => (
+            <Link intent="primary" to={content.sequence.link!.to}>
+              {text}
+            </Link>
+          )
+        )}
+      </p>
     </div>
   );
 }
@@ -409,16 +415,24 @@ function RandomUserCard({ ranUser, breakpoint }: { ranUser?: MinUserCredentials;
   );
 }
 
-function Indicators({ heroSlides, currentSlide, setSearchParams, interaction }: IndicatorsProps) {
+function Indicators({
+  localeEntry,
+  heroSlides,
+  currentSlide,
+  setSearchParams,
+  interaction
+}: IndicatorsProps) {
   return (
-    <div className={s.indicators} role="group" aria-label="Slide Indicators">
+    <div className={s.indicators} role="group" aria-label={localeEntry.general.indicators}>
       {heroSlides.map((slideName) => {
         const currSlide = slideName === currentSlide;
 
         return (
           <button
             key={slideName}
-            aria-label={`${slideName} Slide ${currSlide ? "Active" : "Inactive"}`}
+            aria-label={`${slideName} ${localeEntry.general.indicator[0]}${
+              currSlide ? localeEntry.general.indicator[1] : ""
+            }`}
             aria-pressed={currSlide}
             disabled={interaction && currSlide}
             onClick={() =>

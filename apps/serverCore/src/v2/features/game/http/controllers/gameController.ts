@@ -13,7 +13,6 @@ import type { AddGameRequestDto } from "@gameFeatHttp/dtos/AddGameDto"
 import { isValidObjectId } from "mongoose";
 
 import { type GameStatus, type LeaderboardType, GAME_STATUSES, LEADERBOARD_TYPES, GAME_QUEST_STATUSES, GAME_BONUS_STATUSES } from "@qc/constants";
-import GENERAL_BAD_REQUEST_MESSAGE from "@constants/GENERAL_BAD_REQUEST_MESSAGE";
 
 import { capitalize } from "@qc/utils";
 import { handleHttpError } from "@utils/handleError";
@@ -22,7 +21,7 @@ import getRotateQuestsOrBonusesExpiry from "@gameFeat/utils/getRotateQuestsAndBo
 import * as generalGameService from "@gameFeat/services/gameService";
 import * as httpGameService from "@gameFeatHttp/services/httpGameService";
 
-const gameService = { ...generalGameService, ...httpGameService }
+const gameService = { ...generalGameService, ...httpGameService };
 
 /**
  * Initiates adding of a game related document (not indented to be used for the main client).
@@ -43,7 +42,10 @@ export async function addGame(
 
     await gameService.addGame(capitalize(type) as AddGameType, req.body);
 
-    return res.status(200).json({ message: `Successfully added ${type} to the database successfully.` });
+    return res.status(200).json({
+      message: `Successfully added ${type} to the database successfully.`,
+      success: true
+    });
   } catch (error: any) {
     next(handleHttpError(error, "addGame controller error."));
   }
@@ -63,7 +65,11 @@ export async function getGames(req: Request, res: Response, next: NextFunction) 
 
     const games = await gameService.getGames(status, true);
 
-    return res.status(200).json({ message: "Successfully retrieved all games.", games });
+    return res.status(200).json({
+      message: "Successfully retrieved all games.",
+      success: true,
+      games
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getGames controller error."));
   }
@@ -78,16 +84,26 @@ export async function getGame(req: Request, res: Response, next: NextFunction) {
 
   try {
     if (typeof identifier !== "string") {
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
     } else if (process.env.NODE_ENV !== "development") {
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: req.locale.data.general.error.ACCESS_DENIED
+      });
     }
     
     const game = await gameService.getGame(
       isValidObjectId(identifier) ? "_id" : "title", identifier
     );
 
-    return res.status(200).json({ message: "Game found successfully.", game });
+    return res.status(200).json({
+      message: "Game found successfully.",
+      success: true,
+      game
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getGame controller error."));
   }
@@ -103,11 +119,18 @@ export async function getLeaderboard(req: Request, res: Response, next: NextFunc
 
   try {
     if (!LEADERBOARD_TYPES.includes(type))
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     const users = await gameService.getLeaderboard(type);
 
-    return res.status(200).json({ message: `Successfully retrieved top users via win ${type}.`, users });
+    return res.status(200).json({
+      message: `Successfully retrieved top users via win ${type}.`,
+      success: true,
+      users
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getLeaderboard controller error."));
   }
@@ -123,20 +146,29 @@ export async function getQuests(req: Request, res: Response, next: NextFunction)
 
   try {
     if (status && process.env.NODE_ENV !== "development")
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: req.locale.data.general.error.ACCESS_DENIED
+      });
 
     if (
       (username && typeof username !== "string") ||
       (status && !GAME_QUEST_STATUSES.includes(status))
     )
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     const quests = await gameService.getQuests({ username, status, forClient: true }),
       renew = await getRotateQuestsOrBonusesExpiry("quests");
 
-    return res
-      .status(200)
-      .json({ message: "Successfully retrieved all quests.", quests, renew });
+    return res.status(200).json({
+      message: "Successfully retrieved all quests.",
+      success: true,
+      quests,
+      renew
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getQuests controller error."));
   }
@@ -151,16 +183,26 @@ export async function getQuest(req: Request, res: Response, next: NextFunction) 
 
   try {
     if (typeof identifier !== "string") {
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID,
+      });
     } else if (process.env.NODE_ENV !== "development") {
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: req.locale.data.general.error.ACCESS_DENIED
+      });
     }
 
     const quest = await gameService.getQuest(
       isValidObjectId(identifier) ? "_id" : "title", identifier
     );
 
-    return res.status(200).json({ message: "Quest found Successfully.", quest });
+    return res.status(200).json({
+      message: "Quest found Successfully.",
+      success: true,
+      quest
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getQuest controller error."));
   }
@@ -176,17 +218,28 @@ export async function getBonuses(req: Request, res: Response, next: NextFunction
 
   try {
     if (status && process.env.NODE_ENV !== "development")
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({
+        name: "ACCESS_DENIED",
+        ERROR: req.locale.data.general.error.ACCESS_DENIED
+      });
 
     if (status && !GAME_BONUS_STATUSES.includes(status))
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
 
     const bonuses = await gameService.getBonuses({ status, forClient: true }),
       renew = await getRotateQuestsOrBonusesExpiry("bonuses");
 
     return res
       .status(200)
-      .json({ message: "Successfully retrieved all bonuses.", bonuses, renew });
+      .json({
+        message: "Successfully retrieved all bonuses.",
+        success: true,
+        bonuses,
+        renew
+      });
   } catch (error: any) {
     next(handleHttpError(error, "getBonuses controller error."));
   }
@@ -201,16 +254,26 @@ export async function getBonus(req: Request, res: Response, next: NextFunction) 
 
   try {
     if (typeof identifier !== "string") {
-      return res.status(400).json({ ERROR: GENERAL_BAD_REQUEST_MESSAGE });
+      return res.status(400).json({
+        name: "NO_DATA_INVALID",
+        ERROR: req.locale.data.general.error.NO_DATA_INVALID
+      });
     } else if (process.env.NODE_ENV !== "development") {
-      return res.status(403).json({ ERROR: "Access Denied" });
+      return res.status(403).json({ 
+        name: "ACCESS_DENIED",
+        ERROR: req.locale.data.general.error.ACCESS_DENIED
+      });
     }
 
     const bonus = await gameService.getBonus(
       isValidObjectId(identifier) ? "_id" : "title", identifier
     );
 
-    return res.status(200).json({ message: "Bonus found Successfully.", bonus });
+    return res.status(200).json({
+      message: "Bonus found Successfully.",
+      success: true,
+      bonus
+    });
   } catch (error: any) {
     next(handleHttpError(error, "getBonus controller error."));
   }

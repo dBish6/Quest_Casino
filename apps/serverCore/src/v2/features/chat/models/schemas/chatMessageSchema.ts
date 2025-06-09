@@ -10,6 +10,7 @@ import defaults from "@utils/schemaDefaults";
 
 export const globalChatMessageSchema = new Schema<GlobalChatMessageDoc, Model<GlobalChatMessageDoc>>(
   {
+    room_id: { type: String, required: true },
     avatar_url: {
       type: String,
       validate: {
@@ -19,8 +20,18 @@ export const globalChatMessageSchema = new Schema<GlobalChatMessageDoc, Model<Gl
         message: (props: any) => `${props.value} is not a valid URL.`
       }
     },
-    room_id: { type: String, required: true },
     username: { type: String, required: true },
+    // Adding these extra fields might be overkill, this is supposed to be light since we are using redis and stringify a lot. Worry about that if we had a lot of users.
+    legal_name: {
+      _id: false,
+      type: { first: { type: String }, last: { type: String } },
+      required: true
+    },
+    country: { type: String, required: true },
+    bio: {
+      type: String,
+      maxlength: [338, "bio field in chat message exceeds the max of 338 characters."]
+    },
     message: { type: String, required: true }
   },
   {

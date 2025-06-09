@@ -74,7 +74,7 @@ export async function getChatMessages(roomId: ChatRoomId): Promise<ChatMessage[]
       archivedMessages = await GlobalChatMessage(roomId as GlobalChatRoomId)
         .find({ room_id: roomId })
         .select("-_id")
-        .lean();
+        .lean<any>();
     } else if (chatRoomUtils.isRoomId(roomId, "private")) {
       const privateChat = await PrivateChatMessage.aggregate([
         { $match: { room_id: roomId } },
@@ -85,7 +85,7 @@ export async function getChatMessages(roomId: ChatRoomId): Promise<ChatMessage[]
 
       archivedMessages = privateChat[0]?.chats || [];
     } else {
-      throw new SocketError("Access Denied; Invalid credentials.", "forbidden");
+      throw new SocketError("ACCESS_DENIED_CRED", "general", "forbidden");
     }
 
     const recentMessages = await redisClient.lRange(`chat:${roomId}:message_queue`, 0, -1);

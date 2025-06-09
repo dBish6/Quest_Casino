@@ -19,6 +19,9 @@ const meta: Meta<typeof Avatar> = {
     size: {
       control: { type: "select" },
       options: ["sm", "md", "lrg", "xl", "xxl"]
+    },
+    showShortView: {
+      control: { type: "boolean" }
     }
   },
   args: { linkProfile: true },
@@ -42,12 +45,14 @@ export const Default: Story = {
   },
   NoHoverCard: Story = {
     args: {
+      showShortView: false,
       linkProfile: false
     }
   },
   NoUser: Story = {
     argTypes: {
-      linkProfile: { table: { disable: true } },
+      showShortView: { table: { disable: true } },
+      linkProfile: { table: { disable: true } }
     },
     render: () => <Avatar user={undefined} />
   };
@@ -79,10 +84,12 @@ export const Small: Story = {
   },
   ExtraExtraExtraLarge: Story = {
     argTypes: {
-      linkProfile: { table: { disable: true } },
+      showShortView: { table: { disable: true } },
+      linkProfile: { table: { disable: true } }
     },
     args: {
       size: "xxxl",
+      showShortView: false,
       linkProfile: false
     }
   };

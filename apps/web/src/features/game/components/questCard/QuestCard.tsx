@@ -1,13 +1,14 @@
 import type { VariantProps } from "class-variance-authority";
 import type { Quest } from "@qc/typescript/dtos/GetQuestsDto";
 
+import { useRef } from "react";
 import { cva } from "class-variance-authority";
 
-import formatCurrency from "@authFeat/utils/formatCurrency";
+import useLocale from "@hooks/useLocale";
+
+import { Icon } from "@components/common";
 
 import s from "./questCard.module.css";
-import { Icon } from "@components/common";
-import { useRef } from "react";
 
 const questCard = cva(s.card, {
   variants: {
@@ -26,10 +27,12 @@ export interface QuestCardProps extends React.ComponentProps<"div">,
 }
 
 export default function QuestCard({ className, size, quest, current = 0 }: QuestCardProps) {
+  const { content, numberFormat } = useLocale("QuestCard");
+
   const label = useRef({
-    title: "title-" + quest.title.toLowerCase().replaceAll(" ", "-"),
-    description: "title-" + quest.title.toLowerCase().replaceAll(" ", "-"),
-    progress: "title-" + quest.title.toLowerCase().replaceAll(" ", "-")
+    title: "title-" + quest.title.toLowerCase().replace(/'/g, "").replace(/\s+/g, "-"),
+    description: "descrip-" + quest.title.toLowerCase().replace(/'/g, "").replace(/\s+/g, "-"),
+    progress: "progress-" + quest.title.toLowerCase().replace(/'/g, "").replace(/\s+/g, "-")
   });
 
   const completed = current >= quest.cap;
@@ -45,15 +48,17 @@ export default function QuestCard({ className, size, quest, current = 0 }: Quest
       >
         <div className={s.content}>
           <div>
-            <h3 id={label.current.title} className="hUnderline">{quest.title}</h3>
+            <h3 id={label.current.title} className="hUnderline">
+              {quest.title}
+            </h3>
             <p id={label.current.description}>{quest.description}</p>
           </div>
           <p>
-            <span>Reward:</span>
+            <span>{content.reward}</span>
             <span>
               {quest.reward.type === "spins"
-                ? `${quest.reward.value} Free Spins`
-                : formatCurrency(quest.reward.value)}
+                ? `${numberFormat().format(quest.reward.value)} ${content.freeSpins}`
+                : numberFormat({ currency: "show" }).format(quest.reward.value)}
             </span>
           </p>
         </div>
@@ -61,7 +66,7 @@ export default function QuestCard({ className, size, quest, current = 0 }: Quest
         <div className={s.progress}>
           <div
             role="meter"
-            aria-label="Quest Progress"
+            aria-label={content.aria.label.progress}
             aria-describedby={label.current.progress}
             aria-valuemin={0}
             aria-valuemax={quest.cap}
@@ -71,10 +76,12 @@ export default function QuestCard({ className, size, quest, current = 0 }: Quest
             <div className={s.fill} style={{ width: `${(current / quest.cap) * 100}%` }} />
           </div>
           <div className={s.completion}>
-            <span id={label.current.progress}>{current}/{quest.cap}</span>
+            <span id={label.current.progress}>
+              {numberFormat().format(current)}/{numberFormat().format(quest.cap)}
+            </span>
             {completed && (
               <Icon
-                aria-label="Completed"
+                aria-label={content.aria.label.completed}
                 id={`check-mark-${size === "lrg" ? "16" : "14"}`}
                 fill="var(--c-status-green)"
               />

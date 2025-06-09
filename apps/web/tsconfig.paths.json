@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "paths": {
-      "@meta": ["./src/meta.ts"],
-
       "@storybook/*": ["./.storybook/*"],
 
       "@authFeat/*": ["./src/features/auth/*"],
@@ -14,6 +12,8 @@
       "@constants/*": ["./src/constants/*"],
 
       "@hooks/*": ["./src/hooks/*"],
+
+      "@locales/*": ["./src/locales/*"],
 
       "@redux/*": ["./src/redux/*"],
 

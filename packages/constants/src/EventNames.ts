@@ -7,6 +7,8 @@ export enum AuthEvent {
 
   USER_ACTIVITY = "user_activity",
 
+  LOCALE_CHANGE = "locale_change",
+
   NEW_NOTIFICATION = "new_notification"
 }
 

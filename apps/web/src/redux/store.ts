@@ -15,8 +15,8 @@ import { apiMiddleware } from "@services/api";
 
 let preloadedState = {};
 if (typeof window !== "undefined") {
-  preloadedState = deepMerge([(window?.__PRELOADED_STATE__ || {}), loadState()])
-  delete window?.__PRELOADED_STATE__;
+  preloadedState = deepMerge([(window.__PRELOADED_STATE__ || {}), loadState()])
+  delete window.__PRELOADED_STATE__;
 }
 
 const store = configureStore({
@@ -25,7 +25,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActionPaths: ["meta.baseQueryMeta.request", "meta.baseQueryMeta.response", "meta.arg.originalArgs.callback", "payload.callback", "payload.options.button.onClick"]
+        ignoredActionPaths: ["meta.baseQueryMeta.request", "meta.baseQueryMeta.response", "meta.arg.originalArgs.callback", "payload.callback", "payload.options.inject.btnOnClick"]
       }
     }).concat(apiErrorHandler, apiMiddleware)
 });

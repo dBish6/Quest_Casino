@@ -1,6 +1,7 @@
 import type { VariantProps } from "class-variance-authority";
 import type { ButtonProps } from "../button/Button";
 import type { IconProps } from "@components/common/Icon";
+import type { LocaleContent } from "@typings/Locale";
 
 import { forwardRef, useRef, cloneElement, isValidElement } from "react";
 import { Label } from "@radix-ui/react-label";
@@ -94,32 +95,43 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, React.PropsWith
                 : inputContainer.setAttribute("data-typing", "true");
             }}
           />
-          {Button === "password" ? (
-            <ButtonComp
-              aria-label="Show Password"
-              aria-controls="password"
-              aria-expanded="false"
-              aria-pressed="false"
-              intent="ghost"
-              size={size === "md" ? "md" : "lrg"}
-              type="button"
-              iconBtn
-              onClick={(e) => {
-                const target = e.currentTarget,
-                  isInactive = target.getAttribute("aria-pressed") === "false";
+          {Button === "password"
+            ? (() => {
+                const content = (
+                  typeof window !== "undefined"
+                    ? window.__LOCALE_DATA__.component.Input
+                    : {}
+                ) as LocaleContent;
 
-                (target.previousSibling as HTMLInputElement).type = isInactive ? "text" : "password";
-
-                target.setAttribute("aria-expanded", String(target.getAttribute("aria-expanded") === "false"));
-                target.setAttribute("aria-pressed", String(isInactive));
-                target.setAttribute("aria-label", isInactive ? "Hide Password" : "Show Password");
-              }}
-            >
-              <IconComp aria-hidden="true" id={size === "md" ? "eye-14" : "eye-18"} />
-            </ButtonComp>
-          ) : (
-            Button && cloneElement(Button)
-          )}
+                return (
+                  <ButtonComp
+                    aria-label={content.aria.label.showPassword}
+                    aria-controls="password"
+                    aria-expanded="false"
+                    aria-pressed="false"
+                    intent="ghost"
+                    size={size === "md" ? "md" : "lrg"}
+                    type="button"
+                    iconBtn
+                    onClick={(e) => {
+                      const target = e.currentTarget,
+                        isInactive = target.getAttribute("aria-pressed") === "false";
+      
+                      (target.previousSibling as HTMLInputElement).type = isInactive ? "text" : "password";
+      
+                      target.setAttribute("aria-expanded", String(target.getAttribute("aria-expanded") === "false"));
+                      target.setAttribute("aria-pressed", String(isInactive));
+                      target.setAttribute(
+                        "aria-label",
+                        isInactive ? content.aria.label.hidePassword : content.aria.label.showPassword
+                      );
+                    }}
+                  >
+                    <IconComp aria-hidden="true" id={size === "md" ? "eye-14" : "eye-18"} />
+                  </ButtonComp>
+                );
+              })()
+            : Button && cloneElement(Button)}
         </div>
 
         {children}

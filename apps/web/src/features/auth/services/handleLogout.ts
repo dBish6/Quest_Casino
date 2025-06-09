@@ -7,6 +7,7 @@ import { logger } from "@qc/utils";
 
 import handleRequestByLink from "@services/handleRequestByLink";
 import { authEndpoints } from "./authApi";
+import apiEntry from "@services/getLocaleEntry";
 
 import { getSocketInstance } from "@services/socket";
 import { CLEAR_USER, SET_OSTATE_TOKEN } from "@authFeat/redux/authSlice";
@@ -28,7 +29,7 @@ export default async function handleLogout(
     if (oState) dispatch(SET_OSTATE_TOKEN(oState));
     dispatch(
       ADD_TOAST({
-        message: "User login session timed out.",
+        message: apiEntry("logout").success.message,
         intent: "info",
         duration: 6500
       })

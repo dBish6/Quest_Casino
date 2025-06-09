@@ -5,8 +5,9 @@ import { useState } from "react";
 import { Title } from "@radix-ui/react-dialog";
 
 import formatPhoneNumber from "@authFeat/utils/formatPhoneNumber";
-import parseMessageWithLink from "@authFeat/utils/parseMessageWithLink";
+import injectElementInText from "@utils/injectElementInText";
 
+import useLocale from "@hooks/useLocale";
 import useForm from "@hooks/useForm";
 import useWorldData from "@authFeat/hooks/useWorldData";
 import useSwitchModal from "@authFeat/hooks/useSwitchModal";
@@ -24,6 +25,8 @@ import { Spinner } from "@components/loaders";
 import s from "./registerModal.module.css";
 
 export default function RegisterModal() {
+  const { content } = useLocale("RegisterModal");
+
   const fetcher = useFetcher(),
     { formRef, form, setLoading, setError, setErrors } = useForm<
       RegisterBodyDto & { con_password: string; calling_code: string }
@@ -54,10 +57,8 @@ export default function RegisterModal() {
     [
       postLoginGoogle,
       {
-        data: loginGoogleData,
         error: loginGoogleError,
         isLoading: loginGoogleLoading,
-        isSuccess: loginGoogleSuccess,
         reset: loginGoogleReset
       },
     ] = useLoginGoogleMutation();
@@ -68,7 +69,7 @@ export default function RegisterModal() {
 
   return (
     <ModalTemplate
-      aria-description="Register a profile at Quest Casino by providing the details below or by pressing the google button."
+      aria-description={content.aria.descrip.modal}
       queryKey="register"
       width="496px"
       className={s.modal}
@@ -84,11 +85,11 @@ export default function RegisterModal() {
             <hgroup>
               <Icon aria-hidden="true" id="badge-48" />
               <Title asChild>
-                <h2>Register</h2>
+                <h2>{content.title}</h2>
               </Title>
             </hgroup>
             <div>
-              <span>*</span> <span>Required</span>
+              <span>*</span> <span>{content.required}</span>
             </div>
           </div>
 
@@ -105,11 +106,20 @@ export default function RegisterModal() {
             formLoading={processing}
             resSuccessMsg={
               registerSuccess &&
-              parseMessageWithLink(registerData.message, {
-                sequence: "log in",
-                queryKey: "login",
-                options: { onClick: (e) => handleSwitch(e) },
-              })
+              injectElementInText(
+                registerData.message,
+                null,
+                (text) => (
+                  <ModalTrigger
+                    query={{ param: "login" }}
+                    intent="primary"
+                    onClick={handleSwitch}
+                  >
+                    {text}
+                  </ModalTrigger>
+                ),
+                { localeMarker: true }
+              )
             }
             resError={fetcher.data?.ERROR || registerError || loginGoogleError}
             clearErrors={() => setErrors({})}
@@ -118,7 +128,7 @@ export default function RegisterModal() {
             <div className="inputs">
               <div role="group">
                 <Input
-                  label="First Name"
+                  label={content.general.form.user.first_name}
                   intent="primary"
                   size="lrg"
                   id="first_name"
@@ -129,7 +139,7 @@ export default function RegisterModal() {
                   onInput={() => setError("first_name", "")}
                 />
                 <Input
-                  label="Last Name"
+                  label={content.general.form.user.last_name}
                   intent="primary"
                   size="lrg"
                   id="last_name"
@@ -141,7 +151,7 @@ export default function RegisterModal() {
                 />
               </div>
               <Input
-                label="Email"
+                label={content.general.form.user.email}
                 intent="primary"
                 size="lrg"
                 id="email"
@@ -153,7 +163,7 @@ export default function RegisterModal() {
                 onInput={() => setError("email", "")}
               />
               <Input
-                label="Username"
+                label={content.general.form.user.username}
                 intent="primary"
                 size="lrg"
                 id="username"
@@ -165,7 +175,7 @@ export default function RegisterModal() {
               />
               <div role="group">
                 <Input
-                  label="Password"
+                  label={content.general.form.user.password}
                   intent="primary"
                   size="lrg"
                   id="password"
@@ -177,7 +187,7 @@ export default function RegisterModal() {
                   onInput={() => setError("password", "")}
                 />
                 <Input
-                  label="Confirm Password"
+                  label={content.general.form.user.con_password}
                   intent="primary"
                   size="lrg"
                   id="con_password"
@@ -191,7 +201,7 @@ export default function RegisterModal() {
               </div>
               <div role="group">
                 <Select
-                  label="Country"
+                  label={content.general.form.user.country}
                   intent="primary"
                   size="lrg"
                   id="country"
@@ -227,7 +237,7 @@ export default function RegisterModal() {
                     ))}
                 </Select>
                 <Select
-                  label="Region"
+                  label={content.general.form.user.region}
                   intent="primary"
                   size="lrg"
                   id="region"
@@ -254,7 +264,7 @@ export default function RegisterModal() {
 
               <div role="group">
                 <Select
-                  label="Code"
+                  label={content.general.form.user.calling_code}
                   intent="callingCode"
                   size="lrg"
                   id="calling_code"
@@ -275,7 +285,7 @@ export default function RegisterModal() {
                     ))}
                 </Select>
                 <Input
-                  label="Phone Number"
+                  label={content.general.form.user.phone_number}
                   intent="primary"
                   size="lrg"
                   id="phone_number"
@@ -288,12 +298,13 @@ export default function RegisterModal() {
                   }}
                   disabled={processing}
                 />
+
+                {/* TODO: I am 18 years old or older or is it older than 18? checkbox. */}
               </div>
             </div>
 
             <div className={s.submit}>
               <Button
-                aria-label="Register"
                 aria-live="polite"
                 intent="primary"
                 size="xl"
@@ -304,19 +315,23 @@ export default function RegisterModal() {
                 {form.processing ? (
                   <Spinner intent="primary" size="md" />
                 ) : (
-                  "Register"
+                  content.title
                 )}
               </Button>
               <p>
-                By Registering a profile, you agree to Quest Casino's{" "}
-                <Link intent="primary" to="/terms">
-                  Terms
-                </Link>{" "}
-                and{" "}
-                <Link intent="primary" to="/privacy-policy">
-                  Privacy Policy
-                </Link>
-                .
+                {injectElementInText(
+                  content.agreement,
+                  null,
+                  (text) => [
+                    <Link key={0} intent="primary" to="/terms">
+                      {text[0]}
+                    </Link>,
+                    <Link key={1} intent="primary" to="/privacy-policy">
+                      {text[1]}
+                    </Link>
+                  ],
+                  { localeMarker: true, injectAll: true }
+                )}
               </p>
             </div>
           </Form>
@@ -328,19 +343,25 @@ export default function RegisterModal() {
             processing={{
               google: googleLoading,
               form: form.processing,
-              all: processing,
+              all: processing
             }}
           />
 
           <span className={s.already}>
-            Already have a account?{" "}
-            <ModalTrigger
-              query={{ param: "login" }}
-              intent="primary"
-              onClick={(e) => handleSwitch(e)}
-            >
-              Login
-            </ModalTrigger>
+            {injectElementInText(
+              content.already,
+              null,
+              (text) => (
+                <ModalTrigger
+                  query={{ param: "login" }}
+                  intent="primary"
+                  onClick={handleSwitch}
+                >
+                  {text}
+                </ModalTrigger>
+              ),
+              { localeMarker: true }
+            )}
           </span>
         </>
       )}

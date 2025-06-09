@@ -3,8 +3,10 @@ import type { ViewUserProfileCredentials } from "@qc/typescript/typings/UserCred
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 
+import injectElementInText from "@utils/injectElementInText";
 import { isFetchBaseQueryError } from "@utils/isFetchBaseQueryError";
 
+import useLocale from "@hooks/useLocale";
 import useLeaderboard from "@hooks/useLeaderboard";
 import useResourcesLoadedEffect from "@hooks/useResourcesLoadedEffect";
 
@@ -16,16 +18,18 @@ import { useLazyGetUserProfileQuery } from "@authFeat/services/authApi";
 import { ModalQueryKey, ModalTemplate } from "@components/modals";
 import { Link } from "@components/common";
 import { Spinner } from "@components/loaders";
+import { UserGeneral } from "@authFeat/components/userGeneral";
 import { UserStatistics } from "@authFeat/components/userStatistics";
 import { UserGameHistory } from "@authFeat/components/userActivity";
+import { ScrollArea } from "@components/scrollArea";
 
 import s from "./viewProfileModal.module.css";
-import { ScrollArea } from "@components/scrollArea";
-import { UserGeneral } from "@authFeat/components/userGeneral";
 
 export default function ViewProfileModal() {
   const [searchParams] = useSearchParams(),
     username = searchParams.get(ModalQueryKey.VIEW_PROFILE_MODAL) || "";
+
+  const { content, getContent } = useLocale("ViewProfileModal");
 
   const { selectedUser } = useLeaderboard(),
     storedUser = useAppSelector(selectUserCredentials)! || {};
@@ -60,7 +64,7 @@ export default function ViewProfileModal() {
 
   return (
     <ModalTemplate
-      aria-description="A user's profile, including their profile picture, bio, statistics, and game history. You can also send a message, add them as a friend, or block them."
+      aria-description={content.aria.descrip.modal}
       queryKey="prof"
       width="778px"
       className={s.modal}
@@ -72,33 +76,46 @@ export default function ViewProfileModal() {
         ) : !user ? (
           <p role="alert">
             {isFetchBaseQueryError(profileError) ? (
-              profileError.data?.ERROR.endsWith("in our system.") ? (
+              profileError.data?.name?.includes("USER_NOT_FOUND") ? (
                 profileError.data.ERROR
               ) : (
-                <>
-                  An unexpected server error occurred. Please try refreshing the
-                  page. If the error persists, feel free to reach out to{" "}
-                  <Link intent="primary" to="/support">
-                    Support
-                  </Link>
-                  .
-                </>
+                (() => {
+                  const localeApi = getContent("api");
+                  return injectElementInText(
+                    localeApi.error.unexpectedFull
+                      .replace("{{message}}", localeApi.error.unexpected)
+                      .replace("{{refresh}}", localeApi.error.tryRefresh),
+                    null,
+                    (text) => (
+                      <Link intent="primary" to="/support">
+                        {text}
+                      </Link>
+                    ),
+                    { localeMarker: true }
+                  )
+                })()
               )
             ) : (
               <>
-                An unknown error occurred. The server might down or there was a
-                issue processing your request. Please try refreshing the page. If
-                the error persists, feel free to reach out to{" "}
-                <Link intent="primary" to="/support">
-                  Support
-                </Link>
-                .
+                {injectElementInText(
+                  content.error.unknown,
+                  null,
+                  (text) => (
+                    <Link intent="primary" to="/support">
+                      {text}
+                    </Link>
+                  ),
+                  { localeMarker: true }
+                )}
               </>
             )}
           </p>
         ) : (
           <div role="group">
-            <section aria-label="General Information" className={s.info}>
+            <section
+              aria-label={content.section.general.aria.label.section}
+              className={s.info}
+            >
               <UserGeneral size="full" user={user} />
             </section>
 

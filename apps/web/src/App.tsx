@@ -4,7 +4,7 @@
  *
  * Author: David Bishop
  * Creation Date: April 16, 2024
- * Last Updated: March 19, 2025
+ * Last Updated: June 8, 2025
  *
  * Description:
  * .
@@ -23,43 +23,42 @@ import { type RouteObject, Navigate } from "react-router-dom";
 import HistoryProvider from "@utils/History";
 import { ToastsProvider } from "@components/toast";
 
-import { ResourceLoaderProvider } from "@components/loaders";
-import { BreakpointProvider, Dashboard } from "@components/dashboard";
-import { LeaderboardProvider } from "@gameFeat/components/modals/menu/slides";
-import SocketListenersProvider from "@components/SetupSocketListeners";
-import { ModalsProvider } from "@components/modals";
+import LocaleProvider from "@components/LocaleProvider";
+import SocketPredefinedListenersProvider from "@components/SocketPredefinedListenersProvider";
 import VerificationHandler from "@authFeat/components/VerificationHandler";
 import AwayActivityTracker from "@components/AwayActivityTracker";
 
-import { routes as initialRoutes } from "./routes";
+import { routes as initialRoutes, AppCore } from "./routes";
 
 import validateUserAction from "@authFeat/actions/validateUser";
 
-export const routes: RouteObject[] = initialRoutes.map((route) => {
-  if (route.path === "/") {
+export const routes: RouteObject[] = initialRoutes({
+  // These values don't matter, it gets overwritten below for the client, these are just dummy values. 
+  type: "en",
+  data: {} as any
+}).map((route) => {
+  if (route.path === "/:locale/") {
     route.element = (
       <>
         {/* <ErrorBoundary> */}
         <HistoryProvider />
-        <ToastsProvider />
 
-        <ResourceLoaderProvider>
-          <BreakpointProvider>
-            <LeaderboardProvider>
-              <SocketListenersProvider />
-
-              <Dashboard />
-
-              <ModalsProvider />
-              <VerificationHandler />
-              <AwayActivityTracker />
-            </LeaderboardProvider>
-          </BreakpointProvider>
-        </ResourceLoaderProvider>
+        <LocaleProvider
+          locale={document.documentElement.lang}
+          initialData={window.__LOCALE_DATA__}
+        >
+          <ToastsProvider />
+          <AppCore>
+            <SocketPredefinedListenersProvider />
+            <VerificationHandler />
+            <AwayActivityTracker />
+          </AppCore>
+        </LocaleProvider>
         {/* </ErrorBoundary> */}
 
         {/* They get redirected on the server, this is just in case for the client. */}
         {window.location.pathname === "/" && (
+          // FIXME: Would this even work now (/en/)?
           <Navigate to="/home" replace />
         )}
       </>

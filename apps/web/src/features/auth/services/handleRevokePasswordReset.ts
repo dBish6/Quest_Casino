@@ -14,11 +14,11 @@ export default async function handleRevokePasswordReset(
     try {
       const res = dispatch(authEndpoints.revokePasswordReset.initiate()),
         { data } = await res;
-  
-      if (data && data.message?.includes("successfully"))
+
+      if (data?.success)
         dispatch(ADD_TOAST({ message: data.message, intent: "success" }));
     } catch (error: any) {
-      logger.error("handleSendVerifyEmail error:\n", error.message);
+      logger.error("handleRevokePasswordReset error:\n", error.message);
     }
   });
 }

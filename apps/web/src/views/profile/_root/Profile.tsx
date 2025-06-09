@@ -4,6 +4,7 @@ import { useLayoutEffect, useEffect, useState } from "react";
 
 import { history } from "@utils/History";
 
+import useLocale from "@hooks/useLocale";
 import useBreakpoint from "@hooks/useBreakpoint";
 
 import { useAppSelector, useAppDispatch } from "@redux/hooks";
@@ -23,8 +24,11 @@ import { Statistics, Activity } from "./_components/stats&activity";
 
 import s from "./profile.module.css";
 
+// TODO: Have a danger zone section with "Clear all Sessions" and "Delete Profile".
+
 export default function Profile() {
-  const { viewport } = useBreakpoint()
+  const { content, numberFormat } = useLocale(),
+    { viewport } = useBreakpoint()
 
   const storedUser = useAppSelector(selectUserCredentials)! || {},
     dispatch = useAppDispatch();
@@ -62,35 +66,42 @@ export default function Profile() {
 
   // NOTE: A private profile page doesn't need to be seo friendly.
   useEffect(() => {
-    getUserProfile().then((res) => {
+    const query = getUserProfile();
+    query.then((res) => {
       if (res.isSuccess && res.data?.user) {
         // Adds the extra user data needed for the profile.
-        setUser({ ...storedUser, ...res.data.user as UserProfileCredentials });
+        setUser({ ...storedUser, ...(res.data.user as UserProfileCredentials) });
 
         if (!storedUser.email_verified)
           dispatch(
             ADD_TOAST({
-              title: "Verify your Profile",
-              message: "We've noticed that your profile hasn't been verified yet, send verification email.",
+              title: content.verify,
+              message: content.verifyNotice,
               intent: "info",
               options: {
-                button: {
-                  sequence: "send verification email.",
-                  onClick: () => handleSendVerifyEmail(dispatch)
+                inject: {
+                  btnOnClick: () => handleSendVerifyEmail(dispatch),
+                  localeMarker: true
                 }
               }
             })
           );
       }
-    })
+    });
+
+    return () => query?.abort();
   }, []);
+
+  useEffect(() => {
+    if (user) setUser((prev) => ({ ...prev!, ...storedUser }));
+  }, [storedUser]);
   
   return (
     <Main
       className={s.profile}
       scrollable={viewport === "small" ? true : "horizontal"}
     >
-      {profileLoading && <OverlayLoader message="Loading profile..." />}
+      {profileLoading && <OverlayLoader message={content.loading} />}
 
       {user ? (
         <>
@@ -98,9 +109,17 @@ export default function Profile() {
             orientation={viewport === "small" ? null : "vertical"}
             scrollbarSize="5"
           >
-            {[Facing, Personal, Billing].map((SectionComp, i) => {
-              return <SectionComp key={i} user={user} />;
-            })}
+            {[Facing, Personal, Billing].map((SectionComp, i) => (
+              <SectionComp
+                key={i}
+                localeEntry={{
+                  ...content[SectionComp.name],
+                  general: content.general
+                }}
+                numberFormat={numberFormat}
+                user={user}
+              />
+            ))}
           </ScrollArea>
 
           <div>
@@ -122,28 +141,24 @@ export default function Profile() {
               scrollbarSize="5"
               className={s.inner}
             >
-              {[Statistics, Activity].map((SectionComp, i) => {
-                return <SectionComp key={i} user={user} />;
-              })}
+              {[Statistics, Activity].map((SectionComp, i) => (
+                <SectionComp key={i} user={user} />
+              ))}
             </ScrollArea>
           </div>
         </>
       ) : (
         <div className={s.profError}>
           <hgroup role="group" aria-roledescription="heading group">
-            <h2>Profile Data Not Found</h2>
-            <p aria-roledescription="subtitle">
-              We couldn't find your profile data. Our server may have shut down
-              unexpectedly or there was a unexpected server error. Please try
-              refreshing the page.
-            </p>
+            <h2>{content.error.title}</h2>
+            <p aria-roledescription="subtitle">{content.error.para}</p>
           </hgroup>
           <Button
             intent="primary"
             size="xl"
             onClick={() => history.locationReload()}
           >
-            Refresh
+            {content.general.refresh}
           </Button>
         </div>
       )}

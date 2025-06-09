@@ -8,7 +8,7 @@ export interface BreakpointContextValues {
 
 export const BreakpointContext = createContext<BreakpointContextValues | undefined>(undefined);
 
-export function BreakpointProvider({ children }: React.PropsWithChildren<{}>) {
+export default function BreakpointProvider({ children }: React.PropsWithChildren<{}>) {
   const [breakpoint, setBreakpoint] = useState<BreakpointContextValues>({
     viewport: "large",
     title: { main: false, games: false },

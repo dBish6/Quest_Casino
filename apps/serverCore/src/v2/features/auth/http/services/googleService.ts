@@ -92,10 +92,7 @@ export async function loginWithGoogle(
           { by: "google_id", value: userInfo.sub },
           { $set: { email: userInfo.email } }
         ).catch(() => {
-          throw new HttpError(
-            "Unexpectedly we couldn't find your profile after you changing your google account's email address.",
-            404
-          );
+          throw new HttpError("PROFILE_NOT_FOUND_GOOGLE", "auth", 404);
         });
       }
 
@@ -128,7 +125,7 @@ async function fetchAccessTokenToken(code: string, redirectUri: string) {
 
     if (!res.ok) {
       logger.error("fetchAccessTokenToken error:", data);
-      throw new HttpError("Received a bad status from google token request.", 403);
+      throw new HttpError("TOKEN_GOOGLE", "auth", 403);
     }
 
     return data.access_token;
@@ -150,7 +147,7 @@ async function fetchUserInfo(token: string) {
     logger.debug("google fetchUserInfo", res.status);
 
     if (!res.ok)
-      throw new HttpError("Failed to fetch google user info.", 403);
+      throw new HttpError("INFO_GOOGLE", "auth", 403);
 
     return data;
   } catch (error: any) {

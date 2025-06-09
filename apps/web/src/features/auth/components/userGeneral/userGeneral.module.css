@@ -67,6 +67,7 @@
               & img.flag {
                 width: 28px;
                 height: 20.46px;
+                object-fit: contain;
               }
             }
           }
@@ -101,6 +102,7 @@
               & img.flag {
                 width: 24px;
                 height: 17.45px;
+                object-fit: contain;
               }
             }
           }
