@@ -1,6 +1,11 @@
 import { type AvailableLocales, LANGUAGES } from "@qc/constants";
 import type { LocaleData } from "@typings/Locale";
+
+import { createRequire } from "node:module";
+
 import errorNotLocalized from "./errorNotLocalized";
+
+const require = createRequire(import.meta.url);
 
 export default class LocaleProvider {
   public readonly type: AvailableLocales;
@@ -11,9 +16,9 @@ export default class LocaleProvider {
     this.data = data;
   }
 
-  public static async init(locale: string) {
+  public static init(locale: string) {
     if (!LANGUAGES[locale as keyof typeof LANGUAGES]) locale = "en";
-    const data = await import(`@locales/${locale}.json`);
+    const data = require(`${process.env.NODE_ENV === "production" ? "./locales" : "@locales"}/${locale}.json`);
     return new LocaleProvider(locale as AvailableLocales, data);
   }
 

@@ -12,7 +12,7 @@ export default async function getLocale(
   reqOrSocket: Request | Socket
 ) {
   if (reqOrSocket.locale?.type !== locale) {
-    reqOrSocket.locale = await LocaleProvider.init(locale);
+    reqOrSocket.locale = LocaleProvider.init(locale);
 
     if (!LANGUAGES[locale as keyof typeof LANGUAGES]) 
       throw new ApiError(`"${locale}" is an unsupported locale.`);

@@ -46,12 +46,12 @@ export default function initializeSocketIo(
     const feature = nsp.split("/")[4];
 
     // *Middleware*
-    io.of(nsp).use(async (socket, next) => {
+    io.of(nsp).use((socket, next) => {
       // Locale initialization
       try {
         const locale = socket.handshake.query.lang;
 
-        await getLocale(locale as string, socket);
+        getLocale(locale as string, socket);
 
         logger.debug(`Successfully initialized local data for ${feature} namespace.`);
         next();
