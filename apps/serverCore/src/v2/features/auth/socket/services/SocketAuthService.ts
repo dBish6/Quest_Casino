@@ -90,7 +90,7 @@ export default class SocketAuthService {
         });
       }
     } catch (error: any) {
-      return handleSocketError(callback, this.socket, error, "auth", "initializeFriends service error.");
+      return handleSocketError(callback, this.socket, error, "initializeFriends service error.");
     }
   }
 
@@ -535,7 +535,7 @@ export function localeChangeListener(socket: Socket, io: Server, namespaces: any
 
         for (const sid of socketIds) {
           const targetSocket = io.of(nsp).sockets.get(sid);
-          if (targetSocket) await getLocale(locale, targetSocket);
+          if (targetSocket) getLocale(locale, targetSocket);
         }
       }
 

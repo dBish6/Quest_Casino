@@ -35,6 +35,11 @@ export default {
           src: "src/v2/emails/**/*",
           dest: "build/emails",
           rename: (_, __, fullPath) => fullPath.replace(/^src\/v2\/emails\//, "")
+        },
+        {
+          src: "src/v2/locales/**/*",
+          dest: "build/locales",
+          rename: (_, __, fullPath) => fullPath.replace(/^src\/v2\/locales\//, "")
         }
       ],
       copyOnce: true
