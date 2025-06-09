@@ -9,16 +9,18 @@ export interface MinUserCredentials {
   legal_name: { first: string; last: string };
   username: string;
 }
-export interface MinUserWithBioCredentials extends MinUserCredentials {
+/**
+ * Extends `MinUserCredentials` and adds `country` and `bio`.
+ */
+export interface MinUserWithExtraCredentials extends MinUserCredentials {
+  country: string;
   bio?: string;
 }
 
 /**
  * All credentials on the client of a friend of a user.
  */
-export interface FriendCredentials extends MinUserCredentials {
-  country: string;
-  bio?: string;
+export interface FriendCredentials extends MinUserWithExtraCredentials {
   /** The very last private message sent in the friend room (private room). */
   last_chat_message?: string;
   activity: { status: ActivityStatuses; inactivity_timestamp?: string };
@@ -39,7 +41,7 @@ export interface UserCredentials
   settings: {
     /** Enable or disable the sound effect on new notifications and indicator. */
     notifications: boolean;
-    blocked_list: { [member_id: string]: MinUserWithBioCredentials };
+    blocked_list: { [member_id: string]: MinUserCredentials };
     /** Hides game activity and statistics if false. */
     visibility: boolean;
     block_cookies: boolean;
@@ -96,11 +98,11 @@ export interface UserProfileCredentials extends UserCredentials {
   };
 }
 
-// /**
-//  * The credentials shown on a user's public profile.
-//  */
+/**
+ * The credentials shown on a user's public profile.
+ */
 export interface ViewUserProfileCredentials
-  extends MinUserWithBioCredentials,
+  extends MinUserWithExtraCredentials,
     StatisticsCredential {
   activity: {
     game_history: UserGameHistoryEntry[];
