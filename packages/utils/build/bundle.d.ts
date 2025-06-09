@@ -7,6 +7,10 @@ export declare function capitalize(txt: string): string;
 
 export declare const delay: (ms: number, callback?: () => void) => Promise<void>;
 
+import type Country from "@qc/typescript/typings/Country";
+export declare let COUNTRIES_MAP: Map<string, Country>;
+export declare function getCountriesMap(cdnUrl: string, referer?: string): Promise<Map<string, Country>>;
+
 declare class Logger {
     disableAll: boolean;
     constructor(disableAll: boolean);
@@ -22,5 +26,5 @@ export { logger };
  * Constraints:
  * - Valid email format.
  */
-export declare function validateEmail(email: string): "Invalid email." | undefined;
+export declare function validateEmail(email: string): boolean;
 
