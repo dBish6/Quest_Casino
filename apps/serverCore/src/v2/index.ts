@@ -1,6 +1,6 @@
 /**
  * Quest Casino API (back-end)
- * Version: 2.0.0-pre
+ * Version: 2.1.0.0
  *
  * Author: David Bishop
  * Creation Date: April 16, 2024
