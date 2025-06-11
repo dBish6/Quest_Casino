@@ -55,6 +55,7 @@ async function setupServer() {
   const app = express();
   let vite: ViteDevServer | undefined;
 
+  app.disable("x-powered-by");
   app.set("trust proxy", 1);
 
   if (process.env.NODE_ENV === "development") {
@@ -125,30 +126,29 @@ async function setupServer() {
 
   app.get("/*", async (req, res, next) => {
     try {
-      let render, template;
+      let render, template, localeData;
 
       if (process.env.NODE_ENV === "development") {
-        const [entry, indexHTML] = await Promise.all([
+        const [entry, indexHTML, data] = await Promise.all([
           vite!.ssrLoadModule("./src/entry-server.tsx"), // Makes it compatible with vite ssr in dev and hmr, etc.
-          vite!.transformIndexHtml(req.originalUrl, readFileSync("index.html", "utf-8"))
+          vite!.transformIndexHtml(req.originalUrl, readFileSync("index.html", "utf-8")),
+          readFile(join(_dirname, `./src/locales/${req.locale}.json`), "utf-8")
         ]);
         render = entry.render;
         template = indexHTML;
+        localeData = data;
       } else {
-        const [entry, indexHTML] = await Promise.all([
+        const [entry, indexHTML, data] = await Promise.all([
           import("./src/entry-server"),
-          readFile(join(_dirname, "./public/index.html"), "utf-8")
+          readFile(join(_dirname, "./public/index.html"), "utf-8"),
+          readFile(join(_dirname, `./public/locales/${req.locale}.json`), "utf-8")
         ]);
         render = entry.render;
         template = indexHTML;
+        localeData = data;
       }
       // console.log("template", template);
       // console.log("render", render);
-
-      const localeData = await readFile(
-        join(_dirname, `./src/locales/${req.locale}.json`),
-        "utf-8"
-      );
 
       const parsedLocaleData: any = JSON.parse(localeData),
         pageMeta: LocaleMeta = (
@@ -174,9 +174,6 @@ async function setupServer() {
             .replace("<!--ssr-outlet-->", appHtml)
             .replace(
               "<!--init-locale-content-->",
-              // TODO:
-              // `<script>window.__LOCALE_DATA__ = ${JSON.stringify(JSON.parse(localeData))};</script>`
-              // `<script>window.__LOCALE_DATA__ = ${localeData.replace(/\s+/g, " ")};</script>`
               `<script>window.__LOCALE_DATA__ = ${localeData.replace(/</g, "\\u003c")};</script>`
             )
             .replace("<!--init-state-->", preloadedStateScript);

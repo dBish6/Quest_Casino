@@ -2,6 +2,7 @@ import { defineConfig, mergeConfig, loadEnv } from "vite";
 import { defaults } from "../../packages/vite-config";
 import react from "@vitejs/plugin-react";
 import typescript from "@rollup/plugin-typescript";
+import copy from "rollup-plugin-copy";
 
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd());
@@ -39,7 +40,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       build: {
         outDir: isSsrBuild ? "build" : "build/public",
         copyPublicDir: !isSsrBuild,
-        ...(isSsrBuild && { emptyOutDir: false }),
+        ...(isSsrBuild && {  emptyOutDir: false }),
         rollupOptions: {
           ...(isSsrBuild && {
             output: {
@@ -51,7 +52,19 @@ export default defineConfig(({ mode, isSsrBuild }) => {
             typescript({
               outDir: isSsrBuild ? "build" : "build/public",
               exclude: ["**/*.old*", "**/*copy*"]
-            })
+            }),
+            ...(!isSsrBuild ? [
+              copy({
+                targets: [
+                  {
+                    src: "src/locales/*.json",
+                    dest: "build/public/locales",
+                    transform: (contents) => JSON.stringify(JSON.parse(contents.toString()))
+                  }
+                ],
+                hook: "writeBundle"
+              })
+            ] : [])
           ]
         }
       }
