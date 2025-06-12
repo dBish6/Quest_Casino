@@ -146,7 +146,9 @@ export const userActivitySchema = new Schema<
     collection: "user_activity",
     ...defaults.options
   }
-).index({ "game_history.timestamp": -1, "payment_history.timestamp": -1 });
+)
+  .index({ "game_history.timestamp": -1 })
+  .index({ "payment_history.timestamp": -1 });
 
 const notification = new Schema({
   _id: { type: Schema.Types.ObjectId, immutable: true },
