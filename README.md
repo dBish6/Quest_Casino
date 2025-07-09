@@ -28,7 +28,7 @@ To collaborate just shoot me an [email](mailto:davidbish2002@hotmail.com) or you
 If you want to know more about Quest Casino, take a look at the design case study. Quest Casino's UI has undergone rigorous design and UX testing to ensure a great user experience, the design case study for the new version is on my portfolio website or just use this [link](https://docs.google.com/presentation/d/1cegjwMxQvDhePSHiwVTRRgHZQYwQCqj3NcJFy1GPhMk/edit?usp=sharing). You'll find it at [https://www.davidbishop.info/#design](https://www.davidbishop.info/#design) on my portfolio.
 
 ### Prerequisites
-- `Nodejs` version 20 or greater.
+- `Nodejs` version 22 or greater.
 - `NPM` version 10 or greater.
 
 ### Getting Started
