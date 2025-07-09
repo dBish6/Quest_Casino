@@ -1,6 +1,6 @@
 Version Format:
 APP.MAJOR.MINOR.PATCH
-- APP: Major iteration of the entire app (e.g. `2` = complete rewrite from version `1`).
+- APP: Major iteration of the entire app (e.g. 2 = complete rewrite from version 1).
 - MAJOR: Big new features or significant changes within the app generation.
 - MINOR: Smaller feature improvements or enhancements.
 - PATCH: Bug fixes and minor tweaks.
