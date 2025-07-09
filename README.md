@@ -1,8 +1,10 @@
-## 🚀🚀 Active Development
-The development of the complete overhaul of Quest Casino is now underway and we're now in the very early stages. The previous version (v1.2.8) will remain available online for the time being, you can access the previous version through the releases section or the quest_casino_v1.2.8 branch. Quest Casino version 2 is a highly ambitious upgrade that promises to surpass its predecessor in every way. Stay Tuned! 🎰
-
 # Quest_Casino_Full-Stack_App
 This is a fun casino app that has different kinds of casino games. From the sound of the name, in addition, it has some quests/challenges to complete for some extra moolah!
+
+## About this Version
+This repository contains Quest Casino version 2, a complete overhaul and the next major iteration of the app. It features a new tech stack, architecture, and enhanced features designed to surpass the original version in every way.
+
+The previous version (v1.2.8) remains available in the releases section and in the quest_casino_v1.2.8 branch for reference and maintenance.
 
 ## New Tech Stack
 Quest Casino has transitioned to a `monoRepo`, which is very scalable. This setup allows for potential expansions into mobile development and additional web apps. Also, this allows for the API to communicate with the front-end via proxy which can provide better performance. This monoRepo uses `npm` and `turboRepo` as the build system.
@@ -14,7 +16,7 @@ The `web` directory is a `TypeSript React` app which uses `Vite` and a custom `S
 The `serverCore` directory contains the core API and WebSocket connections via `socket.io`, developed using `TypeScript Express`. I also finally decided to remove Firebase, mid-development. I felt that all I really needed from Firebase was Firestore and all the additional features felt like unnecessary 'bloat' and also the 'hand-holding' began to annoy me. So, after I made up this tech stack, I decided to remove Firebase and use a different document-oriented database, `MongoDB`. Our database is now MongoDB complemented with an Object Data Modeling (ODM) tool, `Mongoose`, for a structured schema approach.
 
 ## Current Steps
-I'm now on the new `chat feature`, which will have global chat rooms based on the user's country and private chat rooms will also be implemented for the user's friends. It's a complex chat system for sure, will be a fun challenge.
+The app is now in a stable state for what it is, and I'm now maintaining and fixing the current code. Development is shifting toward learning Go and building the game server.
 
 ## Collaboration Appreciated!
 I would love to work with other people with this app I envisioned.
