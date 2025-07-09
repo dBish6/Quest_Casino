@@ -51,8 +51,6 @@ $ npm install <package> --workspace <project>
 ## Thanks!
 I hope my work can inspire you, thank you for your interest in the app!
 
-_**Deployed Stable Version (Version 1):** [www.questcasino.xyz](https://www.questcasino.xyz)_
-
 <a href="https://www.buymeacoffee.com/dBish" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 <br />
