@@ -4,7 +4,7 @@ This is a fun casino app that has different kinds of casino games. From the soun
 ## About this Version
 This repository contains Quest Casino version 2, a complete overhaul and the next major iteration of the app. It features a new tech stack, architecture, and enhanced features designed to surpass the original version in every way.
 
-The previous version (v1.2.8) remains available in the releases section and in the quest_casino_v1.2.8 branch for reference and maintenance.
+The previous version (v1.2.8) remains available in the releases section and in the quest_casino_v1.2.8 branch for reference.
 
 ## New Tech Stack
 Quest Casino has transitioned to a `monoRepo`, which is very scalable. This setup allows for potential expansions into mobile development and additional web apps. Also, this allows for the API to communicate with the front-end via proxy which can provide better performance. This monoRepo uses `npm` and `turboRepo` as the build system.
