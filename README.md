@@ -25,7 +25,7 @@ When collaborating, you don't have to help with the main UI, I am also looking f
 
 To collaborate just shoot me an [email](mailto:davidbish2002@hotmail.com) or you can contact me on [Linkedin](https://www.linkedin.com/in/d-bish/).
 
-If you want to know more about Quest Casino, take a look at the design case study. Quest Casino's UI has undergone rigorous design and UX testing to ensure a great user experience, the design case study for the new version is on my portfolio website or just use this [link](https://docs.google.com/presentation/d/1cegjwMxQvDhePSHiwVTRRgHZQYwQCqj3NcJFy1GPhMk/edit?usp=sharing). You'll find it at [https://www.davidbishop.info/#design](https://www.davidbishop.info/#design) on my portfolio.
+If you want to know more about Quest Casino, take a look at the design case study. Quest Casino's UI has undergone rigorous design and UX testing to ensure a great user experience, the design case study for the new version is on my portfolio website or just use this [link](https://docs.google.com/presentation/d/1cegjwMxQvDhePSHiwVTRRgHZQYwQCqj3NcJFy1GPhMk/edit?usp=sharing). You'll find it at [https://www.davidbishops.info/#design](https://www.davidbishops.info/#design) on my portfolio.
 
 ### Prerequisites
 - `Nodejs` version 22 or greater.
