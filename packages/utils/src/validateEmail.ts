@@ -8,5 +8,7 @@ export function validateEmail(email: string) {
       email
     )
   )
-    return "Invalid email.";
+    return false;
+
+  return true;
 }

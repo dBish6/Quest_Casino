@@ -1,0 +1,8 @@
+- Localize the emails.
+- WHEN ALL SAID AND DONE USE STRICT FOR COOKIES SINCE THE PROXY? PROBABLY NOT, BUT IT WOULD HAVE TO BE THE SAME DOMAIN OR SUB DOMAIN IDK.
+
+Left Sticky Notes:
+- Functionally for all settings + notification sound and red dot for the front-end.
+- Finish tracking daily bonuses (calculateBonus.ts).
+- Delete user and wipe user.
+- restrictBanned.ts.

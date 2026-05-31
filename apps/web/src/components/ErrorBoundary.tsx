@@ -25,6 +25,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     logger.error("Application error:\n", error, errorInfo);
   }
 
+  // FIXME: This doesn't even render the component when an error happens and it always makes it say "useBreakpoint must be used within a BreakpointProvider." first every time.
   render() {
     if (this.state.hasError) {
       return (

@@ -19,7 +19,7 @@
     "build-storybook": "storybook build",
     "start": "dotenv -e .env -e .env.production node build/server.mjs",
     "start:debug": "dotenv -e .env -e .env.production tsx server.ts",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf node_modules"
   },
   "dependencies": {

@@ -1,0 +1,4 @@
+- Localize formatPhoneNumber.
+- ControlsHelpModal
+- CompatibleBeforeunload
+- Profile danger section.

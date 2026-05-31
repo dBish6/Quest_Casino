@@ -59,7 +59,7 @@ const Button = forwardRef<HTMLButtonElement, React.PropsWithChildren<ButtonProps
           keyPress(e, () =>
             e.currentTarget.removeAttribute("data-key-press")
           );
-          if (props.onKeyDown) props.onKeyDown(e);
+          if (props.onKeyUp) props.onKeyUp(e);
         }}
       >
         {intent?.includes("exit") ? (

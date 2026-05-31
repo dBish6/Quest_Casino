@@ -35,12 +35,12 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       },
       plugins: [react()],
       ssr: {
-        noExternal: ["react-router-dom"] // Really?
+        noExternal: ["react-router-dom"]
       },
       build: {
         outDir: isSsrBuild ? "build" : "build/public",
         copyPublicDir: !isSsrBuild,
-        ...(isSsrBuild && {  emptyOutDir: false }),
+        ...(isSsrBuild && { emptyOutDir: false }),
         rollupOptions: {
           ...(isSsrBuild && {
             output: {
